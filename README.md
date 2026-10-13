@@ -1,4 +1,5 @@
 # TechTeacher
+Link to live site: https://taylor-benjamin.github.io/TechTeacher/****
 
 A single-page learning platform covering Software Development, AI/ML, Networking, Web Design and Cybersecurity. Built with React, Tailwind CSS and Vite. All lesson content lives in JSON.
 
