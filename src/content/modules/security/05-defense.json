@@ -1,0 +1,242 @@
+{
+  "tab": "security",
+  "id": "defense",
+  "order": 5,
+  "title": "Threats & Defence",
+  "summary": "How attacks work and how defenders stop, detect and respond to them.",
+  "lessons": [
+    {
+      "id": "threats-attacks",
+      "title": "Threats and attacks",
+      "level": "beginner",
+      "minutes": 12,
+      "concept": {
+        "text": "Security exists to protect three properties, known as the **CIA triad**. **Confidentiality**: only authorised people can read data. **Integrity**: data is accurate and unaltered. **Availability**: systems work when needed. Every attack damages at least one.\n\nAttackers range from opportunistic criminals to organised groups and insiders. Most successful attacks are not technical wizardry. They exploit people (phishing), weak or reused passwords, and software that was never patched.",
+        "analogy": "Securing a network is like securing a house. Most burglars do not pick locks. They try the door handle (default passwords), look for an open window (unpatched software), or simply knock and claim to be from the gas company (phishing)."
+      },
+      "visual": {
+        "type": "cards",
+        "caption": "The attacks you will meet most often.",
+        "items": [
+          { "title": "Phishing", "text": "Fake messages that trick you into giving credentials or opening malware. The top entry point." },
+          { "title": "Ransomware", "text": "Malware that encrypts your files and demands payment. Hits availability." },
+          { "title": "Credential attacks", "text": "Stuffing, spraying and brute force against login pages." },
+          { "title": "SQL injection", "text": "Input that is treated as a database command. Steals or alters data." },
+          { "title": "Cross-site scripting (XSS)", "text": "Attacker's script runs in another user's browser." },
+          { "title": "Denial of service (DDoS)", "text": "Flooding a service until it cannot respond. Hits availability." },
+          { "title": "On-path (man in the middle)", "text": "Intercepting traffic between two parties. Hits confidentiality and integrity." },
+          { "title": "Social engineering", "text": "Manipulating people: pretexting, tailgating, urgency, authority." }
+        ]
+      },
+      "steps": [
+        { "title": "Learn the vocabulary", "text": "A **vulnerability** is a weakness. A **threat** is something that could exploit it. An **exploit** is the method used. **Risk** is the likelihood of that happening multiplied by its impact." },
+        { "title": "Spot a phish", "text": "Check for a mismatched sender address, urgency or threats, a link whose real destination differs from its text, unexpected attachments, and requests for credentials or payment." },
+        { "title": "Understand malware types", "text": "A **virus** attaches to files. A **worm** spreads by itself across networks. A **trojan** pretends to be useful software. **Ransomware** encrypts data. **Spyware** and **keyloggers** steal information." },
+        { "title": "Apply defence in depth", "text": "No single control is enough. Layer them: patching, MFA, least privilege, email filtering, endpoint protection, network segmentation, backups and user training." }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "Ransomware encrypts a hospital's patient records. Which part of the CIA triad is hit first?", "options": ["Confidentiality", "Integrity", "Availability", "None"], "answer": 2, "explain": "Staff cannot access the data they need. Modern ransomware often steals data too, which also hits confidentiality." },
+          { "q": "An email from 'IT Support' says your account will be deleted in one hour unless you log in through a link. What technique is this?", "options": ["SQL injection", "Phishing using urgency", "A DDoS attack", "A worm"], "answer": 1, "explain": "Urgency and authority are classic social engineering pressure tactics." },
+          { "q": "A login form accepts `' OR '1'='1` as a username and logs the attacker in. What is the flaw?", "options": ["Cross-site scripting", "SQL injection", "Buffer overflow", "Phishing"], "answer": 1, "explain": "User input was placed directly into a database query. Parameterised queries prevent it." },
+          { "q": "Which malware spreads across a network without any user action?", "options": ["Trojan", "Worm", "Adware", "Keylogger"], "answer": 1, "explain": "Worms self-propagate by exploiting vulnerabilities." }
+        ]
+      },
+      "challenge": {
+        "prompt": "A small company is hit by ransomware that arrived through a phishing email. Name one control at each of four layers that could have stopped or limited it.",
+        "hint": "Follow the attack: the email arrives, a user clicks, malware runs, it spreads, files are encrypted.",
+        "solution": "1. **Email**: filtering and attachment sandboxing to stop the message arriving, plus SPF, DKIM and DMARC.\n\n2. **User**: awareness training and an easy 'report phishing' button.\n\n3. **Endpoint**: up-to-date patches and endpoint detection and response (EDR) to block the malware, plus no local admin rights for ordinary users.\n\n4. **Network and data**: segmentation and least privilege to stop it spreading to every file share, and **offline, tested backups** so that the business can recover without paying."
+      },
+      "takeaways": [
+        "The CIA triad: confidentiality, integrity, availability.",
+        "Most breaches start with phishing, weak credentials or unpatched software.",
+        "Defence in depth layers many controls so that no single failure is fatal."
+      ]
+    },
+    {
+      "id": "firewalls-ids-ips",
+      "title": "Firewalls, IDS and IPS",
+      "level": "intermediate",
+      "minutes": 12,
+      "concept": {
+        "text": "A firewall decides which network traffic may pass, according to rules. It is the basic tool for separating trusted networks from untrusted ones, and for separating parts of your own network from each other.\n\nA firewall only enforces rules about addresses, ports and applications. To notice an attack hidden inside allowed traffic, you need inspection. An IDS watches traffic and **alerts**. An IPS sits directly in the traffic's path and can **block** it. Modern next-generation firewalls combine all three.",
+        "analogy": "A firewall is a bouncer with a guest list: names on the list get in. An IDS is a security camera that sees a fight and raises the alarm. An IPS is a guard inside the venue who steps in and removes the troublemaker."
+      },
+      "visual": {
+        "type": "compare",
+        "columns": ["Firewall", "IDS", "IPS"],
+        "rows": [
+          ["Main job", "Allow or block by rule", "Detect and alert", "Detect and block"],
+          ["Placement", "Inline, at network boundaries", "Out of band, on a copy of the traffic", "Inline, in the traffic path"],
+          ["Looks at", "IPs, ports, state, applications", "Packet contents and behaviour", "Packet contents and behaviour"],
+          ["If it fails or misfires", "Traffic is blocked or wrongly allowed", "A missed or false alert", "Legitimate traffic is blocked"],
+          ["Examples", "pfSense, Palo Alto, Windows Firewall", "Snort or Suricata in detect mode, Zeek", "Suricata inline, most NGFWs"]
+        ]
+      },
+      "steps": [
+        { "title": "Read a rule set", "text": "Rules are processed top to bottom and the first match wins. The last rule is an **implicit deny**: anything not explicitly allowed is blocked.", "code": "#  Action  Source          Destination   Port\n1  ALLOW   any             web-server    443/tcp\n2  ALLOW   10.0.5.0/24     db-server     5432/tcp\n3  DENY    any             any           any" },
+        { "title": "Stateless versus stateful", "text": "A **stateless** filter judges each packet alone. A **stateful** firewall tracks connections, so replies to traffic you started are allowed back in automatically." },
+        { "title": "Two detection methods", "text": "**Signature-based** detection matches known attack patterns: fast and accurate, but blind to new attacks. **Anomaly-based** detection flags deviation from normal behaviour: it catches new attacks but raises more false alarms." },
+        { "title": "Know the specialised types", "text": "A **WAF** (web application firewall) protects websites from attacks such as SQL injection. A **host-based** firewall runs on each machine. A **DMZ** is a separate network for public-facing servers." }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "Using the rule set above, a packet arrives from 10.0.9.7 for db-server on port 5432. What happens?", "options": ["Allowed by rule 1", "Allowed by rule 2", "Denied by rule 3", "Allowed by default"], "answer": 2, "explain": "10.0.9.7 is not in 10.0.5.0/24, so rule 2 does not match, and rule 3 denies everything else." },
+          { "q": "Which device can stop an attack in progress without human action?", "options": ["IDS", "IPS", "A network tap", "A hub"], "answer": 1, "explain": "An IPS is inline and can drop malicious traffic. An IDS only alerts." },
+          { "q": "A legitimate file transfer is blocked by the IPS as an attack. What is this called?", "options": ["A false positive", "A false negative", "A true positive", "A zero-day"], "answer": 0, "explain": "A false positive flags harmless activity. A false negative misses a real attack." },
+          { "q": "Which detection method can catch a brand-new, never-seen attack?", "options": ["Signature-based", "Anomaly-based", "Neither", "MAC filtering"], "answer": 1, "explain": "Anomaly detection does not need a known pattern, only a baseline of normal." }
+        ]
+      },
+      "challenge": {
+        "prompt": "Write firewall rules for a small office with these needs: staff (192.168.10.0/24) can browse the web; only the IT subnet (192.168.99.0/24) may SSH to servers (192.168.50.0/24); guests (192.168.20.0/24) get internet only and nothing internal.",
+        "hint": "Put specific block rules above broad allow rules, and finish with a deny-all.",
+        "code": true,
+        "solution": "#  Action  Source            Destination        Port\n1  ALLOW   192.168.99.0/24   192.168.50.0/24    22/tcp\n2  DENY    192.168.20.0/24   192.168.0.0/16     any      # guests: nothing internal\n3  ALLOW   192.168.20.0/24   any                80,443/tcp\n4  ALLOW   192.168.10.0/24   any                80,443/tcp\n5  ALLOW   192.168.0.0/16    dns-server         53/udp,tcp\n6  DENY    any               any                any\n\n# If guests use the internal DNS server, move rule 5 above rule 2\n# or point guests at a public resolver."
+      },
+      "takeaways": [
+        "Firewalls enforce rules top to bottom, ending in an implicit deny.",
+        "An IDS detects and alerts. An IPS is inline and blocks.",
+        "Signatures catch known attacks. Anomaly detection catches new ones, with more false positives."
+      ]
+    },
+    {
+      "id": "siem",
+      "title": "SIEM and log analysis",
+      "level": "intermediate",
+      "minutes": 12,
+      "concept": {
+        "text": "Every device and application writes logs: firewalls, servers, laptops, cloud services, door systems. Individually, most log lines mean nothing. A SIEM collects them all in one place, converts them to a common format, and **correlates** events across sources to find the patterns that reveal an attack.\n\nA SIEM is the main tool of a Security Operations Centre (SOC). Analysts triage its alerts, investigate what happened, and escalate real incidents. Popular products include Splunk, Microsoft Sentinel, Elastic Security and the open-source Wazuh.",
+        "analogy": "Each log is one witness who saw a small part of a crime. Separately, their accounts are useless. The SIEM is the detective who interviews everyone, lines up the timelines, and realises that the same stranger appears in all of them."
+      },
+      "visual": {
+        "type": "flow",
+        "caption": "The SIEM pipeline.",
+        "nodes": [
+          { "label": "Collect", "detail": "Logs from every source" },
+          { "label": "Normalise", "detail": "One common format" },
+          { "label": "Correlate", "detail": "Rules link events together" },
+          { "label": "Alert", "detail": "Ranked by severity" },
+          { "label": "Investigate", "detail": "Analyst triage and response" }
+        ]
+      },
+      "steps": [
+        { "title": "Collect the right logs", "text": "Start with authentication logs, firewall and proxy logs, endpoint detection alerts, DNS logs and cloud audit logs. Accurate time (NTP) on every system is essential, or timelines cannot be built." },
+        { "title": "Write a correlation rule", "text": "A rule describes a pattern across events. This one catches a successful password-guessing attack.", "code": "IF   10+ failed logins for one account within 5 minutes\nAND  then a successful login for that account\nAND  from the same source IP\nTHEN raise HIGH alert: \"Possible brute-force success\"" },
+        { "title": "Search the logs", "text": "Every SIEM has a query language. This Splunk-style search counts failed logins per source address.", "code": "index=auth action=failure\n| stats count by src_ip, user\n| where count > 10\n| sort -count" },
+        { "title": "Triage alerts", "text": "For each alert, decide: true positive or false positive? What is affected? How severe? Then close, tune the rule, or escalate. Too many noisy alerts cause **alert fatigue**, so tuning is a constant task." }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "What is the main value a SIEM adds over reading individual logs?", "options": ["It deletes old logs", "It correlates events from many sources to reveal patterns", "It encrypts network traffic", "It replaces firewalls"], "answer": 1, "explain": "Correlation across sources is what turns scattered events into a detectable attack." },
+          { "q": "A user logs in from London, and four minutes later from Sydney. What is this detection called?", "options": ["Impossible travel", "Port scanning", "SQL injection", "DNS poisoning"], "answer": 0, "explain": "Nobody travels that far in four minutes, so the credentials are probably compromised." },
+          { "q": "Why must all log sources have synchronised clocks?", "options": ["To save disk space", "So events can be put in the correct order across systems", "To make logs shorter", "It is not important"], "answer": 1, "explain": "Correlation and forensic timelines depend on accurate timestamps." },
+          { "q": "Analysts ignore alerts because 95% are false positives. What is this problem called?", "options": ["Alert fatigue", "Privilege creep", "Shadow IT", "Data exfiltration"], "answer": 0, "explain": "Tuning rules to cut noise is essential, or real alerts get missed." }
+        ]
+      },
+      "challenge": {
+        "prompt": "Here are five log lines from different systems. Put the story together and say what you would do first.\n\n`09:02` Email gateway: user jlee received a message with the attachment invoice.xlsm\n\n`09:05` Endpoint: EXCEL.EXE started powershell.exe on jlee-laptop\n\n`09:06` DNS: jlee-laptop looked up update-cdn-x9.top\n\n`09:06` Firewall: jlee-laptop connected to 185.220.x.x on port 443\n\n`09:15` File server: jlee read 4,200 files in 3 minutes",
+        "hint": "Each line is unremarkable alone. Read them as one timeline for one user.",
+        "solution": "**The story**: jlee received a phishing email with a macro-enabled spreadsheet. Opening it ran a macro, shown by Excel launching PowerShell, which is almost never legitimate. The script contacted a suspicious, newly seen domain: command and control. Nine minutes later the account read thousands of files, which suggests data collection for theft or preparation for ransomware.\n\n**First action**: **contain**. Isolate jlee-laptop from the network and disable or reset jlee's account and sessions. Then block the domain and IP address, search for the same email and indicators on other machines, and preserve the evidence."
+      },
+      "takeaways": [
+        "A SIEM centralises, normalises and correlates logs into alerts.",
+        "Correlation rules describe attack patterns across multiple events and sources.",
+        "Good triage and constant tuning prevent alert fatigue."
+      ]
+    },
+    {
+      "id": "incident-response",
+      "title": "Incident response",
+      "level": "intermediate",
+      "minutes": 12,
+      "concept": {
+        "text": "An **incident** is an event that harms, or threatens to harm, the confidentiality, integrity or availability of systems or data. Incident response (IR) is the organised way to handle one. A prepared team with a plan contains an attack in hours. An unprepared one improvises for weeks and makes it worse.\n\nThe most widely taught model has six phases: **Preparation, Identification, Containment, Eradication, Recovery, Lessons learned**. The order matters. In particular, contain before you clean up, and do not destroy evidence in the rush to get back to normal.",
+        "analogy": "Incident response is firefighting. You train and check the equipment beforehand, confirm there really is a fire, stop it spreading, put it out completely, rebuild what was damaged, and afterwards work out how it started so it does not happen again."
+      },
+      "visual": {
+        "type": "flow",
+        "caption": "The six phases (PICERL). The last one feeds back into the first.",
+        "nodes": [
+          { "label": "Preparation", "detail": "Plan, team, tools, backups, drills" },
+          { "label": "Identification", "detail": "Is it real? What is the scope?" },
+          { "label": "Containment", "detail": "Stop the spread" },
+          { "label": "Eradication", "detail": "Remove the attacker and the cause" },
+          { "label": "Recovery", "detail": "Restore and monitor" },
+          { "label": "Lessons learned", "detail": "Review and improve" }
+        ]
+      },
+      "steps": [
+        { "title": "Prepare", "text": "Write an IR plan and **playbooks** for likely scenarios such as ransomware, phishing and a lost laptop. Decide who is in charge, who talks to customers and regulators, and how to reach people if email is down." },
+        { "title": "Identify and scope", "text": "Confirm the alert, then find out which systems and accounts are affected and how the attacker got in. Start a timeline and keep notes." },
+        { "title": "Contain, then eradicate", "text": "Isolate affected machines from the network and disable compromised accounts. Preserve evidence first: memory and disk images, with a documented **chain of custody**. Then remove malware, close the entry point and reset credentials." },
+        { "title": "Recover and learn", "text": "Restore from clean backups, patch, and watch closely for the attacker returning. Within two weeks, hold a blameless review: what happened, what worked, what will change?" }
+      ],
+      "interactive": {
+        "type": "order",
+        "prompt": "Put the incident response phases in order.",
+        "items": ["Preparation", "Identification", "Containment", "Eradication", "Recovery", "Lessons learned"]
+      },
+      "challenge": {
+        "prompt": "At 2 a.m. monitoring shows ransomware encrypting files on a file server and spreading to workstations. A panicking colleague wants to switch every machine off and reinstall straight away. What do you do instead, and why?",
+        "hint": "Think about spread, evidence and the root cause.",
+        "solution": "**Contain first**: disconnect affected machines from the network by unplugging cables, disabling switch ports or using the EDR isolation feature. This stops the spread at once.\n\n**Do not power off or wipe yet**: memory may hold encryption keys and evidence of how the attacker got in. Take images if you can.\n\n**Protect the backups**: make sure they are offline and unaffected.\n\n**Find the entry point** before rebuilding. If you reinstall without closing it, the attacker comes straight back.\n\nThen eradicate, restore from clean backups, reset credentials, notify whoever the plan and the law require, and review."
+      },
+      "takeaways": [
+        "The phases: Preparation, Identification, Containment, Eradication, Recovery, Lessons learned.",
+        "Contain before you eradicate, and preserve evidence before you wipe.",
+        "A written plan, practised in advance, is worth more than any tool."
+      ]
+    },
+    {
+      "id": "frameworks",
+      "title": "Frameworks: NIST CSF and MITRE ATT&CK",
+      "level": "advanced",
+      "minutes": 14,
+      "concept": {
+        "text": "Security frameworks give organisations a shared structure and vocabulary, so that they do not have to invent a security programme from nothing. Two of the most used answer different questions.\n\nThe **NIST Cybersecurity Framework** (CSF) answers *what should our security programme cover?* It organises all security work into six functions: Govern, Identify, Protect, Detect, Respond and Recover. **MITRE ATT&CK** answers *how do attackers actually behave?* It is a public knowledge base of real attacker **tactics** (their goals) and **techniques** (how they achieve them), used to build and test detections.",
+        "analogy": "NIST CSF is a building code: it tells you what a safe building must have, such as exits, alarms and sprinklers. MITRE ATT&CK is a catalogue of how burglars really break in, so that you can check whether your alarms would catch each method."
+      },
+      "visual": {
+        "type": "compare",
+        "caption": "The six functions of NIST CSF 2.0.",
+        "columns": ["Question it answers", "Examples"],
+        "rows": [
+          ["Govern", "Who is responsible, and what is our strategy?", "Policies, roles, risk appetite, supplier risk"],
+          ["Identify", "What do we have, and what could go wrong?", "Asset inventory, risk assessment"],
+          ["Protect", "How do we prevent incidents?", "MFA, encryption, training, patching"],
+          ["Detect", "How do we notice an attack?", "SIEM, IDS, monitoring"],
+          ["Respond", "What do we do when it happens?", "Incident response plan, communications"],
+          ["Recover", "How do we get back to normal?", "Backups, restoration, improvements"]
+        ]
+      },
+      "steps": [
+        { "title": "Use the CSF to find gaps", "text": "Score your organisation against each function. Many are strong on Protect and weak on Detect and Recover. The gaps become your roadmap." },
+        { "title": "Read the ATT&CK matrix", "text": "Columns are **tactics**, in rough attack order: Reconnaissance, Initial Access, Execution, Persistence, Privilege Escalation, Defence Evasion, Credential Access, Discovery, Lateral Movement, Collection, Command and Control, Exfiltration, Impact. Cells are **techniques**, each with an ID." },
+        { "title": "Map an attack", "text": "A phishing email with a malicious attachment is **T1566.001** (Spearphishing Attachment) under Initial Access. PowerShell running the payload is **T1059.001** under Execution. Analysts use these IDs to describe incidents precisely." },
+        { "title": "Know the others", "text": "**ISO/IEC 27001** is a certifiable standard for security management. **CIS Controls** are a prioritised list of practical safeguards. **PCI DSS** applies to card payments, and **HIPAA** and **GDPR** are laws covering health and personal data." }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "Running a SIEM and monitoring for intrusions belongs to which NIST CSF function?", "options": ["Identify", "Protect", "Detect", "Recover"], "answer": 2, "explain": "Detect covers finding security events as they happen." },
+          { "q": "In MITRE ATT&CK, what is a tactic?", "options": ["A specific tool", "The attacker's goal at a stage, such as Persistence", "A software patch", "A compliance law"], "answer": 1, "explain": "Tactics are the why. Techniques are the how." },
+          { "q": "An attacker uses stolen admin credentials to move from one server to another. Which ATT&CK tactic is this?", "options": ["Initial Access", "Lateral Movement", "Exfiltration", "Reconnaissance"], "answer": 1, "explain": "Lateral movement is spreading through the network after the first foothold." },
+          { "q": "Which function was added in NIST CSF 2.0?", "options": ["Govern", "Protect", "Detect", "Respond"], "answer": 0, "explain": "Govern was added in 2024 to emphasise leadership, strategy and oversight." }
+        ]
+      },
+      "challenge": {
+        "prompt": "Map each stage of this attack to a MITRE ATT&CK tactic: (1) the attacker emails a malicious spreadsheet; (2) the macro runs PowerShell; (3) it adds a registry key so that it runs at every start-up; (4) it dumps passwords from memory; (5) it copies files to a server abroad.",
+        "hint": "Use the list of tactics from the walkthrough. Ask what the attacker is trying to achieve at each stage.",
+        "solution": "1. **Initial Access** (phishing: spearphishing attachment).\n\n2. **Execution** (command and scripting interpreter: PowerShell).\n\n3. **Persistence** (boot or logon autostart: registry run keys).\n\n4. **Credential Access** (OS credential dumping).\n\n5. **Exfiltration** (exfiltration over a command and control or web channel).\n\nFor each, a defender asks: which log source and detection rule would have caught this?"
+      },
+      "takeaways": [
+        "NIST CSF organises a security programme: Govern, Identify, Protect, Detect, Respond, Recover.",
+        "MITRE ATT&CK catalogues real attacker tactics (goals) and techniques (methods).",
+        "Use the CSF to find programme gaps and ATT&CK to test whether you would detect real attacks."
+      ]
+    }
+  ]
+}

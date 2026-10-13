@@ -1,0 +1,137 @@
+{
+  "tab": "software",
+  "id": "javascript",
+  "order": 3,
+  "title": "JavaScript",
+  "summary": "The language of the browser: variables, functions, arrays, objects and async code.",
+  "lessons": [
+    {
+      "id": "syntax-basics",
+      "title": "JavaScript: syntax basics",
+      "level": "beginner",
+      "minutes": 10,
+      "concept": {
+        "text": "JavaScript is the programming language built into every web browser. It makes pages interactive, and with Node.js it runs on servers too.\n\nPrograms store values in a variable, make decisions with `if`, and repeat work with loops. `console.log()` prints a value so you can see what your code is doing.",
+        "analogy": "A variable is a labelled jar. `let score = 10` puts 10 in a jar labelled score. Later you can look inside the jar, or swap what is in it."
+      },
+      "visual": {
+        "type": "cards",
+        "caption": "The value types you will use daily.",
+        "items": [
+          { "title": "string", "text": "Text in quotes: 'hello'" },
+          { "title": "number", "text": "42, 3.14, -7" },
+          { "title": "boolean", "text": "true or false" },
+          { "title": "array", "text": "An ordered list: [1, 2, 3]" },
+          { "title": "object", "text": "Named values: { name: 'Ava', age: 30 }" },
+          { "title": "null / undefined", "text": "Nothing, on purpose / nothing yet" }
+        ]
+      },
+      "steps": [
+        { "title": "Declare variables", "text": "Use `const` by default. Use `let` only when the value must change.", "code": "const name = 'Ava'\nlet score = 0\nscore = score + 10" },
+        { "title": "Make a decision", "text": "Use `===` to compare. It checks value and type.", "code": "if (score >= 10) {\n  console.log('Level up!')\n} else {\n  console.log('Keep going')\n}" },
+        { "title": "Repeat with a loop", "text": "`for...of` walks through each item in an array.", "code": "for (const fruit of ['apple', 'kiwi']) {\n  console.log(fruit)\n}" }
+      ],
+      "interactive": {
+        "type": "code",
+        "language": "javascript",
+        "starter": "const name = 'Ava'\nlet score = 7\n\nscore = score + 5\nconsole.log(`${name} has ${score} points`)\n\nif (score >= 10) {\n  console.log('Level up!')\n}\n\nfor (const n of [1, 2, 3]) {\n  console.log(n * 2)\n}\n"
+      },
+      "challenge": {
+        "prompt": "FizzBuzz: print the numbers 1 to 15. For multiples of 3 print `Fizz`, for multiples of 5 print `Buzz`, and for multiples of both print `FizzBuzz`.",
+        "hint": "`n % 3 === 0` is true when n divides evenly by 3. Check the both case first.",
+        "language": "javascript",
+        "starter": "for (let n = 1; n <= 15; n++) {\n  // your code here\n}\n",
+        "solution": "for (let n = 1; n <= 15; n++) {\n  if (n % 15 === 0) console.log('FizzBuzz')\n  else if (n % 3 === 0) console.log('Fizz')\n  else if (n % 5 === 0) console.log('Buzz')\n  else console.log(n)\n}"
+      },
+      "takeaways": [
+        "Use const by default and let when a value must change.",
+        "Compare with === and print with console.log().",
+        "Template strings with backticks insert values using ${ }."
+      ]
+    },
+    {
+      "id": "core-concepts",
+      "title": "JavaScript: functions, arrays, objects and async",
+      "level": "intermediate",
+      "minutes": 14,
+      "concept": {
+        "text": "A function is a reusable block of code with a name, inputs (parameters) and an output (return value). Arrays and objects hold collections of data, and array methods like `map` and `filter` transform them without manual loops.\n\nSome work takes time, such as fetching from an API. JavaScript does not stop and wait. A slow operation returns a **promise**, and `await` pauses just that function until the result arrives.",
+        "analogy": "A promise is a restaurant buzzer. You order, get a buzzer straight away, and carry on chatting. When it buzzes, your food (the result) is ready."
+      },
+      "visual": {
+        "type": "flow",
+        "caption": "Chaining array methods: each step returns a new array.",
+        "nodes": [
+          { "label": "[1, 2, 3, 4, 5, 6]", "detail": "Start" },
+          { "label": ".filter(n => n % 2 === 0)", "detail": "[2, 4, 6]" },
+          { "label": ".map(n => n * 10)", "detail": "[20, 40, 60]" },
+          { "label": ".reduce((a, b) => a + b)", "detail": "120" }
+        ]
+      },
+      "steps": [
+        { "title": "Write a function", "text": "Arrow functions are the short form.", "code": "function area(w, h) {\n  return w * h\n}\nconst double = (n) => n * 2" },
+        { "title": "Transform arrays", "text": "`filter` keeps items that pass a test. `map` changes every item. `find` returns the first match.", "code": "const users = [{ name: 'Ava', age: 30 }, { name: 'Ben', age: 17 }]\nconst adults = users.filter((u) => u.age >= 18).map((u) => u.name)" },
+        { "title": "Unpack objects", "text": "Destructuring pulls fields out by name.", "code": "const { name, age } = users[0]" },
+        { "title": "Await slow things", "text": "Mark the function `async`, then `await` promises inside it. Wrap in try/catch to handle failures.", "code": "async function getUser(id) {\n  const res = await fetch(`https://jsonplaceholder.typicode.com/users/${id}`)\n  return res.json()\n}" }
+      ],
+      "interactive": {
+        "type": "code",
+        "language": "javascript",
+        "starter": "const users = [\n  { name: 'Ava', age: 30 },\n  { name: 'Ben', age: 17 },\n  { name: 'Cy', age: 45 },\n]\n\nconst adults = users.filter((u) => u.age >= 18).map((u) => u.name)\nconsole.log(adults)\n\n// A real network request\nconst res = await fetch('https://jsonplaceholder.typicode.com/users/1')\nconst user = await res.json()\nconsole.log(user.name, 'lives in', user.address.city)\n"
+      },
+      "challenge": {
+        "prompt": "Given the `cart` array, compute the total price of the items that are in stock. Use `filter` and `reduce`.",
+        "hint": "`reduce((sum, item) => sum + item.price, 0)` adds up prices, starting from 0.",
+        "language": "javascript",
+        "starter": "const cart = [\n  { item: 'Keyboard', price: 60, inStock: true },\n  { item: 'Monitor', price: 220, inStock: false },\n  { item: 'Mouse', price: 25, inStock: true },\n]\n\n// your code here\n",
+        "solution": "const total = cart\n  .filter((c) => c.inStock)\n  .reduce((sum, c) => sum + c.price, 0)\nconsole.log(total) // 85"
+      },
+      "takeaways": [
+        "Functions package logic. Arrow functions are a compact way to write them.",
+        "filter, map and reduce replace most hand-written loops.",
+        "async/await lets you write code that waits for slow work without freezing the page."
+      ]
+    },
+    {
+      "id": "mini-project",
+      "title": "JavaScript mini project: a to-do list engine",
+      "level": "intermediate",
+      "minutes": 15,
+      "concept": {
+        "text": "Every to-do app is the same four operations on an array of objects: add, toggle, remove and list. Build that engine as plain functions first. A user interface is just buttons that call them.",
+        "analogy": "The engine is the kitchen and the UI is the dining room. Get the kitchen cooking properly before you choose tablecloths."
+      },
+      "visual": {
+        "type": "flow",
+        "caption": "State in, new state out.",
+        "nodes": [
+          { "label": "todos (array)", "detail": "The single source of truth" },
+          { "label": "action", "detail": "add / toggle / remove" },
+          { "label": "new todos", "detail": "A fresh array, the old one untouched" },
+          { "label": "render", "detail": "Show the list again" }
+        ]
+      },
+      "steps": [
+        { "title": "Model the data", "text": "Each to-do is an object with an `id`, `text` and `done` flag." },
+        { "title": "Write pure functions", "text": "Each function takes the current list and returns a new list instead of changing the old one. This makes bugs far easier to find.", "code": "const add = (todos, text) => [...todos, { id: Date.now(), text, done: false }]" },
+        { "title": "Render", "text": "Turn the array into lines of text with `map` and `join`. In a browser app, you would create DOM elements here instead." }
+      ],
+      "interactive": {
+        "type": "code",
+        "language": "javascript",
+        "starter": "let nextId = 1\nconst add = (todos, text) => [...todos, { id: nextId++, text, done: false }]\nconst toggle = (todos, id) => todos.map((t) => (t.id === id ? { ...t, done: !t.done } : t))\nconst remove = (todos, id) => todos.filter((t) => t.id !== id)\nconst render = (todos) => todos.map((t) => `${t.done ? '[x]' : '[ ]'} ${t.id}. ${t.text}`).join('\\n')\n\nlet todos = []\ntodos = add(todos, 'Learn JavaScript')\ntodos = add(todos, 'Build a project')\ntodos = add(todos, 'Take a break')\ntodos = toggle(todos, 1)\ntodos = remove(todos, 3)\n\nconsole.log(render(todos))\n"
+      },
+      "challenge": {
+        "prompt": "Add a `stats(todos)` function that returns an object like `{ total: 2, done: 1, remaining: 1 }`, and a `clearDone(todos)` function that removes every finished item.",
+        "hint": "`todos.filter((t) => t.done).length` counts finished items.",
+        "code": true,
+        "solution": "const stats = (todos) => {\n  const done = todos.filter((t) => t.done).length\n  return { total: todos.length, done, remaining: todos.length - done }\n}\nconst clearDone = (todos) => todos.filter((t) => !t.done)\n\nconsole.log(stats(todos))"
+      },
+      "takeaways": [
+        "App state is usually just an array of objects.",
+        "Functions that return new data instead of mutating are easier to test and debug.",
+        "Build and test the logic first, then attach a user interface."
+      ]
+    }
+  ]
+}

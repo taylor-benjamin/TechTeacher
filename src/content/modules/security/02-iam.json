@@ -1,0 +1,100 @@
+{
+  "tab": "security",
+  "id": "iam",
+  "order": 2,
+  "title": "Identity & Access",
+  "summary": "Authentication, MFA, role-based access control and the principle of least privilege.",
+  "lessons": [
+    {
+      "id": "authentication-mfa",
+      "title": "Authentication and MFA",
+      "level": "beginner",
+      "minutes": 12,
+      "concept": {
+        "text": "Identity and Access Management (IAM) answers two questions. **Authentication**: who are you? **Authorization**: what are you allowed to do? They are different steps, and mixing them up causes real breaches.\n\nPasswords alone are weak, because they get reused, guessed and phished. MFA requires two or more different kinds of proof, so a stolen password is not enough. It is the single most effective defence against account takeover.",
+        "analogy": "Authentication is showing your ID at the door of a building. Authorization is which rooms your key card opens once you are inside. MFA is needing both your ID and your fingerprint to get through the door."
+      },
+      "visual": {
+        "type": "cards",
+        "caption": "Authentication factors. MFA means using two or more different types.",
+        "items": [
+          { "title": "Something you know", "text": "Password, PIN, security question. The weakest factor: it can be phished or guessed." },
+          { "title": "Something you have", "text": "Phone authenticator app, hardware security key, smart card." },
+          { "title": "Something you are", "text": "Fingerprint, face, iris: biometrics." },
+          { "title": "Somewhere you are", "text": "Location or network, used as an extra signal." },
+          { "title": "Not MFA", "text": "A password plus a security question is two things you know: one factor, used twice." }
+        ]
+      },
+      "steps": [
+        { "title": "Rank the MFA methods", "text": "From weakest to strongest: **SMS codes** (vulnerable to SIM swapping), **authenticator app codes** (TOTP), **push notifications with number matching**, and **hardware security keys or passkeys** (FIDO2), which resist phishing because they are bound to the real website's domain." },
+        { "title": "Use a password manager", "text": "Long, unique, random passwords for every site, remembered by software. Reuse is what turns one breach into many. Current guidance favours length over forced complexity and regular resets." },
+        { "title": "Understand single sign-on", "text": "**SSO** lets you log in once with an identity provider and reach many apps. Protocols: **SAML** and **OpenID Connect**. It means fewer passwords and one place to enforce MFA and disable leavers." },
+        { "title": "Recognise the attacks", "text": "**Credential stuffing** tries leaked passwords on other sites. **Password spraying** tries one common password across many accounts. **MFA fatigue** bombards a user with prompts until they approve one." }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "Which combination is true multi-factor authentication?", "options": ["Password and PIN", "Password and a code from an authenticator app", "Two different passwords", "A security question and a PIN"], "answer": 1, "explain": "A password is something you know, and the app is something you have. The other options repeat one factor." },
+          { "q": "Which MFA method best resists phishing?", "options": ["SMS code", "Email code", "A hardware security key or passkey (FIDO2)", "A security question"], "answer": 2, "explain": "FIDO2 credentials are tied to the genuine site's domain, so a fake site cannot use them." },
+          { "q": "A user logs in successfully and is then refused access to the payroll folder. Which step refused them?", "options": ["Authentication", "Authorization", "Accounting", "Encryption"], "answer": 1, "explain": "They proved who they are. They are just not permitted to access that resource." },
+          { "q": "An attacker tries the password 'Winter2025!' against 5,000 accounts. What is this called?", "options": ["Brute force", "Password spraying", "Phishing", "A rainbow table"], "answer": 1, "explain": "One password across many accounts avoids triggering lockouts." }
+        ]
+      },
+      "challenge": {
+        "prompt": "An employee receives ten MFA push notifications at 3 a.m. and approves one to make them stop. What attack is this, what must already have happened, and what three controls would prevent it?",
+        "hint": "A push prompt only appears after a correct first step.",
+        "solution": "This is an **MFA fatigue** (push bombing) attack. The attacker **already has the correct password**, probably from phishing or a leaked database.\n\nControls: (1) **number matching**, so the user must type a code shown on the login screen and cannot approve blindly; (2) **phishing-resistant MFA** such as FIDO2 keys or passkeys; (3) **rate limiting and alerting** on repeated prompts, plus training users to report unexpected prompts and change their password immediately."
+      },
+      "takeaways": [
+        "Authentication proves who you are. Authorization decides what you can do.",
+        "MFA combines different factor types: know, have, are.",
+        "Passkeys and hardware keys are the strongest option. SMS is the weakest."
+      ]
+    },
+    {
+      "id": "rbac-least-privilege",
+      "title": "RBAC and least privilege",
+      "level": "intermediate",
+      "minutes": 12,
+      "concept": {
+        "text": "Once a user is authenticated, something must decide what they can do. Granting permissions person by person does not scale and nobody can audit it. RBAC assigns permissions to **roles** such as Accountant or Help Desk, and assigns people to roles.\n\nThe guiding rule is least privilege: every user, program and service gets only the access its job requires, for only as long as it needs it. When an account is compromised, as some always will be, least privilege limits how much damage the attacker can do.",
+        "analogy": "A hotel key card opens your room, the gym and the front door. It does not open other guests' rooms or the manager's office. Cleaning staff get a different card. Nobody has a master key unless their job truly needs it, and that key is tracked."
+      },
+      "visual": {
+        "type": "flow",
+        "caption": "RBAC: people get roles, and roles hold permissions.",
+        "nodes": [
+          { "label": "User", "detail": "Priya (joins Finance)" },
+          { "label": "Group / role", "detail": "Accountant" },
+          { "label": "Permissions", "detail": "Read and write invoices, read reports" },
+          { "label": "Resources", "detail": "Finance system, shared drive" }
+        ]
+      },
+      "steps": [
+        { "title": "Define roles from job functions", "text": "List what each job needs to do, bundle those permissions into a role, and add users to the role. When someone changes job, change their role instead of editing dozens of individual rights." },
+        { "title": "Start from deny", "text": "The default is no access (**implicit deny**). Add only what is needed. It is far safer than granting broadly and removing later." },
+        { "title": "Separate duties", "text": "**Separation of duties** means no single person can complete a risky process alone. The person who requests a payment cannot also approve it." },
+        { "title": "Review and expire", "text": "People collect access as they move roles (**privilege creep**). Run regular access reviews, remove leavers at once, and use **just-in-time** access for admin rights so they expire automatically." }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "A marketing intern is given domain administrator rights 'to save time'. Which principle is violated?", "options": ["Defence in depth", "Least privilege", "Non-repudiation", "Availability"], "answer": 1, "explain": "The intern has far more access than the job requires." },
+          { "q": "In RBAC, permissions are assigned to…", "options": ["Individual users directly", "Roles, which users are then given", "Devices only", "Passwords"], "answer": 1, "explain": "Roles sit between users and permissions, which makes access manageable and auditable." },
+          { "q": "The same employee can create a supplier and approve payments to it. Which control is missing?", "options": ["Separation of duties", "Encryption at rest", "A firewall", "DNSSEC"], "answer": 0, "explain": "Splitting the task between two people prevents fraud and mistakes." },
+          { "q": "An employee who moved from IT to Sales three years ago still has server admin access. What is this called?", "options": ["Privilege creep", "Phishing", "Tailgating", "Hashing"], "answer": 0, "explain": "Access that is never removed accumulates over time." }
+        ]
+      },
+      "challenge": {
+        "prompt": "A 20-person company gives everyone full access to one shared drive containing HR records, finance files and marketing assets. Design a simple RBAC scheme, and name two extra controls for the most sensitive data.",
+        "hint": "Start by listing the departments and what each really needs to read or change.",
+        "solution": "**Roles and folders**: *HR* has read and write on the HR folder only. *Finance* has read and write on Finance only. *Marketing* has read and write on Marketing. *All staff* have read on a shared Company folder. *Directors* have read access to Finance reports. *IT admin* manages permissions through a separate admin account, not their daily one.\n\n**Extra controls for HR and Finance**: (1) require MFA and log every access, with alerts on bulk downloads; (2) run quarterly access reviews and remove access immediately when someone leaves or changes role. Encrypting those folders and backing them up separately is also sensible."
+      },
+      "takeaways": [
+        "RBAC: users get roles, roles get permissions.",
+        "Least privilege limits the damage from any compromised account.",
+        "Separate duties, review access regularly and remove leavers immediately."
+      ]
+    }
+  ]
+}

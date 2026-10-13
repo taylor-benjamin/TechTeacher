@@ -1,0 +1,170 @@
+{
+  "tab": "security",
+  "id": "cryptography",
+  "order": 1,
+  "title": "Cryptography",
+  "summary": "Hashing, symmetric and asymmetric encryption, and the certificates that make the web trustworthy.",
+  "lessons": [
+    {
+      "id": "hashing",
+      "title": "Hashing",
+      "level": "beginner",
+      "minutes": 12,
+      "concept": {
+        "text": "A hash function takes any input, from one letter to a whole film, and produces a fixed-size fingerprint called a hash or digest. The same input always gives the same hash. Change one character and the hash changes completely. And it is **one-way**: you cannot work backwards from the hash to the input.\n\nHashing is not encryption, because there is no key and no way to reverse it. It is used to verify that data has not changed (**integrity**), to store passwords safely, and inside digital signatures.",
+        "analogy": "A hash is a fingerprint. A fingerprint identifies exactly one person, but you cannot rebuild the person from it. And two people who look almost identical still have completely different fingerprints."
+      },
+      "visual": {
+        "type": "compare",
+        "caption": "Common hash algorithms and whether to use them.",
+        "columns": ["Output size", "Status", "Use"],
+        "rows": [
+          ["MD5", "128 bits", "Broken: collisions are easy to make", "Never for security"],
+          ["SHA-1", "160 bits", "Broken: practical collisions exist", "Legacy only"],
+          ["SHA-256", "256 bits", "Secure", "File integrity, signatures, TLS, Bitcoin"],
+          ["SHA-3", "224-512 bits", "Secure", "A modern alternative to SHA-2"],
+          ["bcrypt / Argon2", "Varies", "Secure, and slow on purpose", "Storing passwords"]
+        ]
+      },
+      "steps": [
+        { "title": "Three required properties", "text": "**Deterministic**: the same input always gives the same output. **One-way**: you cannot recover the input. **Collision-resistant**: it is infeasible to find two inputs with the same hash." },
+        { "title": "Verify a download", "text": "A publisher lists the SHA-256 of a file. Hash your copy and compare. If one bit differs, the hashes will not match.", "code": "Get-FileHash installer.exe -Algorithm SHA256   # Windows\nsha256sum installer.iso                        # Linux\nshasum -a 256 installer.dmg                    # macOS" },
+        { "title": "Store passwords as salted hashes", "text": "A site should store a hash of your password, never the password. A unique random salt is added first, so that two users with the same password get different hashes and precomputed **rainbow tables** are useless." },
+        { "title": "Use a slow algorithm for passwords", "text": "SHA-256 is designed to be fast, which helps attackers guess billions of passwords a second. bcrypt, scrypt and Argon2 are deliberately slow and are the right choice for passwords." }
+      ],
+      "interactive": { "type": "hash" },
+      "challenge": {
+        "prompt": "Using the hash generator: (1) make Input A and Input B identical and confirm the hashes match. (2) Change one letter's case in B. Roughly what percentage of SHA-256 bits change? (3) Paste a whole paragraph into A. Does the SHA-256 hash get longer?",
+        "hint": "Read the highlighted line under the two inputs, and compare the length of the hash for a short and a long input.",
+        "solution": "1. Identical inputs give identical hashes, every time. That is determinism, and it is what makes hashes useful for integrity checks.\n\n2. A one-character change flips about **half the bits** (near 50%), the **avalanche effect**. The new hash looks unrelated to the old one, so a hash reveals nothing about how similar two inputs are.\n\n3. No. SHA-256 output is always **256 bits (64 hex characters)**, whatever the input size."
+      },
+      "takeaways": [
+        "A hash is a fixed-size, one-way fingerprint of data.",
+        "Use SHA-256 or SHA-3 for integrity. MD5 and SHA-1 are broken.",
+        "Store passwords with a salt and a slow algorithm such as bcrypt or Argon2."
+      ]
+    },
+    {
+      "id": "symmetric-encryption",
+      "title": "Symmetric encryption",
+      "level": "beginner",
+      "minutes": 12,
+      "concept": {
+        "text": "Encryption scrambles readable data (**plaintext**) into unreadable data (**ciphertext**) using a key. Only someone with the right key can reverse it. This provides **confidentiality**.\n\nIn symmetric encryption, the same key encrypts and decrypts. It is very fast, so it protects almost all data in bulk: your disk, your Wi-Fi traffic, and the contents of every HTTPS connection. Its weakness is the **key distribution problem**: how do two parties agree on a secret key without an eavesdropper learning it?",
+        "analogy": "Symmetric encryption is a padlock where both people hold a copy of the same key. It is quick and strong, but you first have to get a copy of the key to the other person without anyone copying it on the way."
+      },
+      "visual": {
+        "type": "flow",
+        "caption": "One shared key, used in both directions.",
+        "nodes": [
+          { "label": "Plaintext", "detail": "\"Meet me at noon\"" },
+          { "label": "Encrypt + key", "detail": "AES-256" },
+          { "label": "Ciphertext", "detail": "9f3a…c27b (safe to send)" },
+          { "label": "Decrypt + same key", "detail": "AES-256" },
+          { "label": "Plaintext", "detail": "\"Meet me at noon\"" }
+        ]
+      },
+      "steps": [
+        { "title": "Know the standard: AES", "text": "The **Advanced Encryption Standard** is used everywhere. Key sizes are 128, 192 or 256 bits. AES-256 has more possible keys than there are atoms in the universe. **ChaCha20** is a modern alternative. DES and 3DES are obsolete." },
+        { "title": "Choose a mode", "text": "AES encrypts fixed 16-byte blocks, and a **mode** says how to handle longer messages. **GCM** is the modern choice because it also detects tampering. Never use **ECB**, which leaks patterns." },
+        { "title": "Use a fresh IV every time", "text": "An **initialisation vector** (or nonce) is a random value that makes the same message encrypt differently each time. It is not secret, but it must never repeat with the same key." },
+        { "title": "Turn passwords into keys properly", "text": "A password is not a key. A **key derivation function** such as PBKDF2 or Argon2 stretches it into one, slowly, with a salt. The demo below uses PBKDF2 and AES-256-GCM." }
+      ],
+      "interactive": { "type": "cipher", "mode": "symmetric" },
+      "challenge": {
+        "prompt": "In the demo: (1) encrypt a message, then press Encrypt again with the same message and password. Is the ciphertext the same? (2) Change one character in the middle of the ciphertext and decrypt. (3) Decrypt with the wrong password. Explain each result.",
+        "hint": "The ciphertext has three parts separated by dots: salt, IV and data.",
+        "solution": "1. **Different every time.** A new random salt and IV are generated for each encryption, so identical messages never produce identical ciphertext. An eavesdropper cannot even tell that you sent the same thing twice.\n\n2. **Decryption fails.** AES-GCM is *authenticated* encryption: it includes a tag that detects any change to the ciphertext. This provides integrity as well as confidentiality.\n\n3. **Decryption fails.** The wrong password derives a different key, and the authentication check does not pass. Nothing partial or garbled is revealed."
+      },
+      "takeaways": [
+        "Symmetric encryption uses one shared key and is fast. AES is the standard.",
+        "Use an authenticated mode such as GCM, with a unique IV for every message.",
+        "Its hard problem is sharing the key safely, which asymmetric encryption solves."
+      ]
+    },
+    {
+      "id": "asymmetric-encryption",
+      "title": "Asymmetric encryption",
+      "level": "intermediate",
+      "minutes": 14,
+      "concept": {
+        "text": "Asymmetric encryption uses a mathematically linked **key pair**. The public key can be shared with the world. The private key never leaves its owner. What one key locks, only the other can unlock.\n\nThis solves the key distribution problem: anyone can encrypt a message to you with your public key, and only your private key can read it. Used the other way round, it creates **digital signatures**: you sign with your private key, and anyone can verify with your public key that the message came from you and was not altered.",
+        "analogy": "A public key is a letterbox with your address on it. Anyone can post a letter through the slot, but only you have the key that opens the box. A digital signature is the reverse: a wax seal only you can stamp, which anyone can recognise."
+      },
+      "visual": {
+        "type": "compare",
+        "columns": ["Symmetric", "Asymmetric"],
+        "rows": [
+          ["Keys", "One shared secret key", "A public and private key pair"],
+          ["Speed", "Very fast", "Hundreds of times slower"],
+          ["Algorithms", "AES, ChaCha20", "RSA, ECC (ECDSA, Ed25519), Diffie-Hellman"],
+          ["Good at", "Encrypting large amounts of data", "Key exchange, signatures, identity"],
+          ["Main problem", "Sharing the key securely", "Slow, with limits on message size"],
+          ["Typical key size", "256 bits", "RSA 2048-4096 bits, ECC 256 bits"]
+        ]
+      },
+      "steps": [
+        { "title": "Encrypt to someone", "text": "Use the **recipient's public key**. Only their private key can decrypt. Confidentiality." },
+        { "title": "Sign something", "text": "Hash the message and encrypt the hash with **your private key**. Anyone can check it with your public key. This gives **authenticity**, **integrity** and **non-repudiation**." },
+        { "title": "Combine both: hybrid encryption", "text": "Asymmetric encryption is too slow for bulk data. Real systems use it only to agree on a random symmetric key, then switch to AES. TLS, SSH and PGP all work this way." },
+        { "title": "Know the algorithms", "text": "**RSA** relies on the difficulty of factoring large numbers. **Elliptic curve** cryptography gives the same strength with much smaller keys. **Diffie-Hellman** lets two parties derive a shared secret over a public channel. Large quantum computers would break all three, which is why post-quantum algorithms are being deployed." }
+      ],
+      "interactive": { "type": "cipher", "mode": "asymmetric" },
+      "challenge": {
+        "prompt": "Alice wants to send Bob a confidential contract and prove that it came from her. Which key does she use for each goal, and which keys does Bob use?",
+        "hint": "Two goals, two different key pairs. Confidentiality uses the recipient's keys. Proof of origin uses the sender's.",
+        "solution": "**Confidentiality**: Alice encrypts with **Bob's public key**. Bob decrypts with **Bob's private key**.\n\n**Proof of origin**: Alice signs with **Alice's private key**. Bob verifies with **Alice's public key**.\n\nIn practice Alice signs the contract, then encrypts the signed contract using a random AES key, and encrypts that AES key with Bob's public key (hybrid encryption)."
+      },
+      "takeaways": [
+        "A key pair: the public key is shared and the private key is kept secret.",
+        "Encrypt with the recipient's public key. Sign with your own private key.",
+        "Real systems are hybrid: asymmetric to exchange a key, symmetric for the data."
+      ]
+    },
+    {
+      "id": "pki-certificates",
+      "title": "PKI and certificates",
+      "level": "intermediate",
+      "minutes": 14,
+      "concept": {
+        "text": "Asymmetric encryption leaves one question open: how do you know a public key really belongs to `yourbank.com` and not to an impostor? **Public Key Infrastructure** (PKI) answers it.\n\nA certificate is a digital document that binds a public key to an identity, such as a domain name. It is signed by a trusted organisation called a certificate authority. Your browser and operating system ship with a list of trusted **root CAs**. If a site's certificate chains back to one of them, the padlock appears.",
+        "analogy": "A certificate is a passport. It ties your photo (public key) to your name (domain). You trust it not because the traveller says so, but because a government (the certificate authority) you already trust has stamped it."
+      },
+      "visual": {
+        "type": "layers",
+        "caption": "A chain of trust. Each certificate is signed by the one above it.",
+        "layers": [
+          { "name": "Root CA", "detail": "Self-signed. Pre-installed in your OS and browser. Private key kept offline.", "tag": "trust anchor" },
+          { "name": "Intermediate CA", "detail": "Signed by the root. Issues certificates day to day.", "tag": "signed by root" },
+          { "name": "Leaf certificate", "detail": "Issued to www.example.com. Holds the site's public key.", "tag": "signed by intermediate" },
+          { "name": "Your browser", "detail": "Checks every signature up to a root it trusts, plus the name, dates and revocation status.", "tag": "verifier" }
+        ]
+      },
+      "steps": [
+        { "title": "What a certificate contains", "text": "The **subject** (who it is for), the **public key**, the **issuer** (which CA signed it), a **validity period**, the allowed domain names (Subject Alternative Names), and the **CA's signature**. The format is X.509." },
+        { "title": "How a site gets one", "text": "The site creates a key pair and a **Certificate Signing Request** (CSR). The CA verifies control of the domain, then signs and returns the certificate. Let's Encrypt automates this for free with the ACME protocol." },
+        { "title": "How a browser validates it", "text": "Does the name match the site? Is today within the validity dates? Does the signature chain lead to a trusted root? Has it been revoked (checked by CRL or OCSP)? Any failure produces a warning page." },
+        { "title": "Inspect one yourself", "text": "Click the padlock in your browser and view the certificate, or use the command line.", "code": "openssl s_client -connect example.com:443 -showcerts" }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "What does a certificate authority's signature on a certificate prove?", "options": ["The website is safe to shop on", "The CA verified that the public key belongs to that identity", "The site has no malware", "The site is fast"], "answer": 1, "explain": "A certificate proves identity and enables encryption. It says nothing about whether the site is honest." },
+          { "q": "Why are root CA private keys kept offline, with intermediates doing the daily signing?", "options": ["To save electricity", "A stolen root key would undermine everything it has ever signed", "Roots are slower", "It is a tradition"], "answer": 1, "explain": "A compromised intermediate can be revoked. A compromised root is a disaster." },
+          { "q": "Your browser warns that a certificate has expired. What is the correct conclusion?", "options": ["The site is definitely malicious", "The certificate's validity period has ended and trust cannot be confirmed", "Your Wi-Fi is down", "Ignore it always"], "answer": 1, "explain": "It is usually an administrative mistake, but the browser can no longer vouch for the connection." },
+          { "q": "What is a CSR?", "options": ["A request sent to a CA containing your public key and identity details", "A type of firewall", "A revoked certificate", "A private key backup"], "answer": 0, "explain": "The Certificate Signing Request is what the CA signs to produce your certificate." }
+        ]
+      },
+      "challenge": {
+        "prompt": "A phishing site at `paypa1-secure.com` shows a valid padlock. A colleague says 'it has the padlock, so it is safe'. Explain what the padlock does and does not guarantee.",
+        "hint": "Ask what the CA actually verified before issuing the certificate.",
+        "solution": "The padlock guarantees two things: the connection is **encrypted**, and you are really talking to the server that controls `paypa1-secure.com`. For most certificates the CA verifies only **control of the domain** (domain validation).\n\nIt does **not** guarantee that the owner is honest, or that the domain is the one you meant. An attacker can register a look-alike domain and get a valid certificate for it in minutes. Always read the domain name itself."
+      },
+      "takeaways": [
+        "A certificate binds a public key to an identity and is signed by a CA.",
+        "Trust flows down a chain: root, intermediate, leaf.",
+        "A padlock means encrypted and identified by domain, not trustworthy."
+      ]
+    }
+  ]
+}

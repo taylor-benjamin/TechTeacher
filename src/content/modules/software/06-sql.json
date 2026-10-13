@@ -1,0 +1,141 @@
+{
+  "tab": "software",
+  "id": "sql",
+  "order": 6,
+  "title": "SQL",
+  "summary": "Ask questions of data: SELECT, filtering, joins and aggregates on a live SQLite database.",
+  "lessons": [
+    {
+      "id": "syntax-basics",
+      "title": "SQL: syntax basics",
+      "level": "beginner",
+      "minutes": 10,
+      "concept": {
+        "text": "SQL (Structured Query Language) is how you talk to a relational database. Data lives in **tables** made of rows and columns, like a spreadsheet with strict rules.\n\nYou describe **what** you want, not how to get it. `SELECT name FROM students WHERE grade > 80` reads almost like a sentence, and the database works out the fastest way to answer.",
+        "analogy": "A database is a huge filing room and SQL is the request slip you hand the clerk: which cabinet (FROM), which folders (WHERE), and which pages to photocopy (SELECT)."
+      },
+      "visual": {
+        "type": "flow",
+        "caption": "The order the database actually processes a query.",
+        "nodes": [
+          { "label": "FROM", "detail": "Pick the table" },
+          { "label": "WHERE", "detail": "Keep matching rows" },
+          { "label": "SELECT", "detail": "Pick the columns" },
+          { "label": "ORDER BY", "detail": "Sort the result" },
+          { "label": "LIMIT", "detail": "Keep the first N" }
+        ]
+      },
+      "steps": [
+        { "title": "Select columns", "text": "`*` means every column. Naming columns is clearer and faster.", "code": "SELECT name, grade FROM students;" },
+        { "title": "Filter rows", "text": "Text values use single quotes. Combine conditions with AND and OR.", "code": "SELECT name FROM students WHERE city = 'Austin' AND grade >= 85;" },
+        { "title": "Sort and limit", "text": "DESC sorts high to low.", "code": "SELECT name, grade FROM students ORDER BY grade DESC LIMIT 2;" },
+        { "title": "Change data", "text": "INSERT adds rows, UPDATE changes them, DELETE removes them. Always include WHERE on UPDATE and DELETE, or every row is affected.", "code": "INSERT INTO students (name, grade, city) VALUES ('Eli', 88, 'Boston');\nUPDATE students SET grade = 80 WHERE name = 'Ben';" }
+      ],
+      "interactive": {
+        "type": "code",
+        "language": "sql",
+        "seed": "CREATE TABLE students(id INTEGER PRIMARY KEY, name TEXT, grade INTEGER, city TEXT); INSERT INTO students(name, grade, city) VALUES ('Ava',91,'Austin'),('Ben',78,'Boston'),('Cy',85,'Austin'),('Dee',62,'Denver'),('Eve',95,'Boston');",
+        "starter": "-- The students table is ready for you.\nSELECT * FROM students;\n\nSELECT name, grade\nFROM students\nWHERE grade >= 80\nORDER BY grade DESC;\n"
+      },
+      "challenge": {
+        "prompt": "List the names and cities of the two lowest-scoring students who are **not** from Denver.",
+        "hint": "Use `WHERE city != 'Denver'`, sort ascending by grade, and `LIMIT 2`.",
+        "language": "sql",
+        "seed": "CREATE TABLE students(id INTEGER PRIMARY KEY, name TEXT, grade INTEGER, city TEXT); INSERT INTO students(name, grade, city) VALUES ('Ava',91,'Austin'),('Ben',78,'Boston'),('Cy',85,'Austin'),('Dee',62,'Denver'),('Eve',95,'Boston');",
+        "starter": "SELECT name, city\nFROM students\n-- finish the query\n;",
+        "solution": "SELECT name, city\nFROM students\nWHERE city != 'Denver'\nORDER BY grade ASC\nLIMIT 2;\n-- Ben (Boston), Cy (Austin)"
+      },
+      "takeaways": [
+        "Tables hold rows and columns. SELECT reads, INSERT/UPDATE/DELETE write.",
+        "WHERE filters rows, ORDER BY sorts, LIMIT caps the count.",
+        "Never run UPDATE or DELETE without a WHERE clause."
+      ]
+    },
+    {
+      "id": "core-concepts",
+      "title": "SQL: joins, grouping and keys",
+      "level": "intermediate",
+      "minutes": 14,
+      "concept": {
+        "text": "Real databases split data across tables to avoid repeating it. A **primary key** uniquely identifies each row, and a **foreign key** in another table points back to it. A **JOIN** stitches the tables together at query time.\n\n**GROUP BY** collapses many rows into one per group so you can count, sum or average them.",
+        "analogy": "A join is matching name tags. One table lists guests with badge numbers, another lists badge numbers with meal choices. Line up the badge numbers and you know who is eating what."
+      },
+      "visual": {
+        "type": "compare",
+        "caption": "The joins you will actually use.",
+        "columns": ["Keeps", "Use when"],
+        "rows": [
+          ["INNER JOIN", "Only rows that match in both tables", "You need complete pairs"],
+          ["LEFT JOIN", "Every left row, plus matches (or NULL)", "You must not lose left rows, e.g. students with no club"],
+          ["GROUP BY", "One row per group", "Counting or summing per category"],
+          ["HAVING", "Groups that pass a test", "Filtering after aggregation"]
+        ]
+      },
+      "steps": [
+        { "title": "Join two tables", "text": "`ON` says which columns must match. Short aliases (s, c) keep it readable.", "code": "SELECT s.name, c.club\nFROM students s\nJOIN clubs c ON c.student_id = s.id;" },
+        { "title": "Keep unmatched rows", "text": "A LEFT JOIN keeps students with no club. Their club column is NULL.", "code": "SELECT s.name, c.club\nFROM students s\nLEFT JOIN clubs c ON c.student_id = s.id;" },
+        { "title": "Aggregate", "text": "COUNT, SUM, AVG, MIN and MAX summarise each group.", "code": "SELECT city, COUNT(*) AS students, AVG(grade) AS avg_grade\nFROM students\nGROUP BY city;" },
+        { "title": "Filter groups", "text": "WHERE filters rows before grouping. HAVING filters groups after.", "code": "SELECT city, AVG(grade) AS avg_grade\nFROM students GROUP BY city\nHAVING AVG(grade) > 80;" }
+      ],
+      "interactive": {
+        "type": "code",
+        "language": "sql",
+        "seed": "CREATE TABLE students(id INTEGER PRIMARY KEY, name TEXT, grade INTEGER, city TEXT); INSERT INTO students(name, grade, city) VALUES ('Ava',91,'Austin'),('Ben',78,'Boston'),('Cy',85,'Austin'),('Dee',62,'Denver'),('Eve',95,'Boston'); CREATE TABLE clubs(student_id INTEGER REFERENCES students(id), club TEXT); INSERT INTO clubs VALUES (1,'Chess'),(1,'Robotics'),(3,'Chess'),(5,'Robotics');",
+        "starter": "-- Tables: students(id, name, grade, city) and clubs(student_id, club)\nSELECT s.name, c.club\nFROM students s\nLEFT JOIN clubs c ON c.student_id = s.id;\n\nSELECT city, COUNT(*) AS students, ROUND(AVG(grade), 1) AS avg_grade\nFROM students\nGROUP BY city\nORDER BY avg_grade DESC;\n"
+      },
+      "challenge": {
+        "prompt": "Show each club with its number of members and the average grade of those members, highest average first.",
+        "hint": "Join clubs to students, then `GROUP BY c.club`.",
+        "language": "sql",
+        "seed": "CREATE TABLE students(id INTEGER PRIMARY KEY, name TEXT, grade INTEGER, city TEXT); INSERT INTO students(name, grade, city) VALUES ('Ava',91,'Austin'),('Ben',78,'Boston'),('Cy',85,'Austin'),('Dee',62,'Denver'),('Eve',95,'Boston'); CREATE TABLE clubs(student_id INTEGER REFERENCES students(id), club TEXT); INSERT INTO clubs VALUES (1,'Chess'),(1,'Robotics'),(3,'Chess'),(5,'Robotics');",
+        "starter": "SELECT c.club\nFROM clubs c\n-- finish the query\n;",
+        "solution": "SELECT c.club, COUNT(*) AS members, AVG(s.grade) AS avg_grade\nFROM clubs c\nJOIN students s ON s.id = c.student_id\nGROUP BY c.club\nORDER BY avg_grade DESC;\n-- Robotics 2 93.0, Chess 2 88.0"
+      },
+      "takeaways": [
+        "Primary keys identify rows. Foreign keys link tables.",
+        "INNER JOIN keeps matches only. LEFT JOIN keeps every left-hand row.",
+        "GROUP BY plus an aggregate answers 'how many per…' questions."
+      ]
+    },
+    {
+      "id": "mini-project",
+      "title": "SQL mini project: a small shop database",
+      "level": "intermediate",
+      "minutes": 16,
+      "concept": {
+        "text": "You will design a schema for a shop, load data and answer business questions. Designing the tables is the real skill: each fact should be stored once, in one place. That principle is called normalisation.",
+        "analogy": "Storing a customer's address on every order is like writing your phone number on every page of a notebook. Change it once and all the other pages are wrong. Keep it on one page and point to it."
+      },
+      "visual": {
+        "type": "flow",
+        "caption": "How the three tables link together.",
+        "nodes": [
+          { "label": "customers", "detail": "id, name" },
+          { "label": "orders", "detail": "id, customer_id, product_id, qty" },
+          { "label": "products", "detail": "id, name, price" }
+        ]
+      },
+      "steps": [
+        { "title": "Create the tables", "text": "Each table gets an integer primary key. The orders table holds two foreign keys.", "code": "CREATE TABLE orders(\n  id INTEGER PRIMARY KEY,\n  customer_id INTEGER REFERENCES customers(id),\n  product_id INTEGER REFERENCES products(id),\n  qty INTEGER\n);" },
+        { "title": "Insert data", "text": "Insert parents (customers, products) before children (orders) so the references exist." },
+        { "title": "Answer questions", "text": "Revenue per customer needs both joins: orders to customers for the name, orders to products for the price." }
+      ],
+      "interactive": {
+        "type": "code",
+        "language": "sql",
+        "starter": "CREATE TABLE customers(id INTEGER PRIMARY KEY, name TEXT);\nCREATE TABLE products(id INTEGER PRIMARY KEY, name TEXT, price REAL);\nCREATE TABLE orders(\n  id INTEGER PRIMARY KEY,\n  customer_id INTEGER REFERENCES customers(id),\n  product_id INTEGER REFERENCES products(id),\n  qty INTEGER\n);\n\nINSERT INTO customers(name) VALUES ('Ava'), ('Ben'), ('Cy');\nINSERT INTO products(name, price) VALUES ('Keyboard', 60), ('Mouse', 25), ('Monitor', 220);\nINSERT INTO orders(customer_id, product_id, qty) VALUES (1,1,1), (1,2,2), (2,3,1), (2,2,1);\n\n-- Revenue per customer\nSELECT c.name, SUM(p.price * o.qty) AS spent\nFROM orders o\nJOIN customers c ON c.id = o.customer_id\nJOIN products p ON p.id = o.product_id\nGROUP BY c.name\nORDER BY spent DESC;\n"
+      },
+      "challenge": {
+        "prompt": "Add a query to the editor above that lists customers who have **never** placed an order.",
+        "hint": "LEFT JOIN customers to orders, then keep rows where the order side is NULL.",
+        "code": true,
+        "solution": "SELECT c.name\nFROM customers c\nLEFT JOIN orders o ON o.customer_id = c.id\nWHERE o.id IS NULL;\n-- Cy"
+      },
+      "takeaways": [
+        "Store each fact once and link tables with keys.",
+        "Multi-table questions are chains of joins followed by GROUP BY.",
+        "LEFT JOIN ... WHERE right.id IS NULL finds rows with no match."
+      ]
+    }
+  ]
+}

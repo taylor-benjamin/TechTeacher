@@ -1,0 +1,101 @@
+{
+  "tab": "webdesign",
+  "id": "vibe-coding",
+  "order": 3,
+  "title": "Vibe Coding",
+  "summary": "Build websites by describing them to AI: how to prompt, iterate and debug.",
+  "lessons": [
+    {
+      "id": "prompting-to-build",
+      "title": "Prompting AI to build a site",
+      "level": "beginner",
+      "minutes": 12,
+      "concept": {
+        "text": "Vibe coding means building software by describing what you want in plain language and letting an AI write the code, while you steer by reacting to the result. The term was coined by AI researcher Andrej Karpathy in 2025.\n\nIt lets beginners ship real things and lets experts move much faster. But the AI only knows what you tell it. The skill is no longer typing syntax. It is describing the outcome clearly, breaking a project into steps, and judging whether what you got is right.",
+        "analogy": "You are the film director and the AI is the crew. You do not operate the camera, but the film is only as good as your direction. 'Make it good' gets a mess. 'Wide shot, golden hour, she walks toward the camera' gets the scene."
+      },
+      "visual": {
+        "type": "cards",
+        "caption": "What to put in a first build prompt.",
+        "items": [
+          { "title": "What and why", "text": "What is the site, and what should a visitor do on it?" },
+          { "title": "Audience", "text": "Who is it for, and on what device?" },
+          { "title": "Pages and sections", "text": "List them in order. Be concrete about content." },
+          { "title": "Look and feel", "text": "Colours, mood, and reference sites or a screenshot." },
+          { "title": "Tech constraints", "text": "For example plain HTML and CSS, or React with Tailwind." },
+          { "title": "Quality bar", "text": "Responsive, accessible, fast. Say it, or you may not get it." }
+        ]
+      },
+      "steps": [
+        { "title": "Plan before you prompt", "text": "Write three sentences: what the site is, who it is for, and the one action you want visitors to take. Ask the AI to propose a plan and page structure before it writes any code." },
+        { "title": "Write the brief", "text": "A strong first prompt covers the six cards above.", "code": "Build a one-page portfolio for a freelance photographer.\nAudience: couples planning weddings, mostly on phones.\nSections: hero with full-width photo and 'Check my availability'\nbutton, gallery grid of 9 photos, 3 pricing packages,\ntestimonials, contact form.\nStyle: minimal, lots of white space, serif headings, one\ngold accent colour.\nTech: plain HTML and CSS in a single file. Responsive and\naccessible (WCAG AA contrast, alt text, keyboard friendly)." },
+        { "title": "Build in slices", "text": "Get the page structure working first, then style it, then add interactions. Do not ask for everything at once." },
+        { "title": "Save working versions", "text": "Commit to Git, or use the tool's checkpoints, whenever something works. You will want to go back." }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "Which first prompt will produce the best starting point?", "options": ["Make me a cool website", "A website for my business, make it nice", "A one-page site for a mobile bike repair service in Leeds: hero with booking button, 3 services with prices, map of the area covered, contact form. Friendly, bold, green accent. Responsive.", "Website. Fast."], "answer": 2, "explain": "It states the purpose, sections, style and constraints." },
+          { "q": "Why ask the AI for a plan before it writes code?", "options": ["It wastes time", "You can correct misunderstandings before they are built into hundreds of lines", "The AI cannot write code otherwise", "Plans make the site load faster"], "answer": 1, "explain": "A wrong plan is cheap to fix. Wrong code is expensive." },
+          { "q": "What is the developer's main job when vibe coding?", "options": ["Typing quickly", "Describing the goal clearly and judging the result", "Memorising syntax", "Avoiding the preview"], "answer": 1, "explain": "Direction and review replace most of the typing." }
+        ]
+      },
+      "challenge": {
+        "prompt": "Write a build prompt for a personal portfolio site for yourself. Cover all six elements: what and why, audience, sections, look and feel, tech constraints and quality bar.",
+        "hint": "Use the photographer example as a template and replace every detail with your own.",
+        "solution": "An example to compare with yours:\n\n\"Build a personal portfolio site for Sam Taylor, a junior web developer looking for a first job. Audience: recruiters and hiring managers, skimming on a laptop for under a minute.\n\nSections: (1) hero with my name, the line 'I build fast, accessible websites' and a 'See my work' button; (2) three project cards with a screenshot, a short description, tech used and links to the live site and code; (3) skills, grouped by category; (4) a short About paragraph; (5) contact links for email, GitHub and LinkedIn.\n\nStyle: clean and modern, dark navy background, off-white text, one teal accent, generous spacing.\n\nTech: a single index.html with embedded CSS and no frameworks, so I can host it on GitHub Pages.\n\nQuality: responsive from 360 px up, WCAG AA contrast, semantic HTML, visible keyboard focus.\""
+      },
+      "takeaways": [
+        "Vibe coding is directing an AI with clear descriptions and reviewing what it builds.",
+        "A good brief states purpose, audience, sections, style, tech and quality bar.",
+        "Plan first, build in slices, and save every working version."
+      ]
+    },
+    {
+      "id": "iterate-and-debug",
+      "title": "Iterating and debugging with AI",
+      "level": "intermediate",
+      "minutes": 12,
+      "concept": {
+        "text": "The first version an AI produces is a draft. Most of the work is iteration: looking at the result, saying precisely what to change, and checking again. And sooner or later something breaks.\n\nDebugging with AI works when you give it evidence instead of feelings. 'It doesn't work' gives the AI nothing to go on. The exact error message, what you expected and what happened instead give it almost everything.",
+        "analogy": "Debugging with AI is like visiting a doctor. 'I feel bad' gets you nowhere. 'Sharp pain here, started Tuesday, worse when I climb stairs' gets a diagnosis. Symptoms, timing and what changed are the evidence."
+      },
+      "visual": {
+        "type": "flow",
+        "caption": "The iteration loop.",
+        "nodes": [
+          { "label": "Look", "detail": "Test it yourself, on a phone width too" },
+          { "label": "Describe", "detail": "One specific change or one bug" },
+          { "label": "Apply", "detail": "AI edits the code" },
+          { "label": "Verify", "detail": "Did it work? Did anything else break?" },
+          { "label": "Save", "detail": "Commit, then repeat" }
+        ]
+      },
+      "steps": [
+        { "title": "Make change requests specific", "text": "Name the element, the current behaviour and the desired behaviour.", "code": "Weak:   The header looks off.\n\nStrong: On screens narrower than 600px the nav links wrap\n        onto two lines and overlap the logo. Replace them\n        with a hamburger menu button that opens a full-width\n        dropdown." },
+        { "title": "Open the browser's developer tools", "text": "Press **F12**. The **Console** tab shows JavaScript errors in red. The **Network** tab shows requests that failed. The element inspector shows which CSS rules apply." },
+        { "title": "Report bugs with evidence", "text": "Paste the exact error, say what you did, what you expected and what happened.", "code": "When I click 'Send' on the contact form, nothing happens.\nConsole shows:\n  Uncaught TypeError: Cannot read properties of null\n  (reading 'addEventListener') at script.js:12\nExpected: a 'Thanks!' message appears below the form." },
+        { "title": "Know when to go back", "text": "If three attempts have not fixed it, stop. Return to the last working version, and ask the AI to explain the cause before trying a different approach. Piling fixes on fixes makes things worse." }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "Which bug report will get fixed fastest?", "options": ["It's broken, fix it", "The page is weird", "Clicking 'Add to cart' does nothing. Console: 'ReferenceError: cart is not defined at app.js:40'. Expected the cart count to go up by 1.", "Why doesn't this work???"], "answer": 2, "explain": "It includes the action, the exact error and the expected result." },
+          { "q": "Where do JavaScript errors appear in the browser?", "options": ["The address bar", "The Console tab of developer tools", "The bookmarks menu", "The print preview"], "answer": 1, "explain": "Press F12 and open Console." },
+          { "q": "The AI has tried four fixes and the bug is still there, with new ones appearing. What now?", "options": ["Ask for a fifth fix on top", "Revert to the last working version and ask for the root cause", "Delete the project", "Ignore the bug"], "answer": 1, "explain": "Stacked guesses compound the problem. Reset and diagnose." },
+          { "q": "Why should you read the code the AI writes, even as a beginner?", "options": ["You should not", "To learn, to spot mistakes, and because you are responsible for what you publish", "To slow yourself down", "It is required by browsers"], "answer": 1, "explain": "Understanding your own site is what lets you fix and extend it." }
+        ]
+      },
+      "challenge": {
+        "prompt": "Your AI-built page shows a button that should toggle dark mode, but clicking it does nothing. The console shows: `Uncaught TypeError: Cannot read properties of null (reading 'addEventListener') at script.js:3`. Write the message you would send to the AI, and guess the likely cause.",
+        "hint": "The error says something was `null` when the script tried to attach a click handler to it.",
+        "solution": "**Message**: \"The dark mode button does nothing when clicked. The console shows `Uncaught TypeError: Cannot read properties of null (reading 'addEventListener') at script.js:3`. Line 3 is `document.querySelector('#theme-toggle').addEventListener('click', ...)`. Expected: clicking toggles a `dark` class on the body. Please find the root cause and explain it before changing anything.\"\n\n**Likely cause**: `querySelector` returned `null`, meaning it could not find the button. Either the button's id in the HTML does not match `#theme-toggle`, or the script runs before the button exists. Fix the id, or load the script at the end of the body or with the `defer` attribute."
+      },
+      "takeaways": [
+        "Iterate with one specific, well-described change at a time.",
+        "Debug with evidence: exact error, what you did, expected and actual result.",
+        "After a few failed fixes, revert and ask for the root cause."
+      ]
+    }
+  ]
+}

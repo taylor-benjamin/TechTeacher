@@ -1,0 +1,136 @@
+{
+  "tab": "software",
+  "id": "java",
+  "order": 7,
+  "title": "Java",
+  "summary": "A strongly typed, object-oriented language that runs enterprise systems and Android apps.",
+  "lessons": [
+    {
+      "id": "syntax-basics",
+      "title": "Java: syntax basics",
+      "level": "beginner",
+      "minutes": 10,
+      "concept": {
+        "text": "Java is a **statically typed**, compiled language: every variable has a declared type, and the compiler checks your code before it ever runs. That catches many bugs early, at the cost of more typing.\n\nAll Java code lives inside a class, and a program starts at a method called `main`.",
+        "analogy": "Python is a chat with a friend: quick and informal. Java is a legal contract: everything is spelled out up front, which is slower to write but leaves far less room for surprises."
+      },
+      "visual": {
+        "type": "flow",
+        "caption": "From source code to a running program.",
+        "nodes": [
+          { "label": "Main.java", "detail": "Your source code" },
+          { "label": "javac", "detail": "Compiler checks types" },
+          { "label": "Main.class", "detail": "Portable bytecode" },
+          { "label": "JVM", "detail": "Runs it on any OS" }
+        ]
+      },
+      "steps": [
+        { "title": "Declare typed variables", "text": "State the type first. Statements end with a semicolon.", "code": "String name = \"Ava\";\nint score = 7;\ndouble price = 9.99;\nboolean active = true;" },
+        { "title": "Print", "text": "`System.out.println` writes a line. `+` joins text and values.", "code": "System.out.println(name + \" has \" + score + \" points\");" },
+        { "title": "Branch and loop", "text": "Blocks use curly braces. The classic for loop has a start, a condition and a step.", "code": "if (score >= 10) {\n    System.out.println(\"Level up!\");\n}\nfor (int i = 1; i <= 3; i++) {\n    System.out.println(i);\n}" },
+        { "title": "Compile and run", "text": "Install a JDK, then compile and run from a terminal.", "code": "javac Main.java\njava Main" }
+      ],
+      "interactive": {
+        "type": "code",
+        "language": "java",
+        "starter": "public class Main {\n    public static void main(String[] args) {\n        String name = \"Ava\";\n        int score = 7;\n        score += 5;\n        System.out.println(name + \" has \" + score + \" points\");\n\n        if (score >= 10) {\n            System.out.println(\"Level up!\");\n        }\n\n        for (int i = 1; i <= 3; i++) {\n            System.out.println(i * 2);\n        }\n    }\n}\n",
+        "expected": "Ava has 12 points\nLevel up!\n2\n4\n6"
+      },
+      "challenge": {
+        "prompt": "Write a `main` method that adds up the numbers 1 to 100 using a loop and prints `Sum: 5050`.",
+        "hint": "Declare `int sum = 0;` before the loop and add `i` to it each time round.",
+        "code": true,
+        "solution": "public class Main {\n    public static void main(String[] args) {\n        int sum = 0;\n        for (int i = 1; i <= 100; i++) {\n            sum += i;\n        }\n        System.out.println(\"Sum: \" + sum);\n    }\n}"
+      },
+      "takeaways": [
+        "Java is statically typed: declare the type of every variable.",
+        "Code lives in classes and starts at public static void main.",
+        "javac compiles to bytecode and the JVM runs it anywhere."
+      ]
+    },
+    {
+      "id": "core-concepts",
+      "title": "Java: classes, objects and collections",
+      "level": "intermediate",
+      "minutes": 14,
+      "concept": {
+        "text": "Java is object-oriented. A **class** is a blueprint that bundles data (fields) with behaviour (methods). An **object** is one thing built from that blueprint. **Encapsulation** means keeping fields private and exposing only safe methods.\n\nFor groups of objects, use collections: `ArrayList` for an ordered list and `HashMap` for key to value lookups.",
+        "analogy": "A class is a cookie cutter and objects are the cookies. One cutter, many cookies, each with its own icing (field values)."
+      },
+      "visual": {
+        "type": "cards",
+        "caption": "The four pillars of object-oriented programming.",
+        "items": [
+          { "title": "Encapsulation", "text": "Hide data behind methods so it cannot be misused." },
+          { "title": "Inheritance", "text": "A class extends another and reuses its code." },
+          { "title": "Polymorphism", "text": "Different classes respond to the same method call in their own way." },
+          { "title": "Abstraction", "text": "Expose what something does, hide how it does it." }
+        ]
+      },
+      "steps": [
+        { "title": "Define a class", "text": "The constructor runs when you create an object with `new`.", "code": "class Account {\n    private double balance;\n    Account(double opening) { balance = opening; }\n    void deposit(double amount) { balance += amount; }\n    double getBalance() { return balance; }\n}" },
+        { "title": "Create objects", "text": "Each object keeps its own balance.", "code": "Account a = new Account(100);\na.deposit(50);\nSystem.out.println(a.getBalance()); // 150.0" },
+        { "title": "Use collections", "text": "The type in angle brackets says what the collection holds.", "code": "List<String> names = new ArrayList<>();\nnames.add(\"Ava\");\nMap<String, Integer> ages = new HashMap<>();\nages.put(\"Ava\", 30);" },
+        { "title": "Extend a class", "text": "A subclass inherits everything and can override methods.", "code": "class Savings extends Account {\n    Savings(double opening) { super(opening); }\n    void addInterest() { deposit(getBalance() * 0.02); }\n}" }
+      ],
+      "interactive": {
+        "type": "code",
+        "language": "java",
+        "starter": "import java.util.*;\n\nclass Account {\n    private final String owner;\n    private double balance;\n\n    Account(String owner, double opening) {\n        this.owner = owner;\n        this.balance = opening;\n    }\n    void deposit(double amount) { balance += amount; }\n    String summary() { return owner + \": \" + balance; }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        List<Account> accounts = new ArrayList<>();\n        accounts.add(new Account(\"Ava\", 100));\n        accounts.add(new Account(\"Ben\", 40));\n        accounts.get(0).deposit(50);\n\n        for (Account a : accounts) {\n            System.out.println(a.summary());\n        }\n    }\n}\n",
+        "expected": "Ava: 150.0\nBen: 40.0"
+      },
+      "challenge": {
+        "prompt": "Add a `withdraw(double amount)` method to `Account` that refuses to let the balance go below zero. It should return `true` if the withdrawal happened and `false` otherwise.",
+        "hint": "Check `amount > balance` first and return false. This is encapsulation doing its job: the rule lives in one place.",
+        "code": true,
+        "solution": "boolean withdraw(double amount) {\n    if (amount <= 0 || amount > balance) {\n        return false;\n    }\n    balance -= amount;\n    return true;\n}"
+      },
+      "takeaways": [
+        "A class is a blueprint and an object is an instance made with new.",
+        "Keep fields private and enforce rules in methods.",
+        "ArrayList and HashMap cover most collection needs."
+      ]
+    },
+    {
+      "id": "mini-project",
+      "title": "Java mini project: a grade book",
+      "level": "intermediate",
+      "minutes": 16,
+      "concept": {
+        "text": "Combine classes and collections into a small grade book: students have a name and a list of scores, and the program reports each average and the top student. This is the shape of countless business programs: model the things, store them, loop and summarise.",
+        "analogy": "You are building a digital register: one card per student (object), kept in a box (list), with a method that works out each card's average."
+      },
+      "visual": {
+        "type": "flow",
+        "nodes": [
+          { "label": "Student class", "detail": "name + List of scores" },
+          { "label": "List<Student>", "detail": "The whole class" },
+          { "label": "Loop + average()", "detail": "One line per student" },
+          { "label": "Track the best", "detail": "Compare as you go" }
+        ]
+      },
+      "steps": [
+        { "title": "Model a student", "text": "Give the class a method that computes its own average, so the logic lives with the data." },
+        { "title": "Fill a list", "text": "`List.of(...)` creates a fixed list of scores quickly." },
+        { "title": "Report", "text": "Loop once, printing each average with `printf` and remembering the highest so far." }
+      ],
+      "interactive": {
+        "type": "code",
+        "language": "java",
+        "starter": "import java.util.*;\n\nclass Student {\n    String name;\n    List<Integer> scores;\n\n    Student(String name, List<Integer> scores) {\n        this.name = name;\n        this.scores = scores;\n    }\n\n    double average() {\n        int sum = 0;\n        for (int s : scores) sum += s;\n        return (double) sum / scores.size();\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        List<Student> students = List.of(\n            new Student(\"Ava\", List.of(90, 85, 98)),\n            new Student(\"Ben\", List.of(70, 65, 81)),\n            new Student(\"Cy\", List.of(88, 92, 79))\n        );\n\n        Student best = students.get(0);\n        for (Student s : students) {\n            System.out.printf(\"%s: %.1f%n\", s.name, s.average());\n            if (s.average() > best.average()) best = s;\n        }\n        System.out.println(\"Top student: \" + best.name);\n    }\n}\n",
+        "expected": "Ava: 91.0\nBen: 72.0\nCy: 86.3\nTop student: Ava"
+      },
+      "challenge": {
+        "prompt": "Add a `letterGrade()` method to `Student` that returns `\"A\"` for an average of 90 or more, `\"B\"` for 80 or more, `\"C\"` for 70 or more, and `\"F\"` otherwise.",
+        "hint": "Call `average()` once, store it, then use an if / else if chain from highest to lowest.",
+        "code": true,
+        "solution": "String letterGrade() {\n    double avg = average();\n    if (avg >= 90) return \"A\";\n    if (avg >= 80) return \"B\";\n    if (avg >= 70) return \"C\";\n    return \"F\";\n}"
+      },
+      "takeaways": [
+        "Put behaviour next to the data it uses.",
+        "Lists of objects plus a loop solve most reporting tasks.",
+        "printf formats numbers: %.1f means one decimal place."
+      ]
+    }
+  ]
+}

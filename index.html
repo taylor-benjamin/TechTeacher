@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="TechTeacher: learn software development, AI, networking, web design and cybersecurity from beginner to advanced with interactive lessons." />
+    <title>TechTeacher</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <script>
+      // Dark is the default look. Apply the saved theme before first paint to avoid a flash.
+      var t = null
+      try { t = JSON.parse(localStorage.getItem('tt.theme')) } catch (e) {}
+      if (t !== 'light') document.documentElement.classList.add('dark')
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

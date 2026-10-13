@@ -1,0 +1,135 @@
+{
+  "tab": "software",
+  "id": "html-css",
+  "order": 2,
+  "title": "HTML & CSS",
+  "summary": "The structure and style of every web page, with a live preview.",
+  "lessons": [
+    {
+      "id": "syntax-basics",
+      "title": "HTML & CSS: syntax basics",
+      "level": "beginner",
+      "minutes": 10,
+      "concept": {
+        "text": "HTML describes **what** is on a page using elements written as tags, such as `<h1>` for a heading and `<p>` for a paragraph. CSS describes **how it looks** using rules: a selector picks elements, and declarations set properties like colour and size.",
+        "analogy": "HTML is the frame and rooms of a house. CSS is the paint, furniture and lighting. You can redecorate (CSS) without knocking down walls (HTML)."
+      },
+      "visual": {
+        "type": "flow",
+        "caption": "Anatomy of one CSS rule.",
+        "nodes": [
+          { "label": "h1", "detail": "Selector: which elements" },
+          { "label": "{ color:", "detail": "Property: what to change" },
+          { "label": "teal;", "detail": "Value: change it to this" },
+          { "label": "}", "detail": "End of the rule" }
+        ]
+      },
+      "steps": [
+        { "title": "Write an element", "text": "Most elements have an opening tag, content and a closing tag. Attributes add detail inside the opening tag.", "code": "<a href=\"https://example.com\">Visit example</a>" },
+        { "title": "Nest elements", "text": "Elements go inside other elements, forming a tree. Indent to show the nesting.", "code": "<ul>\n  <li>Milk</li>\n  <li>Eggs</li>\n</ul>" },
+        { "title": "Style with a rule", "text": "Put CSS in a `<style>` block or a separate file. Target a tag name, a `.class` or an `#id`.", "code": "<style>\n  .warning { color: darkred; font-weight: bold; }\n</style>\n<p class=\"warning\">Careful!</p>" }
+      ],
+      "interactive": {
+        "type": "code",
+        "language": "html",
+        "starter": "<style>\n  body { font-family: sans-serif; padding: 1rem; }\n  h1 { color: teal; }\n  .note { background: #fff3cd; padding: 8px; border-radius: 6px; }\n</style>\n\n<h1>Hello, web!</h1>\n<p>Edit me and watch the preview change.</p>\n<p class=\"note\">This paragraph has the class \"note\".</p>\n"
+      },
+      "challenge": {
+        "prompt": "Build a mini profile: a heading with your name, a paragraph about you, and a list of three hobbies. Make the heading any colour except black.",
+        "hint": "Use `<h1>`, `<p>`, and `<ul>` with three `<li>` items. Add an `h1 { color: ... }` rule inside `<style>`.",
+        "language": "html",
+        "starter": "<style>\n  /* your CSS here */\n</style>\n\n<!-- your HTML here -->\n",
+        "solution": "<style>\n  h1 { color: rebeccapurple; }\n</style>\n\n<h1>Sam Taylor</h1>\n<p>I am learning to build websites.</p>\n<ul>\n  <li>Cycling</li>\n  <li>Chess</li>\n  <li>Baking</li>\n</ul>"
+      },
+      "takeaways": [
+        "HTML is structure (elements and attributes). CSS is presentation (selectors and declarations).",
+        "Elements nest to form a tree called the DOM.",
+        "Classes let you reuse one style on many elements."
+      ]
+    },
+    {
+      "id": "core-concepts",
+      "title": "HTML & CSS: the box model, flexbox and semantics",
+      "level": "intermediate",
+      "minutes": 12,
+      "concept": {
+        "text": "Every element is a rectangular box with four layers: content, padding, border and margin. Layout is the art of arranging those boxes. **Flexbox** arranges boxes in a row or column and shares out the space between them.\n\n**Semantic** elements like `<nav>`, `<main>` and `<button>` describe meaning, not appearance. Screen readers and search engines rely on them.",
+        "analogy": "The box model is a framed picture: the photo is the content, the mat is padding, the frame is the border, and the gap to the next picture on the wall is margin."
+      },
+      "visual": {
+        "type": "layers",
+        "caption": "The box model, from the outside in.",
+        "layers": [
+          { "name": "Margin", "detail": "Transparent space outside the box, pushing neighbours away" },
+          { "name": "Border", "detail": "The visible edge of the box" },
+          { "name": "Padding", "detail": "Space inside the border, around the content" },
+          { "name": "Content", "detail": "The text or image itself" }
+        ]
+      },
+      "steps": [
+        { "title": "Make sizes predictable", "text": "By default, width excludes padding and border. This one rule makes width mean the whole box.", "code": "* { box-sizing: border-box; }" },
+        { "title": "Turn on flexbox", "text": "Set `display: flex` on the parent. Children line up in a row. `gap` spaces them, `justify-content` spreads them along the row, `align-items` aligns them across it.", "code": ".row { display: flex; gap: 1rem; justify-content: space-between; align-items: center; }" },
+        { "title": "Go responsive", "text": "A media query applies CSS only at certain screen widths.", "code": "@media (max-width: 600px) {\n  .row { flex-direction: column; }\n}" },
+        { "title": "Use the right element", "text": "A `<button>` is focusable and works with a keyboard for free. A clickable `<div>` is not. Prefer semantic HTML first." }
+      ],
+      "interactive": {
+        "type": "code",
+        "language": "html",
+        "starter": "<style>\n  * { box-sizing: border-box; }\n  body { font-family: sans-serif; }\n  .row { display: flex; gap: 12px; justify-content: space-between; }\n  .card {\n    flex: 1;\n    padding: 16px;        /* try 40px */\n    border: 3px solid teal;\n    margin: 0;            /* try 20px */\n    border-radius: 8px;\n  }\n</style>\n\n<div class=\"row\">\n  <div class=\"card\">One</div>\n  <div class=\"card\">Two</div>\n  <div class=\"card\">Three</div>\n</div>\n"
+      },
+      "challenge": {
+        "prompt": "Create a navigation bar: a site name on the left and three links on the right, all vertically centred on one row.",
+        "hint": "Use `<nav>` as a flex container with `justify-content: space-between` and `align-items: center`. Put the links in their own flex `<div>` with a `gap`.",
+        "language": "html",
+        "starter": "<style>\n  nav { }\n</style>\n\n<nav>\n  <strong>MySite</strong>\n  <div class=\"links\">\n    <a href=\"#\">Home</a>\n    <a href=\"#\">About</a>\n    <a href=\"#\">Contact</a>\n  </div>\n</nav>\n",
+        "solution": "<style>\n  nav { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #eef; }\n  .links { display: flex; gap: 16px; }\n</style>\n\n<nav>\n  <strong>MySite</strong>\n  <div class=\"links\">\n    <a href=\"#\">Home</a>\n    <a href=\"#\">About</a>\n    <a href=\"#\">Contact</a>\n  </div>\n</nav>"
+      },
+      "takeaways": [
+        "Every element is a box: content, padding, border, margin.",
+        "Flexbox lays out children in one direction and distributes space.",
+        "Semantic HTML gives you accessibility and SEO for free."
+      ]
+    },
+    {
+      "id": "mini-project",
+      "title": "HTML & CSS mini project: a profile card",
+      "level": "intermediate",
+      "minutes": 15,
+      "concept": {
+        "text": "Time to combine structure, the box model and flexbox into one polished component: a profile card like the ones on team pages. Components like this are the building blocks of real sites.",
+        "analogy": "You have learned individual chords. A component is your first whole song: the same few chords, arranged with intent."
+      },
+      "visual": {
+        "type": "flow",
+        "caption": "Build order for any component.",
+        "nodes": [
+          { "label": "1. Structure", "detail": "Write the HTML with no styling" },
+          { "label": "2. Layout", "detail": "Flexbox, widths, spacing" },
+          { "label": "3. Style", "detail": "Colour, type, borders, shadow" },
+          { "label": "4. Polish", "detail": "Hover states, small screens" }
+        ]
+      },
+      "steps": [
+        { "title": "Structure first", "text": "An `<article>` holds an avatar, a name, a role and a button. Get the content right before any CSS." },
+        { "title": "Lay it out", "text": "Centre the card's content with flexbox in a column, and give the card a fixed max-width." },
+        { "title": "Style and polish", "text": "Add a border radius, a soft shadow and a hover state on the button. Use `transition` so the change feels smooth." }
+      ],
+      "interactive": {
+        "type": "code",
+        "language": "html",
+        "starter": "<style>\n  body { font-family: system-ui, sans-serif; background: #f1f5f9; display: grid; place-items: center; min-height: 90vh; }\n  .card {\n    background: white; max-width: 260px; padding: 24px; border-radius: 16px;\n    box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);\n    display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center;\n  }\n  .avatar { width: 80px; height: 80px; border-radius: 50%; background: teal; color: white; display: grid; place-items: center; font-size: 32px; }\n  h2 { margin: 0; }\n  p { margin: 0; color: #475569; }\n  button { margin-top: 8px; padding: 8px 20px; border: 0; border-radius: 999px; background: teal; color: white; font-weight: 600; cursor: pointer; transition: background 0.2s; }\n  button:hover { background: #0b5a55; }\n</style>\n\n<article class=\"card\">\n  <div class=\"avatar\">A</div>\n  <h2>Ada Lovelace</h2>\n  <p>First programmer</p>\n  <button>Follow</button>\n</article>\n"
+      },
+      "challenge": {
+        "prompt": "Extend the card: add a row of three stats (for example Posts, Followers, Following) between the role and the button, evenly spaced.",
+        "hint": "Add a `<div class=\"stats\">` with three children and make it a flex row with `gap` or `justify-content: space-around` and `width: 100%`.",
+        "code": true,
+        "solution": "<div class=\"stats\">\n  <div><strong>42</strong><br>Posts</div>\n  <div><strong>1.2k</strong><br>Followers</div>\n  <div><strong>180</strong><br>Following</div>\n</div>\n\n/* CSS */\n.stats { display: flex; justify-content: space-around; width: 100%; font-size: 14px; }"
+      },
+      "takeaways": [
+        "Build components in order: structure, layout, style, polish.",
+        "Flexbox in a column with align-items: center is the quickest way to centre a stack.",
+        "Small details such as radius, shadow and hover states make a design feel finished."
+      ]
+    }
+  ]
+}

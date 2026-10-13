@@ -1,0 +1,195 @@
+{
+  "tab": "webdesign",
+  "id": "tools",
+  "order": 2,
+  "title": "Design Tools",
+  "summary": "Practical guides to Figma, Framer, Webflow, Canva and AI site builders, and when to use each.",
+  "lessons": [
+    {
+      "id": "figma",
+      "title": "Figma: designing interfaces",
+      "level": "beginner",
+      "minutes": 14,
+      "concept": {
+        "text": "Figma is the industry-standard tool for designing websites and apps. It runs in the browser, it is free to start, and several people can work in the same file at once.\n\nYou draw screens inside **frames**, build reusable pieces called **components**, and use **auto layout** so that elements space themselves the way CSS flexbox does. A design made this way is easy to change and translates cleanly into code.",
+        "analogy": "Figma is a shared whiteboard with superpowers. Everyone sketches on the same board at the same time, and when you redraw one button, every copy of that button across the whole board updates."
+      },
+      "visual": {
+        "type": "cards",
+        "caption": "The Figma concepts that matter most.",
+        "items": [
+          { "title": "Frame", "text": "A container for a screen or section, like a div. Press F." },
+          { "title": "Auto layout", "text": "Automatic spacing and resizing in a row or column. It is flexbox. Shift + A." },
+          { "title": "Component", "text": "A reusable master element. Edit it once and every instance updates." },
+          { "title": "Variants", "text": "States of one component: default, hover, disabled." },
+          { "title": "Styles and variables", "text": "Saved colours, text styles and spacing values: your design tokens." },
+          { "title": "Prototype", "text": "Link frames together to make a clickable demo." },
+          { "title": "Dev Mode", "text": "Shows developers measurements, CSS values and assets." }
+        ]
+      },
+      "steps": [
+        { "title": "Create a frame", "text": "Press **F** and choose a preset such as Desktop (1440) or a phone size. This is your canvas for one screen." },
+        { "title": "Build with auto layout", "text": "Select a few elements and press **Shift + A**. Set direction, gap and padding. Nest auto layouts the way you would nest flex containers." },
+        { "title": "Make a component", "text": "Design a button, select it and press **Ctrl/Cmd + Alt + K**. Drag copies (instances) from the Assets panel. Change the main component and all instances follow." },
+        { "title": "Define styles first", "text": "Save your colours and text sizes as styles or variables before you design many screens. Consistency then takes no effort." },
+        { "title": "Prototype and share", "text": "In the Prototype tab, drag a connection from a button to another frame. Press Play to test, then share the link for feedback." }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "Which Figma feature behaves like CSS flexbox?", "options": ["Vector networks", "Auto layout", "Plugins", "Comments"], "answer": 1, "explain": "Auto layout handles direction, gap, padding and resizing." },
+          { "q": "You need to change the corner radius of 60 buttons across 20 screens. What makes that a one-step job?", "options": ["Copy and paste", "They are instances of one component", "Exporting to PNG", "Using more frames"], "answer": 1, "explain": "Edit the main component and every instance updates." },
+          { "q": "What is Dev Mode for?", "options": ["Writing JavaScript in Figma", "Giving developers measurements, values and assets from a design", "Running a web server", "Editing photos"], "answer": 1, "explain": "It is the handoff view between design and code." }
+        ]
+      },
+      "challenge": {
+        "prompt": "In a free Figma account, build a pricing card: a plan name, a price, three feature lines and a button. Use auto layout for the card and make the button a component with a default and a hover variant.",
+        "hint": "Stack the text in a vertical auto layout with a 16 px gap and 24 px padding. Create the button as its own horizontal auto layout before turning it into a component.",
+        "solution": "1. Press **F** and draw a frame about 320 px wide. Add the texts and press **Shift + A** to make a vertical auto layout: gap 16, padding 24, corner radius 16, white fill and a light stroke.\n\n2. Create the button: text inside a horizontal auto layout with padding 12 by 24, a fill colour and radius 8. Make it a **component**.\n\n3. With the component selected, choose **Add variant**. Darken the fill on the second variant and name the property `State` with values `Default` and `Hover`.\n\n4. Place an instance in the card and set it to fill the container's width."
+      },
+      "takeaways": [
+        "Frames hold screens. Auto layout spaces content like flexbox.",
+        "Components and styles make designs consistent and quick to change.",
+        "Prototype to test flows, and use Dev Mode to hand off to developers."
+      ]
+    },
+    {
+      "id": "framer-webflow",
+      "title": "Framer and Webflow: visual site builders",
+      "level": "intermediate",
+      "minutes": 12,
+      "concept": {
+        "text": "Framer and Webflow let you design a real, live website visually, with no code required, and publish it on their hosting. Unlike simple template builders, both give you fine control over layout, responsive breakpoints and animation.\n\n**Framer** feels like Figma: a free-form canvas that is quick to learn and strong on animation, ideal for landing pages and portfolios. **Webflow** exposes the real box model and CSS classes through a visual interface and has a powerful content management system (CMS), which suits larger content sites.",
+        "analogy": "If coding a site by hand is building furniture from raw timber, Framer and Webflow are a professional workshop with power tools: you still design and assemble it yourself, but much faster. Framer is the nimble tool for one stunning piece, and Webflow is the full workshop for a matching set."
+      },
+      "visual": {
+        "type": "compare",
+        "columns": ["Framer", "Webflow"],
+        "rows": [
+          ["Feels like", "Figma, on a free-form canvas", "A visual front end for HTML and CSS"],
+          ["Learning curve", "Gentle for designers", "Steeper: you need to understand the box model"],
+          ["Strongest at", "Landing pages, portfolios, animation", "Content-heavy sites, blogs, complex CMS"],
+          ["CMS", "Good for simple collections", "Very capable, with relational content"],
+          ["Code access", "React components", "Custom code embeds and clean export on paid plans"],
+          ["Free tier", "Yes, on a Framer subdomain", "Yes, on a Webflow subdomain"]
+        ]
+      },
+      "steps": [
+        { "title": "Start from a template or a blank page", "text": "Both offer templates. Starting from one and replacing its content is the quickest way to learn how a well-built site is structured." },
+        { "title": "Build with stacks and containers", "text": "Framer uses **stacks** and Webflow uses **flex and grid containers**. They are the same flexbox ideas you learned in the HTML and CSS module." },
+        { "title": "Set breakpoints", "text": "Design for desktop, tablet and phone widths. Changes cascade down from larger to smaller breakpoints, so check every one." },
+        { "title": "Add CMS content", "text": "Define a collection, such as blog posts with a title, image and body, then design one template page that every item uses." },
+        { "title": "Publish", "text": "One click publishes to a free subdomain. Connect a custom domain on a paid plan." }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "A designer who knows Figma wants a striking animated portfolio live this weekend. Which tool fits best?", "options": ["Framer", "Webflow", "A spreadsheet", "A database"], "answer": 0, "explain": "Framer's canvas is familiar to Figma users and excels at animation." },
+          { "q": "A magazine needs 500 articles with authors, categories and related posts. Which tool fits best?", "options": ["Framer", "Webflow", "Canva", "Paint"], "answer": 1, "explain": "Webflow's CMS handles large, related content collections well." },
+          { "q": "What is a CMS collection?", "options": ["A set of fonts", "A structured set of content items that share one page template", "A colour palette", "A hosting plan"], "answer": 1, "explain": "You design the template once and each item fills it in." }
+        ]
+      },
+      "challenge": {
+        "prompt": "You are asked to build a five-page site for a local bakery, with a menu the owner can update without your help. Choose Framer or Webflow, and outline the CMS collection you would create for the menu.",
+        "hint": "Either tool can do it. Justify the choice, then list the fields each menu item needs.",
+        "solution": "Either works. **Framer** is a good choice here: five pages, a visual brand, and a simple collection are well within its CMS, and it is quicker to build.\n\nMenu collection fields: **Name** (text), **Description** (text), **Price** (number), **Category** (option: bread, pastry, cake, drinks), **Photo** (image), **Dietary tags** (options), **Available** (toggle).\n\nDesign one menu page that lists items grouped by category and hides anything not available. The owner then edits items in the CMS without touching the design."
+      },
+      "takeaways": [
+        "Framer and Webflow produce real, responsive, hosted websites visually.",
+        "Framer is quicker and animation-friendly. Webflow is deeper and stronger for content.",
+        "The same layout ideas apply: boxes, flexbox, breakpoints."
+      ]
+    },
+    {
+      "id": "canva",
+      "title": "Canva: fast graphics for the web",
+      "level": "beginner",
+      "minutes": 8,
+      "concept": {
+        "text": "Canva is a template-based design tool for making graphics quickly: social media images, banners, logos, presentations and simple one-page websites. It is not built for designing complex interfaces, but it is hard to beat for producing good-looking visuals in minutes without design training.\n\nFor web work, Canva is most useful for the assets around a site: hero images, social sharing cards, icons and brand kits.",
+        "analogy": "If Figma is a professional kitchen where you cook from scratch, Canva is a meal kit: the ingredients are measured and the recipe is written. You get a good result fast, with less freedom."
+      },
+      "visual": {
+        "type": "compare",
+        "caption": "Common web image sizes to design at.",
+        "columns": ["Size (pixels)", "Tip"],
+        "rows": [
+          ["Social share card (Open Graph)", "1200 × 630", "Keep key text in the centre"],
+          ["Website hero banner", "1920 × 1080", "Export as WebP or compressed JPG"],
+          ["Square social post", "1080 × 1080", "Large text, strong contrast"],
+          ["Favicon source", "512 × 512", "A simple shape that reads at tiny sizes"],
+          ["Logo", "Vector (SVG)", "Export SVG so it stays sharp at any size"]
+        ]
+      },
+      "steps": [
+        { "title": "Pick the right size", "text": "Choose **Custom size** and enter exact pixels, or search for a preset. Starting at the right size avoids blurry or cropped images." },
+        { "title": "Start from a template, then make it yours", "text": "Replace the photos, use your own colours and fonts, and delete elements. An unmodified template looks like everyone else's." },
+        { "title": "Set up a brand kit", "text": "Save your logo, colours and fonts so that every graphic matches your site." },
+        { "title": "Export for the web", "text": "Use **PNG** for graphics with text or transparency, **JPG** for photos, **SVG** for logos and icons. Then compress: large images are the main cause of slow pages." }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "Which format keeps a logo sharp at every size?", "options": ["JPG", "SVG", "BMP", "GIF"], "answer": 1, "explain": "SVG is a vector format that scales without losing quality." },
+          { "q": "What is the standard size for a social share (Open Graph) image?", "options": ["100 × 100", "1200 × 630", "4000 × 4000", "640 × 480"], "answer": 1, "explain": "1200 × 630 displays well on most platforms." },
+          { "q": "Which task is Canva least suited to?", "options": ["A social media banner", "A multi-screen app interface with reusable components", "A presentation", "A poster"], "answer": 1, "explain": "Complex interface design belongs in a tool such as Figma." }
+        ]
+      },
+      "challenge": {
+        "prompt": "Create a 1200 × 630 social share card for a personal portfolio in Canva. It should show your name, a one-line description and one accent colour, and the text must pass contrast.",
+        "hint": "Use Custom size. Keep text large, because share cards are often shown small. Check your colours in the contrast checker from the Colour lesson.",
+        "solution": "1. **Create a design**, Custom size, 1200 × 630 px.\n\n2. Set a solid dark or light background. Add your name at about 80-100 px, bold.\n\n3. Add one line beneath, such as 'Web designer and developer', at about 36-40 px.\n\n4. Add one accent element in your brand colour: a bar, a shape or an underline.\n\n5. Verify the text and background pair reaches at least 4.5:1.\n\n6. **Share, Download, PNG**. Reference it in your site's head with an `og:image` meta tag."
+      },
+      "takeaways": [
+        "Canva is the fastest route to good-looking graphics and brand assets.",
+        "Design at the exact pixel size and customise templates.",
+        "Export SVG for logos, PNG for graphics, JPG or WebP for photos, and compress them."
+      ]
+    },
+    {
+      "id": "ai-builders",
+      "title": "AI builders: v0, Lovable and Bolt",
+      "level": "beginner",
+      "minutes": 12,
+      "concept": {
+        "text": "AI builders turn a written description into a working website or app. You type what you want, the tool writes the code, and you see a live preview within a minute. Then you refine it by chatting.\n\n**v0** (by Vercel) generates React and Tailwind interfaces and is strong on polished UI. **Lovable** builds full-stack apps with a database and logins. **Bolt** runs a complete development environment in your browser. All three produce real code that you can export, edit and deploy, which is the important difference from a closed site builder.",
+        "analogy": "An AI builder is a very fast junior developer who never tires. Describe the page and it appears in a minute. But like any junior, it needs clear instructions, makes mistakes, and its work should be reviewed."
+      },
+      "visual": {
+        "type": "compare",
+        "columns": ["v0", "Lovable", "Bolt"],
+        "rows": [
+          ["Made by", "Vercel", "Lovable", "StackBlitz"],
+          ["Best at", "Polished UI components and pages", "Full apps with a backend and logins", "Full-stack projects in a browser IDE"],
+          ["Typical stack", "React, Next.js, Tailwind, shadcn/ui", "React, Tailwind, Supabase", "Many frameworks, runs Node in the browser"],
+          ["Deploys to", "Vercel", "Its own hosting, or export to GitHub", "Netlify, or export"],
+          ["You get the code?", "Yes", "Yes, with GitHub sync", "Yes"]
+        ]
+      },
+      "steps": [
+        { "title": "Describe the result, not the code", "text": "Say what the page is for, who uses it, which sections it has and the visual style you want. Attach a screenshot or sketch if you have one." },
+        { "title": "Review the preview", "text": "Click through it. Check it on a narrow screen. Read the code it wrote: this is an excellent way to learn." },
+        { "title": "Iterate in small steps", "text": "Ask for one change at a time: 'make the header sticky', then 'add a pricing section with three tiers'. Small requests are followed far more reliably than long lists." },
+        { "title": "Take ownership", "text": "Export the project to GitHub and deploy it. Free tiers have usage limits, so move serious projects into your own repository." }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "You need a working app with user sign-up and a database, quickly. Which tool is designed for that?", "options": ["Canva", "Lovable", "A PDF editor", "Notepad"], "answer": 1, "explain": "Lovable wires up a backend, database and authentication." },
+          { "q": "What is the best way to refine an AI-generated site?", "options": ["One huge message with 30 changes", "Small, specific requests, checking the result each time", "Start again from scratch every time", "Never look at the preview"], "answer": 1, "explain": "Small steps are followed accurately and are easy to undo." },
+          { "q": "Why does it matter that these tools give you the code?", "options": ["It does not", "You can edit, host and extend it anywhere, with no lock-in", "The code is decorative", "It makes pages slower"], "answer": 1, "explain": "Owning the code means you are not trapped in one platform." }
+        ]
+      },
+      "challenge": {
+        "prompt": "Write the first prompt you would give an AI builder to create a landing page for a dog-walking business. Include purpose, audience, sections and style.",
+        "hint": "Imagine briefing a human designer who knows nothing about the business.",
+        "solution": "\"Build a single-page landing site for 'Happy Paws', a dog-walking service in Bristol. The audience is busy professionals with dogs, mostly on mobile.\n\nSections, in order: (1) a hero with the headline 'Happy dogs, even when you're at work', a short subheading and a 'Book a free meet-up' button; (2) three service cards: 30-minute walk, 60-minute walk, puppy visits, each with a price; (3) how it works in three steps; (4) three customer testimonials; (5) a contact form with name, email, dog's name and message; (6) a footer with phone number and service area.\n\nStyle: friendly and clean, white background, a warm green accent, rounded corners, large readable text. Make it fully responsive and accessible, with good colour contrast.\""
+      },
+      "takeaways": [
+        "AI builders generate real, editable code from a description.",
+        "v0 excels at UI, Lovable at full-stack apps, Bolt at in-browser development.",
+        "Brief clearly, iterate in small steps, then export and own the code."
+      ]
+    }
+  ]
+}

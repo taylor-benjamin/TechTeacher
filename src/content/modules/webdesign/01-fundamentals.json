@@ -1,0 +1,183 @@
+{
+  "tab": "webdesign",
+  "id": "fundamentals",
+  "order": 1,
+  "title": "Design Fundamentals",
+  "summary": "Layout, typography, colour and UX: the principles behind every good-looking, usable site.",
+  "lessons": [
+    {
+      "id": "layout",
+      "title": "Layout: hierarchy, grids and white space",
+      "level": "beginner",
+      "minutes": 12,
+      "concept": {
+        "text": "Layout is how you arrange things on a page so that people see the most important thing first and understand what belongs together. Good layout is not decoration. It does the reader's sorting for them.\n\nFour ideas do most of the work. **Hierarchy**: make important things bigger, bolder or higher. **Alignment**: line things up on a shared grid. **Proximity**: put related things close together. **White space**: leave room to breathe, because empty space is what makes the rest readable.",
+        "analogy": "A good layout is a well-organised shop. The special offer is by the door (hierarchy), products sit in straight aisles (alignment), pasta is next to pasta sauce (proximity), and the aisles are wide enough to walk down (white space)."
+      },
+      "visual": {
+        "type": "cards",
+        "caption": "CRAP: four principles from designer Robin Williams, plus two more.",
+        "items": [
+          { "title": "Contrast", "text": "Make different things look clearly different. Headings should not look like body text." },
+          { "title": "Repetition", "text": "Reuse the same styles for the same kinds of thing. Consistency builds trust." },
+          { "title": "Alignment", "text": "Every element should line up with something else. Nothing placed at random." },
+          { "title": "Proximity", "text": "Group related items. Space between groups shows where one ends." },
+          { "title": "Hierarchy", "text": "Size, weight and position tell the eye where to look first, second, third." },
+          { "title": "White space", "text": "Generous spacing looks confident and makes content easier to scan." }
+        ]
+      },
+      "steps": [
+        { "title": "Decide the one main thing", "text": "Every page or section has one primary action or message. Make it the most prominent element. If everything shouts, nothing is heard." },
+        { "title": "Use a grid", "text": "A 12-column grid is the web standard because 12 divides into halves, thirds and quarters. CSS Grid makes this one line.", "code": ".grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }" },
+        { "title": "Use a spacing scale", "text": "Choose a small set of spacing values, such as 4, 8, 16, 24, 32 and 48 pixels, and use only those. Consistent spacing makes a design look professional immediately." },
+        { "title": "Design mobile first", "text": "Start with a single column for phones, then add columns as the screen widens. More than half of web traffic is on phones." }
+      ],
+      "interactive": {
+        "type": "code",
+        "language": "html",
+        "starter": "<style>\n  body { font-family: system-ui, sans-serif; margin: 0; padding: 24px; color: #1e293b; }\n  h1 { font-size: 28px; margin: 0 0 8px; }\n  .lead { color: #475569; margin: 0 0 24px; }\n  .grid {\n    display: grid;\n    grid-template-columns: repeat(3, 1fr);  /* try repeat(2, 1fr) or 1fr */\n    gap: 16px;                              /* try 4px, then 40px */\n  }\n  .card { border: 1px solid #cbd5e1; border-radius: 12px; padding: 16px; }\n  .card h2 { font-size: 16px; margin: 0 0 4px; }\n  .card p { margin: 0; font-size: 14px; color: #475569; }\n  @media (max-width: 500px) { .grid { grid-template-columns: 1fr; } }\n</style>\n\n<h1>Our services</h1>\n<p class=\"lead\">Change the grid and the gap to feel the difference.</p>\n<div class=\"grid\">\n  <div class=\"card\"><h2>Design</h2><p>Clean, usable interfaces.</p></div>\n  <div class=\"card\"><h2>Build</h2><p>Fast, accessible code.</p></div>\n  <div class=\"card\"><h2>Launch</h2><p>Deployed and monitored.</p></div>\n</div>\n"
+      },
+      "challenge": {
+        "prompt": "In the editor above, make the first card the clear focal point: it should span the full width of the grid and have a larger heading, while the other two sit side by side beneath it.",
+        "hint": "`grid-column: 1 / -1` makes an element span every column. Then switch the grid to two columns.",
+        "code": true,
+        "solution": ".grid { grid-template-columns: repeat(2, 1fr); }\n.card:first-child { grid-column: 1 / -1; background: #f1f5f9; }\n.card:first-child h2 { font-size: 22px; }"
+      },
+      "takeaways": [
+        "Hierarchy, alignment, proximity and white space organise a page for the reader.",
+        "Use a grid and a fixed spacing scale for instant consistency.",
+        "Design for the smallest screen first, then expand."
+      ]
+    },
+    {
+      "id": "typography",
+      "title": "Typography: making text easy to read",
+      "level": "beginner",
+      "minutes": 10,
+      "concept": {
+        "text": "Most of the web is text, so most of web design is typography: choosing and arranging type so that reading is effortless. You need very few fonts. One good typeface in a few sizes and weights beats five fonts fighting each other.\n\nThree settings control readability: **size** (body text of at least 16 pixels), **line height** (about 1.5 times the font size for paragraphs) and **line length** (45 to 75 characters per line). Get these right and almost any font looks good.",
+        "analogy": "Typography is the voice of your text. The same sentence can be whispered, announced or shouted. Font, size and weight set the tone before anyone reads a word."
+      },
+      "visual": {
+        "type": "compare",
+        "caption": "Settings that work on almost any site.",
+        "columns": ["Recommended", "Why"],
+        "rows": [
+          ["Body size", "16-18 px", "Smaller text strains eyes, especially on phones"],
+          ["Line height", "1.5 for body, 1.1-1.3 for headings", "Lines need room, but large headings need less"],
+          ["Line length", "45-75 characters (max-width: 65ch)", "Long lines are tiring to track"],
+          ["Typefaces", "One or two families", "More looks chaotic and slows page loading"],
+          ["Type scale", "For example 16, 20, 24, 32, 48", "A consistent ratio creates clear hierarchy"],
+          ["Alignment", "Left-aligned body text", "Centred paragraphs are hard to read"]
+        ]
+      },
+      "steps": [
+        { "title": "Choose a typeface", "text": "**Sans-serif** fonts such as Inter look clean and modern. **Serif** fonts such as Georgia feel traditional. A system font stack loads instantly and looks native.", "code": "font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;" },
+        { "title": "Set a type scale", "text": "Use `rem` units so text respects the user's browser settings. Pick sizes from a scale instead of inventing each one." },
+        { "title": "Limit line length", "text": "`ch` is the width of the character 0, so this keeps lines comfortable at any font size.", "code": "p { max-width: 65ch; line-height: 1.5; }" },
+        { "title": "Create hierarchy with weight and colour", "text": "Use bold for headings and a softer colour for secondary text, instead of many different sizes." }
+      ],
+      "interactive": {
+        "type": "code",
+        "language": "html",
+        "starter": "<style>\n  body { font-family: system-ui, sans-serif; padding: 24px; color: #1e293b; }\n  h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 0.5rem; }\n  .meta { color: #64748b; font-size: 0.875rem; margin: 0 0 1rem; }\n  p {\n    font-size: 1rem;      /* try 0.7rem */\n    line-height: 1.5;     /* try 1 and 2.2 */\n    max-width: 65ch;      /* try 200ch and 25ch */\n  }\n</style>\n\n<h1>Why line length matters</h1>\n<p class=\"meta\">3 minute read</p>\n<p>When lines are too long, your eye loses its place on the way back to the left edge. When they are too short, the rhythm of reading is broken by constant line breaks. Somewhere between 45 and 75 characters, reading becomes comfortable and you stop noticing the layout at all, which is exactly the goal.</p>\n"
+      },
+      "challenge": {
+        "prompt": "A client's blog uses 12 px grey text, line height 1.1, and lines that stretch the full width of a wide monitor. Write the CSS for the paragraph that fixes all three problems.",
+        "hint": "One property each for size, line height and width. Darken the text too.",
+        "code": true,
+        "solution": "p {\n  font-size: 1.125rem;   /* 18px */\n  line-height: 1.6;\n  max-width: 65ch;\n  color: #1e293b;        /* dark enough for strong contrast */\n}"
+      },
+      "takeaways": [
+        "Body text: at least 16 px, line height about 1.5, and 45-75 characters per line.",
+        "One or two typefaces and a consistent scale are enough.",
+        "Use rem units so text scales with the user's settings."
+      ]
+    },
+    {
+      "id": "color",
+      "title": "Colour and contrast",
+      "level": "beginner",
+      "minutes": 12,
+      "concept": {
+        "text": "Colour sets mood, guides attention and signals meaning, such as red for errors. But the most important job of colour on the web is making sure people can read. Text needs enough **contrast** against its background.\n\nThe Web Content Accessibility Guidelines (WCAG) measure contrast as a ratio from 1:1 (invisible) to 21:1 (black on white). Level AA requires **4.5:1** for normal text and **3:1** for large text and interface parts. About 1 in 12 men has some colour blindness, so never use colour as the only signal.",
+        "analogy": "Low-contrast text is a conversation in a noisy bar. The words are being said, but your audience has to strain to catch them, and many will give up. High contrast is speaking in a quiet room."
+      },
+      "visual": {
+        "type": "compare",
+        "caption": "The 60-30-10 rule gives any palette balance.",
+        "columns": ["Share of the page", "Used for", "Example"],
+        "rows": [
+          ["Dominant (neutral)", "60%", "Backgrounds and large surfaces", "White, off-white or near-black"],
+          ["Secondary", "30%", "Cards, sections, text", "Greys and a muted brand tone"],
+          ["Accent", "10%", "Buttons, links, highlights", "One vivid brand colour"],
+          ["Semantic", "As needed", "Status messages", "Green success, red error, amber warning"]
+        ]
+      },
+      "steps": [
+        { "title": "Start with neutrals", "text": "Pick a background, a text colour and two or three greys. Most of a professional interface is neutral." },
+        { "title": "Add one accent", "text": "Choose a single brand colour for actions. If everything is colourful, nothing stands out." },
+        { "title": "Check contrast", "text": "Test every text and background pair. Light grey text on white is the most common failure on the web. Use the checker below." },
+        { "title": "Do not rely on colour alone", "text": "Pair colour with an icon, label or underline. An error should say 'Error' and show an icon, not just turn red." }
+      ],
+      "interactive": { "type": "contrast" },
+      "challenge": {
+        "prompt": "Using the checker: the default grey #8a8a8a on white fails AA for normal text. Find the lightest grey that passes 4.5:1 on white. Then find a brand blue that passes on white and still passes with white text on top of it (for a button).",
+        "hint": "Darken gradually and watch the ratio. For the button, set the blue as the background colour and white as the text colour.",
+        "solution": "On white, greys pass AA at about **#767676** (4.54:1) or darker. #8a8a8a is only about 3.5:1.\n\nFor the blue, a mid-to-dark shade such as **#1d4ed8** gives about 6.7:1 against white in either direction, so it works both as link text on white and as a button background with white text. Contrast is symmetrical: swapping text and background gives the same ratio."
+      },
+      "takeaways": [
+        "WCAG AA: 4.5:1 for normal text, 3:1 for large text and interface parts.",
+        "Build palettes from neutrals plus one accent (60-30-10).",
+        "Never use colour as the only way to convey meaning."
+      ]
+    },
+    {
+      "id": "ux-basics",
+      "title": "UX: designing for real people",
+      "level": "intermediate",
+      "minutes": 12,
+      "concept": {
+        "text": "User experience (UX) is how it feels to use something. A beautiful site that confuses people has bad UX. A plain one that lets people finish their task in seconds has good UX.\n\nUX design starts from the user's goal, not from what you want to show. Who is visiting, what are they trying to do, and what is in their way? The most quoted rule in the field is the title of Steve Krug's book: **Don't make me think.**",
+        "analogy": "Good UX is a well-designed door. A flat plate says push and a handle says pull, and you never notice the door. Bad UX is a door with a pull handle that needs pushing: everyone gets it wrong, and it is never the user's fault."
+      },
+      "visual": {
+        "type": "flow",
+        "caption": "The UX design process is a loop, not a line.",
+        "nodes": [
+          { "label": "Research", "detail": "Who are the users? What do they need?" },
+          { "label": "Define", "detail": "User flows and priorities" },
+          { "label": "Wireframe", "detail": "Rough boxes, no colour" },
+          { "label": "Prototype", "detail": "Clickable mock-up" },
+          { "label": "Test", "detail": "Watch 5 real people use it" },
+          { "label": "Iterate", "detail": "Fix and repeat" }
+        ]
+      },
+      "steps": [
+        { "title": "Follow conventions", "text": "Logo top left links home. Navigation at the top. Links look like links. People spend most of their time on other sites, so they expect yours to work the same way (Jakob's law)." },
+        { "title": "Reduce choices and effort", "text": "More options means slower decisions (Hick's law). Cut form fields, offer sensible defaults, and make the main button obvious." },
+        { "title": "Give feedback", "text": "Every action needs a visible response: a button changes when pressed, a form says what went wrong and how to fix it, a slow page shows progress." },
+        { "title": "Design for everyone", "text": "Accessibility is part of UX. Support keyboards, add alt text to images, label form fields, and make tap targets at least about 44 pixels." }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "A sign-up form has 14 fields and most visitors abandon it. What is the best first fix?", "options": ["Make the button red", "Remove every field that is not essential", "Add a video", "Use a smaller font"], "answer": 1, "explain": "Every extra field costs effort. Ask only for what you need now." },
+          { "q": "What is a wireframe?", "options": ["The final design with colours", "A rough layout sketch with no styling", "A type of font", "A JavaScript framework"], "answer": 1, "explain": "Wireframes settle structure cheaply before anyone argues about colours." },
+          { "q": "How many users does it typically take to uncover most usability problems in a test?", "options": ["About 5", "About 500", "Exactly 100", "None, testing is optional"], "answer": 0, "explain": "Nielsen's research found that around five users reveal most of the big issues." },
+          { "q": "A form error says only 'Invalid input'. Why is this bad UX?", "options": ["It is too long", "It does not say which field or how to fix it", "It uses text", "It is good UX"], "answer": 1, "explain": "Good errors say what went wrong and how to fix it, next to the field." }
+        ]
+      },
+      "challenge": {
+        "prompt": "List the steps a first-time visitor must take to book a table on a restaurant website. Then name three things you would do to make that flow as short and clear as possible.",
+        "hint": "Count clicks and decisions from landing on the home page to seeing a confirmation.",
+        "solution": "A typical flow: land on home page, find the booking link, choose date, time and party size, enter name and contact details, confirm, see confirmation.\n\nImprovements: (1) put a prominent **Book a table** button at the top of every page; (2) ask for only the essentials (date, time, people, name, phone) with sensible defaults such as tonight and 2 people; (3) show available times directly instead of an error after submitting, and finish with a clear confirmation page plus an email."
+      },
+      "takeaways": [
+        "Good UX helps people reach their goal with the least thought and effort.",
+        "Follow conventions, reduce choices, and always give feedback.",
+        "Wireframe, prototype and test with real people before polishing."
+      ]
+    }
+  ]
+}

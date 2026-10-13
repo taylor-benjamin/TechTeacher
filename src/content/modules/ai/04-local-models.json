@@ -1,0 +1,101 @@
+{
+  "tab": "ai",
+  "id": "local-models",
+  "order": 4,
+  "title": "Running Models Locally",
+  "summary": "Run open models on your own machine with Ollama and LM Studio, and size the hardware you need.",
+  "lessons": [
+    {
+      "id": "ollama-lm-studio",
+      "title": "Ollama and LM Studio",
+      "level": "beginner",
+      "minutes": 12,
+      "concept": {
+        "text": "You do not need a cloud service to use an LLM. Open-weight models such as Llama, Mistral, Gemma, Qwen and Phi can be downloaded and run on your own computer. Your data never leaves the machine, it works offline, and there is no per-token bill.\n\n**Ollama** is a command-line tool that downloads and runs models with one command and exposes a local API. **LM Studio** is a desktop app with a chat window, a model browser and a local server. Both run the same kinds of model files.",
+        "analogy": "Cloud AI is a restaurant: excellent food, but you pay per dish and they see your order. A local model is cooking at home: your kitchen sets the limits, but it is private and the marginal cost of each meal is zero."
+      },
+      "visual": {
+        "type": "compare",
+        "columns": ["Ollama", "LM Studio"],
+        "rows": [
+          ["Interface", "Command line + API", "Desktop app with chat UI"],
+          ["Best for", "Developers, scripts, servers", "Beginners, exploring and comparing models"],
+          ["Get a model", "ollama pull llama3.2", "Search and click download"],
+          ["Local API", "http://localhost:11434", "http://localhost:1234 (OpenAI-compatible)"],
+          ["Licence", "Open source", "Free to use, closed source"]
+        ]
+      },
+      "steps": [
+        { "title": "Install and run with Ollama", "text": "Install from ollama.com, then one command downloads the model and opens a chat in your terminal.", "code": "ollama run llama3.2\n\nollama list   # models you have downloaded\nollama ps     # models currently loaded" },
+        { "title": "Call it from code", "text": "Ollama serves an HTTP API on your machine, so any language can use it.", "code": "curl http://localhost:11434/api/generate -d '{\n  \"model\": \"llama3.2\",\n  \"prompt\": \"Why is the sky blue?\",\n  \"stream\": false\n}'" },
+        { "title": "Or use LM Studio", "text": "Install from lmstudio.ai, search for a model, pick a size your machine can handle (the app marks which will fit), and chat. The Developer tab starts a local server." },
+        { "title": "Run agents locally", "text": "Tools that speak the OpenAI API format can be pointed at your local server instead of the cloud. Choose a model trained for tool calling, and expect smaller models to be less reliable at multi-step agent work." }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "Which is a real advantage of running a model locally?", "options": ["It is always smarter than cloud models", "Your prompts and data stay on your machine", "It needs no hardware", "It updates itself with live news"], "answer": 1, "explain": "Privacy and offline use are the main reasons to go local." },
+          { "q": "What does `ollama run llama3.2` do the first time?", "options": ["Trains a new model", "Downloads the model, then starts a chat", "Uploads your files", "Opens a web browser"], "answer": 1, "explain": "It pulls the model file if needed, loads it into memory and starts an interactive session." },
+          { "q": "An app expects the OpenAI API. How can it use a local model?", "options": ["It cannot", "Point its base URL at the local server", "Rewrite the model in Python", "Buy a licence"], "answer": 1, "explain": "LM Studio and Ollama both offer OpenAI-compatible endpoints." }
+        ]
+      },
+      "challenge": {
+        "prompt": "Write a JavaScript `fetch` call that asks a local Ollama model called `llama3.2` to 'Explain DNS in one sentence' and logs the reply.",
+        "hint": "POST JSON to `http://localhost:11434/api/generate` with `stream: false`. The text comes back in the `response` field.",
+        "code": true,
+        "solution": "const res = await fetch('http://localhost:11434/api/generate', {\n  method: 'POST',\n  headers: { 'Content-Type': 'application/json' },\n  body: JSON.stringify({\n    model: 'llama3.2',\n    prompt: 'Explain DNS in one sentence',\n    stream: false,\n  }),\n})\nconst data = await res.json()\nconsole.log(data.response)"
+      },
+      "takeaways": [
+        "Open-weight models run on your own hardware: private, offline and with no per-token cost.",
+        "Ollama is command line and API first. LM Studio is a friendly desktop app.",
+        "Both expose local APIs, so existing tools can be pointed at them."
+      ]
+    },
+    {
+      "id": "hardware-requirements",
+      "title": "Hardware: what can your machine run?",
+      "level": "intermediate",
+      "minutes": 12,
+      "concept": {
+        "text": "The limit for local models is memory. A model's weights must fit in fast memory, ideally the **VRAM** on your graphics card. If they do not fit, the model spills into normal RAM and runs many times slower.\n\nModel size is measured in parameters, such as 8B for 8 billion. Quantization shrinks a model by storing each weight with fewer bits. A 4-bit version, often labelled Q4, is roughly a quarter of the full size with only a small loss in quality, which is why it is the usual choice.",
+        "analogy": "VRAM is the size of your workbench. A project that fits on the bench is quick to work on. If it does not fit, you keep fetching parts from the shed (system RAM or disk), and everything slows to a crawl. Quantization is buying a more compact version of the kit."
+      },
+      "visual": {
+        "type": "compare",
+        "caption": "Rough guide for 4-bit (Q4) models. Leave 1-2 GB spare for the context window.",
+        "columns": ["File size (Q4)", "Memory to aim for", "Typical hardware"],
+        "rows": [
+          ["1-4B parameters", "1-3 GB", "4-8 GB", "Most laptops, even without a GPU"],
+          ["7-9B", "4-6 GB", "8 GB VRAM", "Entry gaming GPU, or 16 GB Apple Silicon"],
+          ["12-14B", "7-9 GB", "12-16 GB VRAM", "Mid-range GPU, or 24 GB Apple Silicon"],
+          ["27-34B", "17-21 GB", "24 GB VRAM", "High-end GPU, or 32-48 GB Apple Silicon"],
+          ["70B+", "40 GB and up", "48 GB+", "Multiple GPUs, or 64 GB+ Apple Silicon"]
+        ]
+      },
+      "steps": [
+        { "title": "Estimate the size", "text": "Memory in GB ≈ parameters in billions × bits per weight ÷ 8, plus overhead. An 8B model at 4 bits is about 8 × 4 ÷ 8 = 4 GB, plus about 1 GB of overhead.", "code": "size_GB ≈ params_B × bits / 8  (+ ~20% overhead)" },
+        { "title": "Check your memory", "text": "On a PC, the graphics card's VRAM is what counts. Apple Silicon Macs share one memory pool between CPU and GPU, so most of the system RAM is usable." },
+        { "title": "Pick a quantization", "text": "Q4 is the common sweet spot. Q8 is closer to full quality at twice the size. Below Q4, quality drops noticeably." },
+        { "title": "Remember context costs memory", "text": "A bigger context window needs more memory on top of the weights. If a model slows down suddenly, it has probably spilled out of VRAM." }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "Roughly how much memory do the weights of a 12B model at 4-bit need?", "options": ["About 1.5 GB", "About 6 GB", "About 24 GB", "About 48 GB"], "answer": 1, "explain": "12 × 4 ÷ 8 = 6 GB, plus overhead." },
+          { "q": "What does quantization trade away?", "options": ["Privacy", "A little output quality, in exchange for much lower memory use", "Internet access", "The licence"], "answer": 1, "explain": "Fewer bits per weight means less precision but a far smaller model." },
+          { "q": "A model generates 40 tokens a second, then 2 a second after you raise the context length. Likely cause?", "options": ["The model got bored", "It no longer fits in VRAM and spilled into system RAM", "The internet is slow", "The disk is full"], "answer": 1, "explain": "Context uses memory too. Once past VRAM, speed collapses." }
+        ]
+      },
+      "challenge": {
+        "prompt": "You have a desktop PC with a 12 GB graphics card and 32 GB of RAM. Which model sizes can you run well, and what would you choose for (a) fast autocomplete-style help and (b) the best quality you can manage?",
+        "hint": "Use the formula with 4-bit weights and leave headroom for the context.",
+        "solution": "With 12 GB of VRAM you can comfortably run models up to about **12-14B at Q4** (7-9 GB), with room left for context.\n\n(a) For speed, choose a **3-8B** model: it fits with plenty of spare memory and responds quickly.\n\n(b) For quality, choose a **12-14B Q4** model. A 30B model (about 18 GB) would not fit and would spill into system RAM. It would run, since you have 32 GB, but slowly."
+      },
+      "takeaways": [
+        "Memory, especially VRAM, decides which models you can run.",
+        "Size in GB ≈ billions of parameters × bits ÷ 8. Q4 is the usual choice.",
+        "If the model does not fit in VRAM, it still runs but far more slowly."
+      ]
+    }
+  ]
+}

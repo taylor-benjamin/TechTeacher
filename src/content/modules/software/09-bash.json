@@ -1,0 +1,140 @@
+{
+  "tab": "software",
+  "id": "bash",
+  "order": 9,
+  "title": "Bash",
+  "summary": "Drive a computer from the command line: navigate, combine commands with pipes, and write scripts.",
+  "lessons": [
+    {
+      "id": "syntax-basics",
+      "title": "Bash: navigating and managing files",
+      "level": "beginner",
+      "minutes": 10,
+      "concept": {
+        "text": "Bash is a **shell**: a program that reads commands you type and runs them. It is the default way to control Linux servers, cloud machines and most developer tools.\n\nA command is a program name followed by options (starting with `-`) and arguments. `ls -a logs` means: run `ls`, with the option `a`, on the folder `logs`.",
+        "analogy": "A graphical desktop is ordering by pointing at pictures on a menu. The shell is speaking the language: harder at first, but you can ask for exactly what you want, and ask for it a thousand times in a row."
+      },
+      "visual": {
+        "type": "cards",
+        "caption": "Ten commands that cover most daily work.",
+        "items": [
+          { "title": "pwd", "text": "Print the folder you are in" },
+          { "title": "ls", "text": "List files (-a shows hidden)" },
+          { "title": "cd dir", "text": "Change folder (cd .. goes up)" },
+          { "title": "mkdir dir", "text": "Make a folder" },
+          { "title": "touch file", "text": "Create an empty file" },
+          { "title": "cat file", "text": "Print a file's contents" },
+          { "title": "cp a b", "text": "Copy a to b" },
+          { "title": "mv a b", "text": "Move or rename" },
+          { "title": "rm file", "text": "Delete. There is no recycle bin!" }
+        ]
+      },
+      "steps": [
+        { "title": "Find out where you are", "text": "Every shell has a current folder. Paths that do not start with `/` are relative to it.", "code": "pwd\nls" },
+        { "title": "Move around", "text": "`cd logs` goes down into logs. `cd ..` goes up. `cd` alone goes home.", "code": "cd logs\npwd\ncd .." },
+        { "title": "Create and inspect", "text": "Make a folder, create a file in it, and read a file.", "code": "mkdir projects\ntouch projects/todo.txt\ncat notes.txt" },
+        { "title": "Copy, rename, delete", "text": "Be careful with `rm`: deleted files are gone for good.", "code": "cp notes.txt backup.txt\nmv backup.txt old-notes.txt\nrm old-notes.txt" }
+      ],
+      "interactive": {
+        "type": "code",
+        "language": "bash",
+        "starter": "pwd\nls\n\ncat notes.txt\n\nmkdir projects\ntouch projects/todo.txt\ncp notes.txt projects/notes-copy.txt\nls projects\n\ncd logs\npwd\nls\n"
+      },
+      "challenge": {
+        "prompt": "Create a folder called `archive`, move `notes.txt` into it renamed as `notes-2024.txt`, then list the `archive` folder to prove it worked.",
+        "hint": "`mv` both moves and renames: `mv source destination/newname`.",
+        "language": "bash",
+        "starter": "# your commands here\n",
+        "solution": "mkdir archive\nmv notes.txt archive/notes-2024.txt\nls archive"
+      },
+      "takeaways": [
+        "A command is a program name, options and arguments.",
+        "pwd, ls and cd let you navigate. mkdir, touch, cp, mv and rm manage files.",
+        "rm is permanent. Check with ls before you delete."
+      ]
+    },
+    {
+      "id": "core-concepts",
+      "title": "Bash: pipes, redirects, variables and loops",
+      "level": "intermediate",
+      "minutes": 14,
+      "concept": {
+        "text": "The shell's superpower is combining small tools. A **pipe** (`|`) sends one command's output into the next command's input. A **redirect** (`>`) sends output into a file instead of the screen.\n\nAdd variables and loops, and a few lines can process thousands of files.",
+        "analogy": "Each command is a single Lego brick that does one thing. The pipe is the stud that snaps bricks together into a machine."
+      },
+      "visual": {
+        "type": "flow",
+        "caption": "A pipeline: each command transforms the stream of text.",
+        "nodes": [
+          { "label": "cat logs/app.log", "detail": "Emit every line" },
+          { "label": "| grep ERROR", "detail": "Keep lines containing ERROR" },
+          { "label": "| sort", "detail": "Alphabetical order" },
+          { "label": "> errors.txt", "detail": "Save to a file" }
+        ]
+      },
+      "steps": [
+        { "title": "Search with grep", "text": "`grep` prints the lines that match a pattern. `-c` counts them and `-i` ignores case.", "code": "grep ERROR logs/app.log\ngrep -c INFO logs/app.log" },
+        { "title": "Pipe commands together", "text": "Count the lines in a file by piping `cat` into `wc -l`.", "code": "cat notes.txt | wc -l" },
+        { "title": "Redirect to a file", "text": "`>` overwrites the file and `>>` appends to it.", "code": "echo \"first line\" > out.txt\necho \"second line\" >> out.txt" },
+        { "title": "Variables and loops", "text": "No spaces around `=`. Read a variable with `$`. `$(...)` captures a command's output.", "code": "NAME=\"world\"\necho \"Hello, $NAME\"\nfor f in notes.txt logs/app.log; do\n  echo \"$f has $(cat $f | wc -l) lines\"\ndone" }
+      ],
+      "interactive": {
+        "type": "code",
+        "language": "bash",
+        "starter": "grep ERROR logs/app.log\n\ncat logs/app.log | grep INFO | wc -l\n\ngrep ERROR logs/app.log | sort > errors.txt\ncat errors.txt\n\nNAME=\"learner\"\necho \"Hello, $NAME. You are in $(pwd)\"\n\nfor f in notes.txt logs/app.log; do\n  echo \"$f has $(cat $f | wc -l) lines\"\ndone\n"
+      },
+      "challenge": {
+        "prompt": "Write one pipeline that prints the **last** line of `notes.txt` when its lines are sorted alphabetically.",
+        "hint": "`sort` then `tail -n 1`.",
+        "language": "bash",
+        "starter": "# one line\n",
+        "solution": "sort notes.txt | tail -n 1\n# ship project"
+      },
+      "takeaways": [
+        "A pipe | feeds one command's output to the next.",
+        "> writes output to a file and >> appends.",
+        "Variables, $(...) and for loops turn commands into automation."
+      ]
+    },
+    {
+      "id": "mini-project",
+      "title": "Bash mini project: a log report script",
+      "level": "intermediate",
+      "minutes": 15,
+      "concept": {
+        "text": "System administrators live in log files. You will write a script that summarises a log: how many lines, how many errors, and a warning if errors pass a threshold. Scripts like this get scheduled to run every few minutes on real servers.",
+        "analogy": "The script is a night watchman with a checklist. It walks the same route every time, counts what it sees, and only wakes you if something is wrong."
+      },
+      "visual": {
+        "type": "flow",
+        "nodes": [
+          { "label": "Read the log", "detail": "logs/app.log" },
+          { "label": "Count", "detail": "wc -l and grep -c" },
+          { "label": "Save errors", "detail": "> report.txt" },
+          { "label": "Decide", "detail": "if errors > limit, alert" }
+        ]
+      },
+      "steps": [
+        { "title": "Start with a shebang", "text": "The first line of a real script tells the system which shell runs it. Make the file executable with `chmod +x report.sh`, then run `./report.sh`.", "code": "#!/bin/bash" },
+        { "title": "Capture counts in variables", "text": "`$(...)` stores a command's output." },
+        { "title": "Test a condition", "text": "`[ a -gt b ]` is true when a is greater than b. The spaces inside the brackets are required.", "code": "if [ $ERRORS -gt 1 ]; then\n  echo \"ALERT\"\nelse\n  echo \"OK\"\nfi" }
+      ],
+      "interactive": {
+        "type": "code",
+        "language": "bash",
+        "starter": "LOG=logs/app.log\nLIMIT=1\n\nTOTAL=$(cat $LOG | wc -l)\nERRORS=$(grep -c ERROR $LOG)\n\necho \"Log: $LOG\"\necho \"Lines: $TOTAL\"\necho \"Errors: $ERRORS\"\n\ngrep ERROR $LOG > report.txt\necho \"--- report.txt ---\"\ncat report.txt\n\nif [ $ERRORS -gt $LIMIT ]; then\n  echo \"ALERT: more than $LIMIT error(s)\"\nelse\n  echo \"All good\"\nfi\n"
+      },
+      "challenge": {
+        "prompt": "Extend the script to also print the percentage of lines that are errors, for example `Error rate: 40%`.",
+        "hint": "Bash arithmetic uses `$(( ))`. Multiply before dividing because Bash only does whole numbers: `$((ERRORS * 100 / TOTAL))`.",
+        "code": true,
+        "solution": "RATE=$((ERRORS * 100 / TOTAL))\necho \"Error rate: $RATE%\""
+      },
+      "takeaways": [
+        "A script is a file of commands, starting with #!/bin/bash.",
+        "$(command) captures output and $((math)) does integer arithmetic.",
+        "if [ ... ] tests conditions: -gt, -lt and -eq compare numbers."
+      ]
+    }
+  ]
+}

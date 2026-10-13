@@ -1,0 +1,225 @@
+{
+  "tab": "ai",
+  "id": "how-ai-works",
+  "order": 1,
+  "title": "How AI Works",
+  "summary": "Neural networks, training, tokens, embeddings, attention and transformers, from the ground up.",
+  "lessons": [
+    {
+      "id": "neural-networks",
+      "title": "Neural networks: learning from examples",
+      "level": "beginner",
+      "minutes": 14,
+      "concept": {
+        "text": "Traditional software follows rules a programmer wrote. A neural network learns its own rules from examples. It is built from simple units called **neurons**, arranged in layers. Each connection between neurons has a weight: a number that says how strongly one neuron influences the next.\n\nA neuron multiplies each input by its weight, adds them up, and passes the total through an **activation function** that decides how strongly it fires. Stack enough of these and the network can represent remarkably complex patterns. Nobody types in the weights. They start random and are adjusted, a little at a time, until the outputs match the examples.",
+        "analogy": "Picture a huge mixing desk with thousands of volume sliders. At first the sliders are set randomly and the music sounds terrible. Training is nudging each slider slightly, over and over, until the song sounds right. The sliders are the weights."
+      },
+      "visual": {
+        "type": "flow",
+        "caption": "What a single neuron computes.",
+        "nodes": [
+          { "label": "Inputs", "detail": "x1 = 1, x2 = 0" },
+          { "label": "× weights", "detail": "1 × 0.8 + 0 × -0.4" },
+          { "label": "+ bias", "detail": "0.8 + 0.1 = 0.9" },
+          { "label": "Activation", "detail": "squash 0.9 into a range" },
+          { "label": "Output", "detail": "0.71, passed to the next layer" }
+        ]
+      },
+      "steps": [
+        { "title": "Data flows forward", "text": "Inputs enter on the left. Each layer transforms them and hands the result to the next. The final layer produces the prediction. This is the **forward pass**." },
+        { "title": "Measure the error", "text": "A **loss function** compares the prediction with the right answer and produces one number: how wrong the network was. Lower is better." },
+        { "title": "Adjust the weights", "text": "The network works out which weights contributed to the error and nudges each one to reduce it. Repeat thousands of times." },
+        { "title": "Why hidden layers matter", "text": "One neuron can only draw a straight dividing line. XOR (output 1 when exactly one input is 1) cannot be split by one line, so it needs a hidden layer. Try it below: AND and OR learn quickly, and XOR takes longer." }
+      ],
+      "interactive": { "type": "neural-net" },
+      "challenge": {
+        "prompt": "Using the visualizer: reset the weights, choose **XOR**, and train until all four rows show a tick. Then set the learning rate to 2 and reset and train again. What changes, and why?",
+        "hint": "The learning rate is the size of each nudge. Watch whether the loss falls smoothly or jumps around.",
+        "solution": "With a moderate rate (about 0.5) the loss falls steadily and XOR is usually solved within a few hundred steps. With a very high rate each nudge is so large that the network can **overshoot**, so the loss may bounce or get stuck. Too low a rate, on the other hand, learns very slowly. Choosing the learning rate is one of the most important decisions in training, and different random starting weights give different runs, which is why Reset changes the result."
+      },
+      "takeaways": [
+        "A neural network is layers of simple units connected by adjustable weights.",
+        "It learns by repeatedly predicting, measuring error, and nudging weights to reduce that error.",
+        "Hidden layers let networks learn patterns, such as XOR, that a single neuron cannot."
+      ]
+    },
+    {
+      "id": "training",
+      "title": "Training: gradient descent and backpropagation",
+      "level": "intermediate",
+      "minutes": 12,
+      "concept": {
+        "text": "Training means finding weights that make the loss small. The method is gradient descent: work out which direction is downhill for each weight, take a small step, and repeat.\n\nThe direction comes from backpropagation, which passes the error backward through the network using the chain rule from calculus, assigning each weight its share of the blame. Data is fed in small **batches**, and one full pass over the dataset is an **epoch**.",
+        "analogy": "You are on a foggy mountain and want to reach the valley. You cannot see far, so you feel the slope under your feet and step downhill. Step size is the learning rate: too big and you leap over the valley, too small and you are still walking at midnight."
+      },
+      "visual": {
+        "type": "flow",
+        "caption": "The training loop, repeated millions of times.",
+        "nodes": [
+          { "label": "Forward pass", "detail": "Predict from a batch" },
+          { "label": "Loss", "detail": "How wrong was it?" },
+          { "label": "Backpropagation", "detail": "Blame each weight" },
+          { "label": "Update", "detail": "weight -= rate × gradient" }
+        ]
+      },
+      "steps": [
+        { "title": "Split your data", "text": "Keep a **training set** to learn from, a **validation set** to tune settings, and a **test set** you touch only once at the end." },
+        { "title": "Watch two losses", "text": "Training loss should fall. If validation loss starts rising while training loss keeps falling, the model is **overfitting**: memorising examples instead of learning the pattern." },
+        { "title": "Fight overfitting", "text": "Use more data, a smaller model, dropout, or stop training early when validation loss stops improving." },
+        { "title": "Scale up", "text": "The update rule is the same for a 9-weight toy and a model with billions of weights. What changes is the hardware: GPUs do the matrix maths in parallel.", "code": "for batch in data:\n    prediction = model(batch.inputs)\n    loss = loss_fn(prediction, batch.targets)\n    loss.backward()        # backpropagation\n    optimizer.step()       # nudge the weights\n    optimizer.zero_grad()" }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "Training loss keeps dropping but validation loss is climbing. What is happening?", "options": ["Underfitting", "Overfitting", "The learning rate is zero", "Perfect training"], "answer": 1, "explain": "The model is memorising the training set and getting worse on unseen data." },
+          { "q": "What does backpropagation compute?", "options": ["The final prediction", "How much each weight contributed to the error", "The size of the dataset", "The number of layers needed"], "answer": 1, "explain": "It produces the gradient: the direction to move each weight." },
+          { "q": "Why is the test set only used once, at the end?", "options": ["It is too large", "So it stays an honest measure on truly unseen data", "It contains errors", "GPUs cannot read it"], "answer": 1, "explain": "If you tune against the test set, you are indirectly training on it." }
+        ]
+      },
+      "challenge": {
+        "prompt": "A model scores 99% accuracy on its training data and 61% on new data. Name the problem and give three different ways to reduce it.",
+        "hint": "The gap between the two numbers is the clue.",
+        "solution": "This is **overfitting**. Fixes: (1) gather more or more varied training data, or use data augmentation; (2) reduce model capacity or add regularisation such as dropout or weight decay; (3) use early stopping, ending training when validation loss stops improving."
+      },
+      "takeaways": [
+        "Gradient descent nudges weights downhill on the loss, and backpropagation supplies the direction.",
+        "The learning rate sets the step size and is critical to get right.",
+        "Overfitting shows up as a gap between training and validation performance."
+      ]
+    },
+    {
+      "id": "tokens",
+      "title": "Tokens: how models read text",
+      "level": "beginner",
+      "minutes": 10,
+      "concept": {
+        "text": "Neural networks work on numbers, not letters. Before a language model sees your text, a **tokenizer** chops it into pieces called tokens and replaces each with an ID number from a fixed vocabulary.\n\nA token is often a whole short word, but longer or rarer words are split into pieces. In English, one token averages about four characters, or roughly three quarters of a word. Tokens matter because models have a maximum context window measured in tokens, and API pricing is per token.",
+        "analogy": "Tokenizing is like spelling with Scrabble tiles when some tiles hold whole common words. 'The' is one tile. 'Unbelievably' needs several: un + believ + ably. The model only ever sees the tile numbers."
+      },
+      "visual": {
+        "type": "flow",
+        "caption": "From your text to the numbers a model receives.",
+        "nodes": [
+          { "label": "Text", "detail": "\"unbelievable!\"" },
+          { "label": "Split into tokens", "detail": "un | believ | able | !" },
+          { "label": "Look up IDs", "detail": "403, 31019, 481, 0" },
+          { "label": "Model", "detail": "Predicts the next ID" },
+          { "label": "Decode", "detail": "IDs back into text" }
+        ]
+      },
+      "steps": [
+        { "title": "Build a vocabulary", "text": "Algorithms such as Byte Pair Encoding (BPE) start from single characters and repeatedly merge the most frequent neighbouring pair. Common words become single tokens, and anything else can still be spelled from smaller pieces." },
+        { "title": "Spaces count", "text": "The space before a word is usually part of the token, so ' cat' and 'cat' are different tokens." },
+        { "title": "Estimate cost and limits", "text": "Rule of thumb for English: tokens ≈ words × 1.3. A 1,000-word essay is about 1,300 tokens. Code, numbers and non-English text use more tokens per character." },
+        { "title": "See the quirks", "text": "Because a model sees token pieces, not letters, tasks such as counting the letters in a word or doing long arithmetic are surprisingly hard for it." }
+      ],
+      "interactive": { "type": "tokenizer" },
+      "challenge": {
+        "prompt": "In the tokenizer demo, compare the characters-per-token figure for: (a) a simple sentence of short everyday words, (b) a sentence full of long technical words, (c) a long number such as 31415926535. Which is most token-efficient, and what does that imply for prompts?",
+        "hint": "Type each one separately and read the 'Characters per token' value.",
+        "solution": "Short common words are the most efficient, because each is a single token. Long or rare words split into several pieces, and long numbers split into chunks of a few digits, so they cost more tokens per character. The implication: prompts in plain language are cheaper, and data-heavy content such as IDs, numbers, code and tables uses up the context window faster than its length suggests."
+      },
+      "takeaways": [
+        "Models read and write tokens: word pieces mapped to ID numbers.",
+        "Roughly 4 characters or 0.75 words per token in English.",
+        "Context limits and pricing are both measured in tokens."
+      ]
+    },
+    {
+      "id": "embeddings",
+      "title": "Embeddings: meaning as numbers",
+      "level": "intermediate",
+      "minutes": 10,
+      "concept": {
+        "text": "A token ID is just a label: ID 5,000 is not 'close' to ID 5,001 in meaning. So the first thing a model does is swap each ID for an embedding: a long list of numbers (a vector) that places the token as a point in space.\n\nTraining arranges that space so that things used in similar ways end up near each other. 'Cat' sits near 'kitten' and far from 'carburettor'. Whole sentences and documents can be embedded too, which powers semantic search: finding text by meaning instead of exact words.",
+        "analogy": "Embeddings are map coordinates for meaning. Paris and Lyon have nearby coordinates because they are physically close. 'Happy' and 'joyful' have nearby coordinates because they are close in meaning."
+      },
+      "visual": {
+        "type": "cards",
+        "caption": "A toy 2-number embedding: (animal-ness, size). Real ones have hundreds or thousands of dimensions.",
+        "items": [
+          { "title": "kitten  (0.9, 0.1)", "text": "Very animal, very small" },
+          { "title": "cat  (0.9, 0.2)", "text": "Right next to kitten" },
+          { "title": "elephant  (0.9, 0.95)", "text": "Animal, but far away on size" },
+          { "title": "pebble  (0.0, 0.1)", "text": "Small like a kitten, but not an animal" },
+          { "title": "mountain  (0.0, 1.0)", "text": "Far from kitten in both directions" }
+        ]
+      },
+      "steps": [
+        { "title": "Turn text into a vector", "text": "An embedding model maps any text to a fixed-length list of numbers.", "code": "embed(\"How do I reset my password?\")\n# [0.021, -0.403, 0.118, ... ]  (e.g. 1,536 numbers)" },
+        { "title": "Measure closeness", "text": "**Cosine similarity** compares the direction of two vectors: about 1 means same meaning, about 0 means unrelated." },
+        { "title": "Search by meaning", "text": "Embed every document once and store the vectors. To search, embed the question and return the nearest vectors. 'Forgot my login' finds the password-reset article with no shared keywords." },
+        { "title": "Store at scale", "text": "A **vector database** (pgvector, Pinecone, Chroma, Qdrant) finds nearest neighbours quickly among millions of vectors." }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "Which pair should have the most similar embeddings?", "options": ["'bank' and 'banana'", "'doctor' and 'physician'", "'run' and 'rune'", "'cat' and 'category'"], "answer": 1, "explain": "Embeddings capture meaning, not spelling. Doctor and physician are near-synonyms." },
+          { "q": "Using the toy vectors above, which is closest to 'cat' (0.9, 0.2)?", "options": ["elephant (0.9, 0.95)", "pebble (0.0, 0.1)", "kitten (0.9, 0.1)", "mountain (0.0, 1.0)"], "answer": 2, "explain": "Kitten differs by only 0.1 in one dimension." },
+          { "q": "Why can semantic search find a document that shares no words with the query?", "options": ["It guesses randomly", "It compares meaning vectors rather than matching text", "It translates everything to Latin", "It only works with identical words"], "answer": 1, "explain": "Similar meanings produce nearby vectors even with different wording." }
+        ]
+      },
+      "challenge": {
+        "prompt": "A support site has 5,000 help articles. Users type questions in their own words and keyword search keeps failing. Outline, in four steps, how you would build meaning-based search with embeddings.",
+        "hint": "Some work happens once in advance, and some happens for every query.",
+        "solution": "1. **Chunk** each article into passages of a few paragraphs.\n\n2. **Embed** every chunk with an embedding model and store the vectors in a vector database, with a link back to the source article. This is done once, and again whenever an article changes.\n\n3. At query time, **embed the user's question** with the same model.\n\n4. **Retrieve** the nearest vectors by cosine similarity and show those articles. This is also the retrieval half of RAG."
+      },
+      "takeaways": [
+        "An embedding is a vector that represents meaning.",
+        "Similar meaning means nearby vectors, measured with cosine similarity.",
+        "Embeddings power semantic search, recommendations and RAG."
+      ]
+    },
+    {
+      "id": "transformers-attention",
+      "title": "Transformers and attention",
+      "level": "advanced",
+      "minutes": 14,
+      "concept": {
+        "text": "The transformer is the architecture behind every modern language model. Its key idea is attention: when processing a token, the model looks at every other token in the context and decides how much each one matters right now.\n\nIn 'The trophy didn't fit in the suitcase because **it** was too big', attention lets 'it' draw information from 'trophy'. Older designs read text one word at a time and forgot distant words. Attention connects any two positions directly, and all positions can be computed in parallel, which is what made training on internet-scale text practical.",
+        "analogy": "Attention is a meeting where, before speaking, each person glances round the table and listens most closely to whoever is most relevant to their point. Every word does this with every other word, in every layer."
+      },
+      "visual": {
+        "type": "layers",
+        "caption": "One trip through a transformer (decoder-only, like GPT-style models). The middle block repeats dozens of times.",
+        "layers": [
+          { "name": "Tokens", "detail": "Text split into token IDs", "tag": "input" },
+          { "name": "Embedding + position", "detail": "Each ID becomes a vector, plus information about where it sits in the sequence" },
+          { "name": "Self-attention", "detail": "Each token gathers information from the tokens before it", "tag": "× N layers" },
+          { "name": "Feed-forward network", "detail": "Each token's vector is processed and refined", "tag": "× N layers" },
+          { "name": "Output scores", "detail": "A score for every token in the vocabulary" },
+          { "name": "Sample next token", "detail": "Pick one, append it, and run again", "tag": "output" }
+        ]
+      },
+      "steps": [
+        { "title": "Query, key, value", "text": "Each token produces a **query** (what am I looking for?), a **key** (what do I contain?) and a **value** (what I will pass on). A token's query is compared with every key to get attention scores." },
+        { "title": "Weighted mix", "text": "Scores are turned into percentages with softmax. The token's new vector is the weighted mix of the values.", "code": "Attention(Q, K, V) = softmax(Q · Kᵀ / √d) · V" },
+        { "title": "Many heads", "text": "**Multi-head attention** runs several attention patterns in parallel. One head might track grammar, another which noun a pronoun refers to." },
+        { "title": "Stack and repeat", "text": "Dozens of layers of attention plus feed-forward networks build up from syntax to meaning to reasoning. Generation is a loop: predict one token, append it, and run again." }
+      ],
+      "interactive": {
+        "type": "order",
+        "prompt": "Order the stages a prompt passes through inside a transformer.",
+        "items": [
+          "Text is split into tokens",
+          "Each token ID is replaced by an embedding vector",
+          "Position information is added",
+          "Self-attention mixes in context from other tokens",
+          "A feed-forward network refines each token's vector",
+          "The final vector is turned into scores for every possible next token",
+          "One token is sampled and appended to the text"
+        ]
+      },
+      "challenge": {
+        "prompt": "In the sentence 'The animal didn't cross the street because it was too tired', which word should 'it' attend to most? What if 'tired' were replaced with 'wide'? What does this show about attention?",
+        "hint": "Ask what could sensibly be tired, and what could sensibly be wide.",
+        "solution": "With 'tired', 'it' should attend to **animal**. With 'wide', 'it' should attend to **street**. The words around a token change which earlier token is relevant, so attention weights cannot be fixed rules. They are computed fresh from the content of each sentence, which is exactly what the query-key comparison does."
+      },
+      "takeaways": [
+        "Attention lets each token pull in information from any other token in the context.",
+        "Transformers stack attention and feed-forward layers and process all positions in parallel.",
+        "Text generation is a loop: predict the next token, append it, repeat."
+      ]
+    }
+  ]
+}

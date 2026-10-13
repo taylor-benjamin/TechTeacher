@@ -1,0 +1,137 @@
+{
+  "tab": "software",
+  "id": "nodejs",
+  "order": 5,
+  "title": "Node.js",
+  "summary": "JavaScript outside the browser: servers, scripts, npm and the event loop.",
+  "lessons": [
+    {
+      "id": "syntax-basics",
+      "title": "Node.js: running JavaScript outside the browser",
+      "level": "beginner",
+      "minutes": 10,
+      "concept": {
+        "text": "Node.js is a program that runs JavaScript on your computer or a server instead of inside a web page. It adds abilities browsers forbid, such as reading files and listening for network connections.\n\nNode code is organised into **modules** (files that export things) and **packages** (other people's modules, installed with npm).",
+        "analogy": "JavaScript in a browser is a chef working a food truck: limited tools, strict safety rules. Node.js moves the same chef into a full restaurant kitchen with access to the pantry (files) and the delivery door (network)."
+      },
+      "visual": {
+        "type": "compare",
+        "columns": ["Browser JavaScript", "Node.js"],
+        "rows": [
+          ["Runs in", "A web page", "Your terminal or a server"],
+          ["Can touch", "The page (DOM), fetch", "Files, network, processes, databases"],
+          ["Global object", "window", "globalThis / process"],
+          ["Get code from others", "Script tags, bundlers", "npm install"],
+          ["Typical use", "Interactive UI", "APIs, CLIs, build tools"]
+        ]
+      },
+      "steps": [
+        { "title": "Run a file", "text": "Install Node from nodejs.org, save code in a file, and run it from a terminal.", "code": "node hello.js" },
+        { "title": "Export and import", "text": "One file exports, another imports. This is the modern ES module syntax.", "code": "// math.js\nexport const add = (a, b) => a + b\n\n// app.js\nimport { add } from './math.js'\nconsole.log(add(2, 3))" },
+        { "title": "Use npm", "text": "`npm init -y` creates package.json, the project's manifest. `npm install` adds packages and records them there.", "code": "npm init -y\nnpm install chalk" },
+        { "title": "Use built-in modules", "text": "Node ships with modules for files, paths, HTTP and more. Prefix them with `node:`.", "code": "import { readFile } from 'node:fs/promises'\nconst text = await readFile('notes.txt', 'utf8')" }
+      ],
+      "interactive": {
+        "type": "code",
+        "language": "node",
+        "starter": "// The language is identical to browser JavaScript.\nconst add = (a, b) => a + b\nconst greet = (name) => `Hello from Node, ${name}!`\n\nconsole.log(greet('Ava'))\nconsole.log('2 + 3 =', add(2, 3))\n\n// A package.json is just JSON describing your project:\nconst pkg = { name: 'my-app', version: '1.0.0', type: 'module', dependencies: { chalk: '^5.3.0' } }\nconsole.log(Object.keys(pkg.dependencies))\n"
+      },
+      "challenge": {
+        "prompt": "Write the two files for a tiny project: `temperature.js` exports `toF(c)` and `toC(f)`, and `app.js` imports both and prints 100°C in Fahrenheit and 32°F in Celsius.",
+        "hint": "F = C × 9/5 + 32. Use `export const` in one file and `import { toF, toC } from './temperature.js'` in the other.",
+        "code": true,
+        "solution": "// temperature.js\nexport const toF = (c) => (c * 9) / 5 + 32\nexport const toC = (f) => ((f - 32) * 5) / 9\n\n// app.js\nimport { toF, toC } from './temperature.js'\nconsole.log(toF(100)) // 212\nconsole.log(toC(32))  // 0"
+      },
+      "takeaways": [
+        "Node.js runs JavaScript outside the browser with access to files and the network.",
+        "Modules split code across files with export and import.",
+        "npm installs packages and package.json records what your project needs."
+      ]
+    },
+    {
+      "id": "core-concepts",
+      "title": "Node.js: the event loop and a web server",
+      "level": "intermediate",
+      "minutes": 14,
+      "concept": {
+        "text": "Node runs your JavaScript on a single thread, yet it can serve thousands of connections. The trick is the **event loop**: slow work (network, disk) is handed off, and Node keeps running other code. When the slow work finishes, its callback joins a queue and runs when the thread is free.\n\nThis is why Node code is full of `async` and `await`, and why you must never block the thread with a long calculation.",
+        "analogy": "The event loop is one very fast waiter. They take an order, pass it to the kitchen, and immediately serve another table instead of standing at the stove. When a dish is ready, the kitchen rings a bell and the waiter delivers it."
+      },
+      "visual": {
+        "type": "flow",
+        "caption": "One turn of the event loop.",
+        "nodes": [
+          { "label": "Run current code", "detail": "Until the call stack is empty" },
+          { "label": "Microtasks", "detail": "Resolved promises run first" },
+          { "label": "Timers", "detail": "setTimeout callbacks that are due" },
+          { "label": "I/O callbacks", "detail": "Finished network and file work" },
+          { "label": "Repeat", "detail": "Forever, while work remains" }
+        ]
+      },
+      "steps": [
+        { "title": "Predict the order", "text": "Synchronous code runs first, then promise callbacks (microtasks), then timers, even a timer of 0 ms." },
+        { "title": "Create a server", "text": "This callback runs once per request. Node is not blocked while waiting for the next one.", "code": "import { createServer } from 'node:http'\n\ncreateServer((req, res) => {\n  res.writeHead(200, { 'Content-Type': 'application/json' })\n  res.end(JSON.stringify({ path: req.url, ok: true }))\n}).listen(3000)\n\nconsole.log('http://localhost:3000')" },
+        { "title": "Use a framework for real apps", "text": "Express (or Fastify, Hono) adds routing so you can map methods and paths to handlers.", "code": "import express from 'express'\nconst app = express()\napp.get('/users/:id', (req, res) => res.json({ id: req.params.id }))\napp.listen(3000)" },
+        { "title": "Handle errors", "text": "Wrap awaited calls in try/catch and return a proper status code such as 500 instead of crashing." }
+      ],
+      "interactive": {
+        "type": "code",
+        "language": "node",
+        "starter": "// Before you press Run: what order will these print in?\nconsole.log('1. start')\n\nsetTimeout(() => console.log('4. timer (0 ms)'), 0)\n\nPromise.resolve().then(() => console.log('3. promise'))\n\nconsole.log('2. end of script')\n"
+      },
+      "challenge": {
+        "prompt": "Write an async function `fetchAll(urls)` that requests every URL **at the same time** and returns the parsed JSON results in order. Test it with two JSONPlaceholder user URLs.",
+        "hint": "`Promise.all(array.map(async ...))` starts everything at once and waits for all of them.",
+        "language": "node",
+        "starter": "async function fetchAll(urls) {\n  // your code here\n}\n\nconst base = 'https://jsonplaceholder.typicode.com/users/'\nconst users = await fetchAll([base + 1, base + 2])\nconsole.log(users.map((u) => u.name))\n",
+        "solution": "async function fetchAll(urls) {\n  return Promise.all(urls.map(async (url) => (await fetch(url)).json()))\n}\n\nconst base = 'https://jsonplaceholder.typicode.com/users/'\nconst users = await fetchAll([base + 1, base + 2])\nconsole.log(users.map((u) => u.name))"
+      },
+      "takeaways": [
+        "Node is single-threaded but non-blocking thanks to the event loop.",
+        "Order of execution: synchronous code, then promises, then timers and I/O.",
+        "Promise.all runs independent async work concurrently."
+      ]
+    },
+    {
+      "id": "mini-project",
+      "title": "Node.js mini project: a REST API in memory",
+      "level": "intermediate",
+      "minutes": 16,
+      "concept": {
+        "text": "You will design the core of a REST API for notes: a router that maps a method and path to a handler, backed by an in-memory array. This is exactly what Express does for you, so building a tiny version removes the mystery.",
+        "analogy": "A router is a hotel switchboard. A call comes in for a room (method + path) and the operator connects it to the right guest (handler function)."
+      },
+      "visual": {
+        "type": "sequence",
+        "actors": ["Client", "Router", "Handler"],
+        "messages": [
+          { "from": 0, "to": 1, "label": "POST /notes {text}" },
+          { "from": 1, "to": 2, "label": "createNote(body)" },
+          { "from": 2, "to": 1, "label": "{ status: 201, body }" },
+          { "from": 1, "to": 0, "label": "201 Created" }
+        ]
+      },
+      "steps": [
+        { "title": "Store the data", "text": "An array of note objects stands in for a database." },
+        { "title": "Write handlers", "text": "Each handler takes the request and returns a status and a body. Unknown ids return 404." },
+        { "title": "Route requests", "text": "Match the method and path, pull the id out of the path, and call the right handler. In a real server you would wire this function into `createServer`." }
+      ],
+      "interactive": {
+        "type": "code",
+        "language": "node",
+        "starter": "let notes = [{ id: 1, text: 'Learn Node' }]\nlet nextId = 2\n\nfunction handle(method, path, body) {\n  const [, resource, id] = path.split('/')\n  if (resource !== 'notes') return { status: 404, body: { error: 'Not found' } }\n\n  if (method === 'GET' && !id) return { status: 200, body: notes }\n  if (method === 'POST') {\n    const note = { id: nextId++, text: body.text }\n    notes.push(note)\n    return { status: 201, body: note }\n  }\n  const note = notes.find((n) => n.id === Number(id))\n  if (!note) return { status: 404, body: { error: 'No such note' } }\n  if (method === 'GET') return { status: 200, body: note }\n  if (method === 'DELETE') {\n    notes = notes.filter((n) => n !== note)\n    return { status: 204, body: null }\n  }\n  return { status: 405, body: { error: 'Method not allowed' } }\n}\n\nconsole.log(handle('POST', '/notes', { text: 'Build an API' }))\nconsole.log(handle('GET', '/notes'))\nconsole.log(handle('DELETE', '/notes/1'))\nconsole.log(handle('GET', '/notes/1'))\n"
+      },
+      "challenge": {
+        "prompt": "Add support for `PATCH /notes/:id` that updates a note's text and returns 200 with the updated note. Return 400 if the body has no `text`.",
+        "hint": "Add the branch after the note is found. `Object.assign(note, { text: body.text })` updates it in place.",
+        "code": true,
+        "solution": "if (method === 'PATCH') {\n  if (!body?.text) return { status: 400, body: { error: 'text is required' } }\n  note.text = body.text\n  return { status: 200, body: note }\n}"
+      },
+      "takeaways": [
+        "A REST API is a router plus handlers plus a data store.",
+        "Return accurate status codes: 201 created, 204 deleted, 400 bad input, 404 missing.",
+        "Frameworks like Express automate the routing you just wrote by hand."
+      ]
+    }
+  ]
+}

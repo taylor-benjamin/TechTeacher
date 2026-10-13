@@ -1,0 +1,247 @@
+{
+  "tab": "ai",
+  "id": "llms",
+  "order": 2,
+  "title": "Working with LLMs",
+  "summary": "How large language models behave, and how to steer them with prompts, RAG, fine-tuning and tools.",
+  "lessons": [
+    {
+      "id": "how-llms-work",
+      "title": "What an LLM is and is not",
+      "level": "beginner",
+      "minutes": 10,
+      "concept": {
+        "text": "An LLM is a transformer trained on an enormous amount of text to do one thing: predict the next token. Chatting, coding and summarising all emerge from doing that one thing extremely well.\n\nAn LLM has no database of facts and no live view of the world. Its knowledge is compressed into its weights and frozen at a **training cutoff**. Within a conversation, the only things it knows are in its context window: the system prompt, the messages so far, and anything a tool has added.",
+        "analogy": "An LLM is a very well-read improviser. It has absorbed millions of books and can continue any text convincingly. But it is improvising from memory, not looking things up, which is why it can be fluent and wrong at the same time."
+      },
+      "visual": {
+        "type": "flow",
+        "caption": "Generation is a loop that produces one token per turn.",
+        "nodes": [
+          { "label": "Context", "detail": "System prompt + conversation" },
+          { "label": "Model", "detail": "Scores every possible next token" },
+          { "label": "Sample", "detail": "Temperature controls randomness" },
+          { "label": "Append", "detail": "Add the token to the context" },
+          { "label": "Repeat", "detail": "Until a stop token" }
+        ]
+      },
+      "steps": [
+        { "title": "Pre-training", "text": "The model reads vast amounts of text and learns to predict what comes next. This is where general knowledge and language ability come from." },
+        { "title": "Instruction tuning", "text": "Further training on conversations and human feedback teaches the raw predictor to behave as a helpful assistant." },
+        { "title": "Inference", "text": "When you send a message, the weights do not change. The model just runs the predict-and-append loop over your context." },
+        { "title": "Sampling settings", "text": "**Temperature** near 0 picks the most likely token every time, giving consistent output. Higher values add variety and risk. **Max tokens** caps the length of the reply." }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "An LLM confidently cites a research paper that does not exist. Why?", "options": ["It is lying on purpose", "It generates plausible text and does not look facts up", "Its database is corrupted", "The temperature was 0"], "answer": 1, "explain": "This is a hallucination: a likely-looking continuation that happens to be false." },
+          { "q": "Does chatting with a model change its weights?", "options": ["Yes, every message trains it", "No, weights are fixed at inference time", "Only on Tuesdays", "Only for long messages"], "answer": 1, "explain": "The model only 'remembers' what is in its context window." },
+          { "q": "For extracting data into a strict format, which temperature is best?", "options": ["Low (near 0)", "High (above 1)", "It makes no difference", "Negative"], "answer": 0, "explain": "Low temperature gives predictable, repeatable output." }
+        ]
+      },
+      "challenge": {
+        "prompt": "A friend says: 'I told the chatbot my name yesterday, and today in a new chat it has forgotten. It must be broken.' Explain what is really going on.",
+        "hint": "Where does a model keep information during a conversation?",
+        "solution": "Nothing is broken. A model has no memory between conversations unless the product adds one. Everything it 'knows' about you lives in the **context window** of the current chat. A new chat starts with an empty context. Products that appear to remember are saving notes and inserting them into the context of later chats."
+      },
+      "takeaways": [
+        "An LLM predicts the next token. Everything else is built on that loop.",
+        "Its knowledge is frozen at training time and it does not look things up by itself.",
+        "The context window is its only working memory."
+      ]
+    },
+    {
+      "id": "prompt-engineering",
+      "title": "Prompt engineering",
+      "level": "beginner",
+      "minutes": 12,
+      "concept": {
+        "text": "A prompt is everything you give the model: instructions, context, examples and the question. The model cannot read your mind, so the quality of the answer tracks the quality of the prompt.\n\nGood prompting is mostly clear communication. Say who the answer is for, what you want, what you already know, and what form the output should take.",
+        "analogy": "Prompting is briefing a brilliant new colleague who has zero context on your project. 'Fix the report' gets you a guess. A proper brief with the goal, the audience, the source material and an example gets you what you needed."
+      },
+      "visual": {
+        "type": "cards",
+        "caption": "The building blocks of a strong prompt.",
+        "items": [
+          { "title": "Role and audience", "text": "Who is answering, and who is it for?" },
+          { "title": "Task", "text": "One clear, specific instruction" },
+          { "title": "Context", "text": "The material and background to work from" },
+          { "title": "Examples", "text": "One or two samples of what good looks like (few-shot)" },
+          { "title": "Format", "text": "Bullets? JSON? 100 words? Say so." },
+          { "title": "Constraints", "text": "What to avoid, and what to do when unsure" }
+        ]
+      },
+      "steps": [
+        { "title": "Be specific", "text": "Compare a vague prompt with a specific one.", "code": "Weak:   Write about dogs.\n\nStrong: Write a 150-word guide for first-time owners on\n        choosing a dog for a small flat. Friendly tone.\n        End with 3 bullet-point breed suggestions." },
+        { "title": "Show examples", "text": "Few-shot prompting: give input and output pairs, then the new input. The model copies the pattern." },
+        { "title": "Give room to think", "text": "For reasoning tasks, ask the model to work through the problem step by step before giving its final answer." },
+        { "title": "Separate instructions from data", "text": "Wrap pasted material in clear delimiters such as XML-style tags so the model knows what is content and what is instruction.", "code": "Summarise the article inside <article> tags in 3 bullets.\n\n<article>\n...pasted text...\n</article>" }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "Which prompt will give the most useful result?", "options": ["Make this better.", "Rewrite this email to be more polite and under 80 words. Keep the deadline of Friday.", "Email.", "Do your best."], "answer": 1, "explain": "It states the task, the tone, the length and what must be preserved." },
+          { "q": "What is few-shot prompting?", "options": ["Using a short prompt", "Providing a few examples of the desired input and output", "Asking the same question several times", "Limiting the reply to a few words"], "answer": 1, "explain": "Examples are often the fastest way to communicate a format or style." },
+          { "q": "Why wrap pasted documents in delimiters or tags?", "options": ["It looks tidy", "So the model can tell your instructions from the content", "It makes the model faster", "It is required by law"], "answer": 1, "explain": "Clear boundaries reduce confusion and make prompt injection less likely to work." }
+        ]
+      },
+      "challenge": {
+        "prompt": "Improve this prompt: **'Summarise this meeting.'** Assume you will paste a transcript and that the summary is for a manager who missed the meeting.",
+        "hint": "Cover audience, length, structure and what matters most to a manager.",
+        "solution": "One strong version:\n\n\"You are summarising a meeting for a manager who could not attend and has two minutes to read. Using only the transcript inside the transcript tags, write: (1) a two-sentence overview, (2) decisions made, as bullets, (3) action items as a list of owner, task and due date, (4) open questions. If the transcript does not say who owns an action, write 'owner unclear' instead of guessing.\""
+      },
+      "takeaways": [
+        "Clear, specific prompts with context beat clever tricks.",
+        "Examples and an explicit output format remove guesswork.",
+        "Tell the model what to do when it is unsure, so it does not invent an answer."
+      ]
+    },
+    {
+      "id": "rag",
+      "title": "RAG: giving a model your documents",
+      "level": "intermediate",
+      "minutes": 12,
+      "concept": {
+        "text": "A model does not know your company wiki, yesterday's news or your private files. RAG fixes this without retraining anything: when a question arrives, the system first **retrieves** the most relevant passages from your documents, then adds them to the prompt so the model can answer from them.\n\nBecause the answer is grounded in supplied text, RAG reduces hallucination, keeps knowledge current, and lets the model cite its sources.",
+        "analogy": "A closed-book exam tests memory. RAG turns it into an open-book exam: the student is handed the three most relevant pages before answering each question."
+      },
+      "visual": {
+        "type": "sequence",
+        "caption": "One RAG query, start to finish.",
+        "actors": ["User", "App", "Vector DB", "LLM"],
+        "messages": [
+          { "from": 0, "to": 1, "label": "\"What is our refund policy?\"" },
+          { "from": 1, "to": 2, "label": "Embed question, search" },
+          { "from": 2, "to": 1, "label": "Top 3 matching chunks" },
+          { "from": 1, "to": 3, "label": "Question + chunks" },
+          { "from": 3, "to": 1, "label": "Grounded answer" },
+          { "from": 1, "to": 0, "label": "Answer with sources" }
+        ]
+      },
+      "steps": [
+        { "title": "Index (done in advance)", "text": "Split documents into chunks, embed each chunk, and store the vectors in a vector database." },
+        { "title": "Retrieve", "text": "Embed the user's question and fetch the nearest chunks. Good systems combine vector search with keyword search and then rerank." },
+        { "title": "Augment", "text": "Build a prompt that contains the chunks and tells the model to answer only from them.", "code": "Answer using only the context below.\nIf the answer is not there, say you don't know.\n\n<context>\n{retrieved chunks}\n</context>\n\nQuestion: {question}" },
+        { "title": "Generate and cite", "text": "The model writes the answer. Return the source links so users can verify." }
+      ],
+      "interactive": {
+        "type": "order",
+        "prompt": "Put the RAG pipeline in order, from preparing documents to answering.",
+        "items": [
+          "Split documents into chunks",
+          "Embed each chunk and store it in a vector database",
+          "User asks a question",
+          "Embed the question",
+          "Retrieve the most similar chunks",
+          "Add the chunks to the prompt",
+          "The model generates an answer with citations"
+        ]
+      },
+      "challenge": {
+        "prompt": "Your RAG chatbot answers 'I don't know' to a question you are sure the documents cover. List three places in the pipeline where it could be failing.",
+        "hint": "Follow the question through the pipeline: was the right text stored, was it found, and was it used?",
+        "solution": "1. **Indexing**: the document was never ingested, or chunks are cut so that the answer is split across two pieces.\n\n2. **Retrieval**: the right chunk exists but is not in the top results, because the wording differs or too few chunks are fetched. Hybrid search and reranking help.\n\n3. **Generation**: the right chunk was retrieved but buried among irrelevant ones, or the prompt is so strict that the model refuses. Always log the retrieved chunks, so you can tell which stage failed."
+      },
+      "takeaways": [
+        "RAG retrieves relevant text and puts it in the prompt before the model answers.",
+        "It keeps answers current and grounded without retraining the model.",
+        "Most RAG failures are retrieval failures. Inspect what was retrieved."
+      ]
+    },
+    {
+      "id": "fine-tuning",
+      "title": "Fine-tuning: when and why",
+      "level": "advanced",
+      "minutes": 10,
+      "concept": {
+        "text": "Fine-tuning continues training an existing model on your own examples, changing its weights so that a behaviour becomes built in. It is good for teaching a consistent style, format or narrow skill. It is a poor way to teach facts, which change and are better supplied through RAG.\n\nModern fine-tuning rarely updates the whole model. Methods such as **LoRA** train a small set of extra weights attached to a frozen model, which is far cheaper.",
+        "analogy": "Prompting is giving a professional a briefing. RAG is handing them reference documents. Fine-tuning is sending them on a training course: slower and more expensive, but the skill becomes second nature."
+      },
+      "visual": {
+        "type": "compare",
+        "caption": "Three ways to customise a model. Try them from left to right.",
+        "columns": ["Prompting", "RAG", "Fine-tuning"],
+        "rows": [
+          ["Changes weights?", "No", "No", "Yes"],
+          ["Best for", "Instructions and format", "Private or changing knowledge", "Consistent style or a narrow skill"],
+          ["Needs", "A good prompt", "Documents and a retrieval system", "Hundreds or more quality examples"],
+          ["Cost and effort", "Lowest", "Medium", "Highest"],
+          ["Update speed", "Instant", "Re-index documents", "Retrain"]
+        ]
+      },
+      "steps": [
+        { "title": "Try prompting first", "text": "Most problems are solved with a better prompt and a few examples. Measure before reaching for anything heavier." },
+        { "title": "Prepare examples", "text": "Fine-tuning data is pairs of input and ideal output, usually one JSON object per line. Quality matters far more than quantity.", "code": "{\"messages\": [\n  {\"role\": \"user\", \"content\": \"Order #991 arrived damaged\"},\n  {\"role\": \"assistant\", \"content\": \"{\\\"intent\\\": \\\"damaged_item\\\", \\\"order\\\": 991}\"}\n]}" },
+        { "title": "Train and evaluate", "text": "Hold back a test set. Compare the fine-tuned model against the base model with a good prompt, on the same examples." },
+        { "title": "Watch for side effects", "text": "A model tuned hard on a narrow task can get worse at everything else. Combine fine-tuning for behaviour with RAG for knowledge when you need both." }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "Your product catalogue changes daily and the bot must quote current prices. Best approach?", "options": ["Fine-tune every night", "RAG over the live catalogue", "A longer system prompt with no data", "Raise the temperature"], "answer": 1, "explain": "Fast-changing facts belong in retrieval, not in weights." },
+          { "q": "You need every reply in your brand's very distinctive voice, across millions of calls, with short prompts. Best approach?", "options": ["Fine-tuning", "RAG", "Lower max tokens", "Nothing can do this"], "answer": 0, "explain": "Consistent style at scale is a classic fine-tuning use." },
+          { "q": "What does LoRA do?", "options": ["Deletes half the model", "Trains a small set of added weights while the base model stays frozen", "Converts a model to run on a CPU", "Encrypts the weights"], "answer": 1, "explain": "That makes fine-tuning much cheaper in compute and storage." }
+        ]
+      },
+      "challenge": {
+        "prompt": "A law firm wants an assistant that answers questions about its 20,000 internal case files and always replies in the firm's formal house style. Recommend an architecture and justify it.",
+        "hint": "There are two separate needs here: knowledge and behaviour.",
+        "solution": "Use **RAG for knowledge**: index the case files, with access controls so staff only retrieve what they may see, and cite the source files. Start with a **system prompt plus examples for the house style**. Only if the style is still inconsistent after measuring should you add a light fine-tune for tone. Do not fine-tune on the case files themselves: facts would be unreliable, impossible to cite, and stale as soon as a new case is added."
+      },
+      "takeaways": [
+        "Order of escalation: prompt, then RAG, then fine-tune.",
+        "Fine-tune for behaviour and style. Use RAG for facts.",
+        "LoRA and similar methods make fine-tuning affordable by training only a small add-on."
+      ]
+    },
+    {
+      "id": "mcp-tool-use",
+      "title": "Tool use and MCP",
+      "level": "intermediate",
+      "minutes": 12,
+      "concept": {
+        "text": "By itself, a model can only produce text. **Tool use** (also called function calling) lets it act: you describe the available tools, and when the model needs one it outputs a structured request such as `get_weather(city: \"Paris\")`. Your application runs the tool and returns the result, and the model continues with real data.\n\nMCP, the Model Context Protocol, is an open standard for this connection. Instead of writing custom glue for every app and every tool, a tool is wrapped once as an **MCP server** and any MCP-compatible AI app can use it.",
+        "analogy": "A model without tools is a genius locked in a room with no phone. Tool use is the phone. MCP is the universal socket standard, like USB-C: build a device once and it plugs into any compatible host."
+      },
+      "visual": {
+        "type": "sequence",
+        "caption": "A tool call. The model asks, and your application does the work.",
+        "actors": ["User", "AI app", "LLM", "Tool / MCP server"],
+        "messages": [
+          { "from": 0, "to": 1, "label": "\"Weather in Paris?\"" },
+          { "from": 1, "to": 2, "label": "Question + tool list" },
+          { "from": 2, "to": 1, "label": "Call get_weather(Paris)" },
+          { "from": 1, "to": 3, "label": "Run the tool" },
+          { "from": 3, "to": 1, "label": "18°C, cloudy" },
+          { "from": 1, "to": 2, "label": "Tool result" },
+          { "from": 2, "to": 0, "label": "\"It's 18°C and cloudy.\"" }
+        ]
+      },
+      "steps": [
+        { "title": "Describe a tool", "text": "A tool has a name, a description the model reads, and a JSON schema for its inputs. Clear descriptions matter as much as prompts.", "code": "{\n  \"name\": \"get_weather\",\n  \"description\": \"Get the current weather for a city\",\n  \"input_schema\": {\n    \"type\": \"object\",\n    \"properties\": { \"city\": { \"type\": \"string\" } },\n    \"required\": [\"city\"]\n  }\n}" },
+        { "title": "The model requests, you execute", "text": "The model never runs code itself. It emits a request, and your application decides whether to run it. That is your control point for safety." },
+        { "title": "MCP's three building blocks", "text": "An MCP server can offer **tools** (actions the model can take), **resources** (data it can read) and **prompts** (reusable templates)." },
+        { "title": "Connect a server", "text": "Hosts such as Claude Desktop, Claude Code and many IDEs load MCP servers from a config file. There are servers for GitHub, databases, file systems, browsers and more." }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "When a model 'calls a tool', what actually executes the tool?", "options": ["The model's weights", "The application hosting the model", "The user's keyboard", "The training data"], "answer": 1, "explain": "The model only outputs a structured request. The host application runs it." },
+          { "q": "What problem does MCP solve?", "options": ["It makes models smaller", "It standardises how AI apps connect to tools and data", "It removes the need for prompts", "It trains models faster"], "answer": 1, "explain": "One protocol means a tool built once works in every compatible host." },
+          { "q": "Why should tools that delete data or spend money require human approval?", "options": ["Models are slow", "Models can misread instructions or be manipulated by text they read", "Approval makes tools faster", "It is not needed"], "answer": 1, "explain": "Web pages and documents can contain instructions that hijack a model (prompt injection)." }
+        ]
+      },
+      "challenge": {
+        "prompt": "Design a tool definition called `create_calendar_event`. Write its description and list its input fields with types, marking which are required.",
+        "hint": "Think about what a calendar needs at minimum, and what is optional. The description should tell the model when to use the tool.",
+        "code": true,
+        "solution": "{\n  \"name\": \"create_calendar_event\",\n  \"description\": \"Create an event on the user's calendar. Use when the user asks to schedule, book or add a meeting or reminder.\",\n  \"input_schema\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"title\":     { \"type\": \"string\" },\n      \"start\":     { \"type\": \"string\", \"description\": \"ISO 8601 date-time\" },\n      \"end\":       { \"type\": \"string\", \"description\": \"ISO 8601 date-time\" },\n      \"attendees\": { \"type\": \"array\", \"items\": { \"type\": \"string\" } },\n      \"location\":  { \"type\": \"string\" }\n    },\n    \"required\": [\"title\", \"start\", \"end\"]\n  }\n}"
+      },
+      "takeaways": [
+        "Tool use lets a model request actions. Your application executes them.",
+        "MCP is an open standard that connects AI apps to tools, resources and prompts.",
+        "Keep a human approval step for anything destructive or irreversible."
+      ]
+    }
+  ]
+}

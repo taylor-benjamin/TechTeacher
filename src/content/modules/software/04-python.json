@@ -1,0 +1,137 @@
+{
+  "tab": "software",
+  "id": "python",
+  "order": 4,
+  "title": "Python",
+  "summary": "The most beginner-friendly language, used for automation, data and AI. Runs here with Pyodide.",
+  "lessons": [
+    {
+      "id": "syntax-basics",
+      "title": "Python: syntax basics",
+      "level": "beginner",
+      "minutes": 10,
+      "concept": {
+        "text": "Python reads almost like English, which makes it a popular first language. It is used for scripts, websites, data analysis and nearly all AI work.\n\nPython uses **indentation** (spaces at the start of a line) to show which lines belong together. There are no curly braces, so tidy spacing is not optional: it is the syntax.",
+        "analogy": "Indentation in Python works like an outline. Sub-points are indented under their heading, and that is how everyone knows what belongs to what."
+      },
+      "visual": {
+        "type": "compare",
+        "caption": "The same idea in Python and JavaScript.",
+        "columns": ["Python", "JavaScript"],
+        "rows": [
+          ["Variable", "score = 10", "let score = 10"],
+          ["Print", "print(score)", "console.log(score)"],
+          ["Block", "Indentation and a colon", "Curly braces { }"],
+          ["Text with values", "f\"Hi {name}\"", "`Hi ${name}`"],
+          ["True / nothing", "True, False, None", "true, false, null"]
+        ]
+      },
+      "steps": [
+        { "title": "Variables and printing", "text": "No keyword is needed to create a variable. f-strings insert values into text.", "code": "name = \"Ava\"\nscore = 7\nprint(f\"{name} has {score} points\")" },
+        { "title": "Decisions", "text": "A colon starts a block and the indented lines are inside it.", "code": "if score >= 10:\n    print(\"Level up!\")\nelif score >= 5:\n    print(\"Halfway\")\nelse:\n    print(\"Keep going\")" },
+        { "title": "Loops", "text": "`for` walks through any sequence. `range(3)` produces 0, 1, 2.", "code": "for fruit in [\"apple\", \"kiwi\"]:\n    print(fruit)\n\nfor i in range(3):\n    print(i)" }
+      ],
+      "interactive": {
+        "type": "code",
+        "language": "python",
+        "starter": "name = \"Ava\"\nscore = 7\nscore += 5\nprint(f\"{name} has {score} points\")\n\nif score >= 10:\n    print(\"Level up!\")\n\nfor n in range(1, 4):\n    print(n, \"squared is\", n ** 2)\n"
+      },
+      "challenge": {
+        "prompt": "Print a countdown from 5 to 1, then print `Liftoff!`.",
+        "hint": "`range(5, 0, -1)` counts down: start at 5, stop before 0, step by -1.",
+        "language": "python",
+        "starter": "# your code here\n",
+        "solution": "for n in range(5, 0, -1):\n    print(n)\nprint(\"Liftoff!\")"
+      },
+      "takeaways": [
+        "Indentation defines blocks in Python. Use 4 spaces.",
+        "print() shows output and f-strings build text from values.",
+        "for loops iterate over lists, strings and range()."
+      ]
+    },
+    {
+      "id": "core-concepts",
+      "title": "Python: functions, lists and dictionaries",
+      "level": "intermediate",
+      "minutes": 12,
+      "concept": {
+        "text": "Three tools carry most Python programs. A function packages reusable logic with `def`. A **list** holds ordered items. A **dictionary** maps keys to values, like a real dictionary maps words to definitions.\n\nList comprehensions build a new list from an old one in a single readable line.",
+        "analogy": "A list is a numbered queue: you find people by position. A dictionary is a coat check: you hand over a ticket (the key) and get back exactly your coat (the value)."
+      },
+      "visual": {
+        "type": "cards",
+        "caption": "Python's core collections.",
+        "items": [
+          { "title": "list  [1, 2, 3]", "text": "Ordered, changeable. Index with nums[0]." },
+          { "title": "dict  {'a': 1}", "text": "Key to value lookup. Access with d['a']." },
+          { "title": "tuple  (1, 2)", "text": "Ordered, cannot change. Good for fixed pairs." },
+          { "title": "set  {1, 2}", "text": "Unique items only, no order." }
+        ]
+      },
+      "steps": [
+        { "title": "Define a function", "text": "Parameters can have default values.", "code": "def greet(name, greeting=\"Hello\"):\n    return f\"{greeting}, {name}!\"\n\nprint(greet(\"Ava\"))" },
+        { "title": "Work with lists", "text": "Append, slice and loop.", "code": "nums = [3, 1, 4]\nnums.append(1)\nprint(sorted(nums), len(nums), nums[0:2])" },
+        { "title": "Use a dictionary", "text": "`.items()` gives key and value pairs.", "code": "ages = {\"Ava\": 30, \"Ben\": 17}\nages[\"Cy\"] = 45\nfor name, age in ages.items():\n    print(name, age)" },
+        { "title": "Comprehensions", "text": "Read it as: give me n squared, for each n in nums, if n is even.", "code": "squares = [n ** 2 for n in range(10) if n % 2 == 0]" }
+      ],
+      "interactive": {
+        "type": "code",
+        "language": "python",
+        "starter": "def average(numbers):\n    return sum(numbers) / len(numbers)\n\ngrades = {\"Ava\": [90, 85, 97], \"Ben\": [70, 65, 80]}\n\nfor name, scores in grades.items():\n    print(f\"{name}: {average(scores):.1f}\")\n\npassed = [name for name, s in grades.items() if average(s) >= 75]\nprint(\"Passed:\", passed)\n"
+      },
+      "challenge": {
+        "prompt": "Write `word_count(text)` that returns a dictionary counting how often each word appears, ignoring case. Test it on the sentence provided.",
+        "hint": "`text.lower().split()` gives a list of words. `counts.get(word, 0) + 1` handles a word you have not seen yet.",
+        "language": "python",
+        "starter": "def word_count(text):\n    counts = {}\n    # your code here\n    return counts\n\nprint(word_count(\"the cat and the hat and the bat\"))\n",
+        "solution": "def word_count(text):\n    counts = {}\n    for word in text.lower().split():\n        counts[word] = counts.get(word, 0) + 1\n    return counts\n\nprint(word_count(\"the cat and the hat and the bat\"))\n# {'the': 3, 'cat': 1, 'and': 2, 'hat': 1, 'bat': 1}"
+      },
+      "takeaways": [
+        "def creates functions. return sends a value back to the caller.",
+        "Lists are ordered sequences. Dictionaries look values up by key.",
+        "Comprehensions build lists in one expressive line."
+      ]
+    },
+    {
+      "id": "mini-project",
+      "title": "Python mini project: a password strength checker",
+      "level": "intermediate",
+      "minutes": 15,
+      "concept": {
+        "text": "You will write a small tool that scores a password and explains what is weak about it. It combines functions, strings, loops and conditionals, and it is your first taste of security tooling.",
+        "analogy": "The checker is a bouncer with a checklist: long enough? Has a digit? Has a symbol? Each tick earns a point, and you need enough points to get in."
+      },
+      "visual": {
+        "type": "flow",
+        "caption": "The checker's pipeline.",
+        "nodes": [
+          { "label": "Password", "detail": "Text input" },
+          { "label": "Run each rule", "detail": "Length, cases, digits, symbols" },
+          { "label": "Count passes", "detail": "Score out of 5" },
+          { "label": "Verdict + tips", "detail": "Weak, OK or strong" }
+        ]
+      },
+      "steps": [
+        { "title": "Write the rules", "text": "`any()` returns True if at least one character passes a test.", "code": "has_digit = any(c.isdigit() for c in password)" },
+        { "title": "Collect feedback", "text": "Store each rule as a description and a result, then loop over them to build a score and a list of tips." },
+        { "title": "Return a verdict", "text": "Map the score to a label and print the tips for failed rules." }
+      ],
+      "interactive": {
+        "type": "code",
+        "language": "python",
+        "starter": "def check(password):\n    rules = {\n        \"at least 12 characters\": len(password) >= 12,\n        \"a lowercase letter\": any(c.islower() for c in password),\n        \"an uppercase letter\": any(c.isupper() for c in password),\n        \"a digit\": any(c.isdigit() for c in password),\n        \"a symbol\": any(not c.isalnum() for c in password),\n    }\n    score = sum(rules.values())\n    verdict = \"strong\" if score == 5 else \"ok\" if score >= 3 else \"weak\"\n    print(f\"{password!r}: {verdict} ({score}/5)\")\n    for rule, passed in rules.items():\n        if not passed:\n            print(\"  - add\", rule)\n\ncheck(\"password\")\ncheck(\"Tr0ub4dor&3\")\ncheck(\"correct-Horse-battery-9\")\n"
+      },
+      "challenge": {
+        "prompt": "Add a sixth rule: the password must not be in a list of common passwords (`password`, `123456`, `qwerty`, `letmein`). A common password should always be rated weak, whatever its score.",
+        "hint": "Create `COMMON = {\"password\", ...}` and check `password.lower() in COMMON` before computing the verdict.",
+        "code": true,
+        "solution": "COMMON = {\"password\", \"123456\", \"qwerty\", \"letmein\"}\n\n# inside check(), after computing score:\nif password.lower() in COMMON:\n    verdict = \"weak\"\n    print(\"  - never use a common password\")"
+      },
+      "takeaways": [
+        "A dictionary of rule name to result makes checks easy to add and report on.",
+        "any() and generator expressions test characters without manual loops.",
+        "Real tools are small pieces of logic composed together."
+      ]
+    }
+  ]
+}

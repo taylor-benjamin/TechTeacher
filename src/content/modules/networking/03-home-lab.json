@@ -1,0 +1,136 @@
+{
+  "tab": "networking",
+  "id": "home-lab",
+  "order": 3,
+  "title": "Home Lab",
+  "summary": "Build a practice environment at home: hardware, Proxmox virtualization, pfSense and a full topology.",
+  "lessons": [
+    {
+      "id": "hardware",
+      "title": "Choosing home lab hardware",
+      "level": "beginner",
+      "minutes": 10,
+      "concept": {
+        "text": "A home lab is your own practice network where you can build, break and fix things without consequences. It is the fastest way to turn theory into skill, and it gives you real stories to tell in interviews.\n\nYou do not need a rack of servers. One second-hand mini PC with plenty of RAM can run a dozen virtual machines. Spend on memory first, then storage, and remember that a lab that runs all day costs electricity and makes noise.",
+        "analogy": "A home lab is a flight simulator for IT. Pilots do not learn emergency landings with passengers on board, and you should not learn firewall rules on a production network."
+      },
+      "visual": {
+        "type": "compare",
+        "caption": "Three sensible starting points.",
+        "columns": ["Hardware", "Good for", "Watch out for"],
+        "rows": [
+          ["Starter", "An old laptop or PC with 16 GB RAM", "A few VMs, learning Linux", "Limited memory, usually one network port"],
+          ["Sweet spot", "Used mini PC, 32-64 GB RAM, SSD", "A hypervisor with 10+ VMs, quiet and low power", "Few drive bays"],
+          ["Enthusiast", "Used rack server or a multi-node cluster", "Clustering, lots of storage, enterprise features", "Noise, heat, power bill"],
+          ["Networking", "Managed switch + a box with 2+ network ports", "VLANs and running your own firewall", "Unmanaged switches cannot do VLANs"]
+        ]
+      },
+      "steps": [
+        { "title": "Prioritise RAM", "text": "Virtual machines reserve memory. 32 GB is comfortable for a firewall, a few Linux servers and a Windows VM. CPU is rarely the limit." },
+        { "title": "Use SSD storage", "text": "An NVMe or SATA SSD makes VMs feel fast. Add a large hard drive or NAS later for backups." },
+        { "title": "Plan the network gear", "text": "To run your own firewall you need at least two network ports: one facing the internet (WAN) and one facing your lab (LAN). A **managed switch** lets you practise VLANs." },
+        { "title": "Check the running cost", "text": "A mini PC at about 15 W costs little to run all year. An old rack server at 150 W or more costs ten times as much and sounds like a hairdryer." }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "Which component most often limits how many VMs you can run?", "options": ["The monitor", "RAM", "The case", "The keyboard"], "answer": 1, "explain": "Each VM needs its own memory, so RAM runs out first." },
+          { "q": "Why do you need a managed switch to practise VLANs?", "options": ["Unmanaged switches are slower", "Only managed switches let you configure VLANs and trunks", "Managed switches are wireless", "You do not"], "answer": 1, "explain": "Unmanaged switches have no configuration interface." },
+          { "q": "What is the minimum number of network ports for a dedicated firewall box?", "options": ["One", "Two", "Four", "Eight"], "answer": 1, "explain": "One for WAN and one for LAN. More VLANs can share the LAN port on a trunk." }
+        ]
+      },
+      "challenge": {
+        "prompt": "You have a budget for one used machine. Choose between (a) a 10-year-old dual-CPU rack server with 128 GB RAM and (b) a 3-year-old mini PC with 32 GB RAM. It will live in your bedroom. Decide and justify.",
+        "hint": "Consider what you will really run, plus noise, heat and electricity.",
+        "solution": "For a bedroom, choose the **mini PC**. 32 GB runs a firewall VM, several Linux servers and a Windows VM, which covers most Network+, Security+ and cloud practice. It is silent and uses roughly a tenth of the power. The rack server offers far more capacity and enterprise features such as remote management, but it is loud, hot and costly to run. Buy it later if you outgrow the mini PC and have somewhere to put it."
+      },
+      "takeaways": [
+        "Start small. One machine with enough RAM is a complete lab.",
+        "Prioritise RAM, then SSD storage, then network ports.",
+        "A managed switch and a two-port box unlock VLAN and firewall practice."
+      ]
+    },
+    {
+      "id": "proxmox-virtualization",
+      "title": "Virtualization with Proxmox",
+      "level": "intermediate",
+      "minutes": 14,
+      "concept": {
+        "text": "Virtualization lets one physical computer run many separate virtual machines, each with its own operating system. The software that makes this possible is a hypervisor. A **type 1** hypervisor is installed directly on the hardware. A **type 2** hypervisor, such as VirtualBox, runs as an app on your normal operating system.\n\n**Proxmox VE** is a free, open-source type 1 hypervisor that you manage from a web browser. It runs full VMs and lightweight Linux **containers** (LXC), and supports snapshots, backups and clustering.",
+        "analogy": "A hypervisor turns a house into a block of flats. Each tenant (VM) has their own front door, kitchen and furniture and cannot see into the others, but they all share the same foundations, plumbing and electricity (CPU, RAM, disk)."
+      },
+      "visual": {
+        "type": "layers",
+        "caption": "The virtualization stack on a Proxmox host.",
+        "layers": [
+          { "name": "VMs and containers", "detail": "pfSense, Ubuntu Server, Windows, Pi-hole…", "tag": "guests" },
+          { "name": "Virtual hardware", "detail": "Virtual CPUs, RAM, disks and network cards" },
+          { "name": "Virtual bridges", "detail": "vmbr0, vmbr1: software switches that connect VMs", "tag": "network" },
+          { "name": "Proxmox VE", "detail": "Type 1 hypervisor, based on Debian, using KVM", "tag": "hypervisor" },
+          { "name": "Physical hardware", "detail": "CPU, RAM, SSD, network ports", "tag": "host" }
+        ]
+      },
+      "steps": [
+        { "title": "Install Proxmox", "text": "Download the ISO, write it to a USB stick, boot the machine from it and follow the installer. Give the host a static IP address." },
+        { "title": "Open the web interface", "text": "From another computer, browse to the host on port 8006.", "code": "https://192.168.1.50:8006" },
+        { "title": "Create a VM", "text": "Upload an operating system ISO, press **Create VM**, and choose CPU cores, memory, disk size and the network bridge. Start it and use the built-in console." },
+        { "title": "Snapshot before you break things", "text": "A **snapshot** saves the exact state of a VM. Experiment freely, then roll back in seconds. This is the single most useful lab habit." }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "Which is a type 1 (bare-metal) hypervisor?", "options": ["VirtualBox", "Proxmox VE", "Microsoft Word", "VMware Workstation"], "answer": 1, "explain": "Proxmox installs directly on the hardware. VirtualBox and Workstation run on top of another operating system." },
+          { "q": "How does a container (LXC) differ from a full VM?", "options": ["It is slower", "It shares the host's kernel, so it is lighter but less isolated", "It needs its own physical server", "It cannot use the network"], "answer": 1, "explain": "Containers start in seconds and use little memory, but must run Linux on a Linux host." },
+          { "q": "What should you do just before a risky change to a VM?", "options": ["Delete it", "Take a snapshot", "Unplug the server", "Rename it"], "answer": 1, "explain": "A snapshot lets you roll back instantly if the change goes wrong." }
+        ]
+      },
+      "challenge": {
+        "prompt": "Your Proxmox host has 32 GB of RAM. Plan a set of VMs and containers for a learning lab, with memory for each, leaving headroom for the host.",
+        "hint": "Keep about 4 GB for Proxmox itself. Containers need far less memory than VMs.",
+        "solution": "One reasonable plan (about 26 GB used):\n\n**pfSense firewall VM**: 2 GB. **Ubuntu Server VM** for Docker and web apps: 6 GB. **Windows Server VM** for Active Directory practice: 6 GB. **Windows 11 client VM**: 6 GB. **Kali Linux VM** for security practice: 4 GB. **Pi-hole container** for DNS: 512 MB. **Monitoring container** such as Uptime Kuma: 1 GB.\n\nThat leaves roughly 6 GB for the host and for bursts. Not every VM needs to be running at once."
+      },
+      "takeaways": [
+        "A hypervisor runs many isolated VMs on one machine. Proxmox is a free type 1 option.",
+        "VMs are fully isolated. Containers are lighter and share the host kernel.",
+        "Virtual bridges connect VMs. Snapshots make experiments safe."
+      ]
+    },
+    {
+      "id": "pfsense-topology",
+      "title": "pfSense and a sample lab topology",
+      "level": "intermediate",
+      "minutes": 18,
+      "concept": {
+        "text": "**pfSense** is a free, open-source firewall and router that runs on an ordinary PC or inside a VM. It gives you enterprise features at home: firewall rules, VLANs, DHCP and DNS services, VPN, and intrusion detection add-ons. OPNsense is a closely related alternative.\n\nIn a lab, pfSense sits between your home network and your lab network. Its **WAN** interface faces your home router and its **LAN** interface faces your lab switch. Everything in the lab reaches the outside through pfSense, so you control and observe all of it.",
+        "analogy": "pfSense is the security desk at a building entrance. Everyone coming in or going out passes it, it checks each against a rule list from top to bottom, and it keeps a log of who went where."
+      },
+      "visual": {
+        "type": "flow",
+        "caption": "The sample home lab. Press 'Load sample home lab' in the builder below to see it.",
+        "nodes": [
+          { "label": "Internet", "detail": "Your ISP" },
+          { "label": "pfSense", "detail": "WAN in, LAN out. Rules, DHCP, VLANs" },
+          { "label": "Managed switch", "detail": "Trunk from pfSense, access ports to devices" },
+          { "label": "Proxmox, NAS, Wi-Fi AP, PC", "detail": "Each in the right VLAN" }
+        ]
+      },
+      "steps": [
+        { "title": "Install and assign interfaces", "text": "Install pfSense on a box with two network ports, or as a Proxmox VM with two virtual network cards on different bridges. Assign one as WAN and one as LAN." },
+        { "title": "Run the setup wizard", "text": "Browse to the LAN address (by default `192.168.1.1`), change the admin password, and set the LAN to a range that does not clash with your home network, such as `10.10.10.1/24`." },
+        { "title": "Add VLANs", "text": "Create VLANs on the LAN interface, for example 10 Servers, 20 Clients, 30 IoT and 99 Management. Give each its own subnet and DHCP range, and trunk them to the managed switch." },
+        { "title": "Write firewall rules", "text": "Rules are read top to bottom, and the first match wins. Anything not allowed is blocked by default. Example: IoT may reach the internet but not the Servers VLAN.", "code": "IoT VLAN rules (top to bottom):\n1. BLOCK  IoT net  ->  10.10.10.0/24 (Servers)\n2. BLOCK  IoT net  ->  10.10.20.0/24 (Clients)\n3. ALLOW  IoT net  ->  any (internet)" }
+      ],
+      "interactive": { "type": "topology" },
+      "challenge": {
+        "prompt": "In the builder, press **Load sample home lab**. Then extend it: add a second switch for an IoT area, connect it to the main switch, and attach a new Wi-Fi AP and a PC to it. Finally, explain which link must be a trunk and why.",
+        "hint": "Use the device buttons to add items, drag them into place, then use **Connect devices** and click two devices. A link must be a trunk if more than one VLAN has to cross it.",
+        "solution": "Add a **Switch**, a **Wi-Fi AP** and a **PC**. Connect main switch ↔ new switch, new switch ↔ AP, and new switch ↔ PC.\n\nThe **switch-to-switch link must be a trunk**, because it carries several VLANs: for example IoT for the access point's devices and Clients for the PC. The pfSense-to-main-switch link is also a trunk for the same reason. The link to the PC is an access port in one VLAN. The link to the AP is a trunk if the AP broadcasts more than one network."
+      },
+      "takeaways": [
+        "pfSense is a free firewall and router: WAN faces outward and LAN faces your lab.",
+        "Firewall rules run top to bottom, first match wins, and the default is deny.",
+        "Segment with VLANs: servers, clients, IoT and management each get a subnet and rules."
+      ]
+    }
+  ]
+}

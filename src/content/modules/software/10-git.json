@@ -1,0 +1,155 @@
+{
+  "tab": "software",
+  "id": "git",
+  "order": 10,
+  "title": "Git & GitHub",
+  "summary": "Track every change, work on branches without fear, and collaborate through pull requests.",
+  "lessons": [
+    {
+      "id": "git-basics",
+      "title": "Git basics: commits and history",
+      "level": "beginner",
+      "minutes": 12,
+      "concept": {
+        "text": "Git is a version control system. It records snapshots of your project called commits, so you can see what changed, when and why, and go back to any earlier point.\n\nGit works in three areas. You edit files in the **working directory**, choose which changes to include in the **staging area**, and then save them permanently to the repository with a commit.",
+        "analogy": "Git is the save system in a video game. Each commit is a save point with a note. Staging is choosing what goes into the save. If the boss fight goes badly, you reload an earlier save."
+      },
+      "visual": {
+        "type": "flow",
+        "caption": "A change travels through three areas, then to GitHub.",
+        "nodes": [
+          { "label": "Working directory", "detail": "You edit files" },
+          { "label": "Staging area", "detail": "git add" },
+          { "label": "Local repository", "detail": "git commit" },
+          { "label": "Remote (GitHub)", "detail": "git push" }
+        ]
+      },
+      "steps": [
+        { "title": "Start a repository", "text": "Run this once inside your project folder.", "code": "git init" },
+        { "title": "Check what changed", "text": "`git status` is the command you will run most. `git diff` shows the exact lines.", "code": "git status\ngit diff" },
+        { "title": "Stage and commit", "text": "Write messages that say why, in the present tense.", "code": "git add index.html\ngit commit -m \"Add homepage hero section\"" },
+        { "title": "Review history", "text": "Each commit has an id, author, date and message.", "code": "git log --oneline" }
+      ],
+      "interactive": {
+        "type": "order",
+        "prompt": "Put these in the order you would run them to save a change and share it.",
+        "items": [
+          "Edit a file in your editor",
+          "git status (see what changed)",
+          "git add <file> (stage it)",
+          "git commit -m \"message\" (save a snapshot)",
+          "git push (send it to GitHub)"
+        ]
+      },
+      "challenge": {
+        "prompt": "You edited `app.js` and `style.css`, but only the `app.js` change is ready. Which commands create a commit containing only `app.js`? What state is `style.css` in afterwards?",
+        "hint": "The staging area exists precisely so you can choose what goes into a commit.",
+        "solution": "`git add app.js` then `git commit -m \"Fix login validation\"`.\n\n`style.css` is still **modified but unstaged** in your working directory. Nothing is lost, and it will show up in `git status` until you stage and commit it."
+      },
+      "takeaways": [
+        "A commit is a snapshot of your project with a message.",
+        "The flow is edit, git add (stage), git commit (save), git push (share).",
+        "git status tells you where you are. Run it constantly."
+      ]
+    },
+    {
+      "id": "branching-merging",
+      "title": "Branching and merging",
+      "level": "intermediate",
+      "minutes": 12,
+      "concept": {
+        "text": "A branch is a movable label pointing at a commit. Creating one gives you a separate line of work, so you can build a feature or try an experiment without touching `main`.\n\nWhen the work is ready, you **merge** the branch back. If two branches changed the same lines, Git stops and asks you to resolve the **merge conflict** by choosing what the final text should be.",
+        "analogy": "A branch is a parallel universe for your code. You try things there. If they work, you merge that universe back into reality. If not, you delete it and reality never knew."
+      },
+      "visual": {
+        "type": "flow",
+        "caption": "The life of a feature branch.",
+        "nodes": [
+          { "label": "main", "detail": "Stable code" },
+          { "label": "git switch -c feature", "detail": "Branch off" },
+          { "label": "Commit, commit", "detail": "Work safely" },
+          { "label": "git merge feature", "detail": "Bring it back" },
+          { "label": "git branch -d feature", "detail": "Tidy up" }
+        ]
+      },
+      "steps": [
+        { "title": "Create and switch", "text": "`-c` creates the branch and moves you onto it.", "code": "git switch -c add-dark-mode" },
+        { "title": "Work and commit", "text": "Commits go onto the current branch only. `main` is unchanged." },
+        { "title": "Merge", "text": "Switch to the branch you want to update, then merge the other one in.", "code": "git switch main\ngit merge add-dark-mode" },
+        { "title": "Resolve a conflict", "text": "Git marks the clash in the file. Edit it to the version you want, delete the markers, then add and commit.", "code": "<<<<<<< HEAD\ncolor: blue;\n=======\ncolor: navy;\n>>>>>>> add-dark-mode" }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "You are on `main` and run `git switch -c fix-typo`. What happened?", "options": ["main was deleted", "A new branch was created and you are now on it", "Your files were reset", "A commit was made"], "answer": 1, "explain": "-c creates the branch and switches to it in one step." },
+          { "q": "When does a merge conflict occur?", "options": ["Whenever two branches exist", "When both branches changed the same lines differently", "When a branch has too many commits", "When you forget to push"], "answer": 1, "explain": "Git merges different lines automatically. It only needs you when the same lines disagree." },
+          { "q": "To merge `feature` into `main`, which branch must you be on?", "options": ["feature", "main", "Either", "A third branch"], "answer": 1, "explain": "You merge into the branch you are currently on." }
+        ]
+      },
+      "challenge": {
+        "prompt": "Resolve this conflict so the button is green and says **Sign up**. Write the final file content.\n\n`<<<<<<< HEAD`\n\n`<button class=\"green\">Join</button>`\n\n`=======`\n\n`<button class=\"blue\">Sign up</button>`\n\n`>>>>>>> new-copy`",
+        "hint": "You are not limited to picking one side. Combine them, then remove all three marker lines.",
+        "code": true,
+        "solution": "<button class=\"green\">Sign up</button>\n\n# then:\ngit add index.html\ngit commit"
+      },
+      "takeaways": [
+        "Branches isolate work so main stays stable.",
+        "git switch -c creates a branch and git merge brings it back.",
+        "Conflicts are normal: edit the file, remove the markers, add and commit."
+      ]
+    },
+    {
+      "id": "github-collaboration",
+      "title": "GitHub: remotes and pull requests",
+      "level": "intermediate",
+      "minutes": 12,
+      "concept": {
+        "text": "Git runs on your machine. **GitHub** hosts a copy of your repository online, called a remote, so that others can get it and you have a backup.\n\nTeams rarely push straight to `main`. Instead you push a branch and open a pull request: a page that shows your changes, lets teammates review and comment, runs automated tests, and merges with one click when approved.",
+        "analogy": "A pull request is handing in a draft for editing. You do not print straight into the published book. An editor reads the draft, suggests changes, and only then does it go to press."
+      },
+      "visual": {
+        "type": "sequence",
+        "caption": "The pull request workflow used by most teams.",
+        "actors": ["You (local)", "GitHub", "Reviewer"],
+        "messages": [
+          { "from": 0, "to": 1, "label": "git push origin my-branch" },
+          { "from": 0, "to": 1, "label": "Open pull request" },
+          { "from": 1, "to": 2, "label": "Review requested" },
+          { "from": 2, "to": 1, "label": "Approve (or request changes)" },
+          { "from": 2, "to": 1, "label": "Merge into main" },
+          { "from": 1, "to": 0, "label": "git pull (get latest main)" }
+        ]
+      },
+      "steps": [
+        { "title": "Get a repository", "text": "`clone` downloads a remote repository and its whole history.", "code": "git clone https://github.com/user/project.git" },
+        { "title": "Push a branch", "text": "`origin` is the default name of the remote you cloned from.", "code": "git switch -c fix-footer\ngit commit -am \"Fix footer links\"\ngit push -u origin fix-footer" },
+        { "title": "Open a pull request", "text": "On GitHub, press **Compare & pull request**. Describe what changed and why, and link any related issue." },
+        { "title": "Stay in sync", "text": "After a merge, update your local `main`.", "code": "git switch main\ngit pull" }
+      ],
+      "interactive": {
+        "type": "order",
+        "prompt": "Order the steps for contributing a fix to a team project.",
+        "items": [
+          "git clone the repository",
+          "git switch -c fix-bug",
+          "Edit files, git add, git commit",
+          "git push -u origin fix-bug",
+          "Open a pull request on GitHub",
+          "Address review comments and get approval",
+          "Merge the pull request"
+        ]
+      },
+      "challenge": {
+        "prompt": "Create a `.gitignore` for a Node.js project. Name at least three things that must never be committed and say why.",
+        "hint": "Think about: downloaded dependencies, secrets, and build output.",
+        "code": true,
+        "solution": "node_modules/   # huge, and recreated by npm install\n.env            # contains secrets such as API keys\ndist/           # build output, regenerated from source\n.DS_Store       # operating system clutter"
+      },
+      "takeaways": [
+        "A remote is a hosted copy of your repository. origin is its usual name.",
+        "Push a branch, open a pull request, get a review, then merge.",
+        "Use .gitignore to keep dependencies, secrets and build output out of Git."
+      ]
+    }
+  ]
+}

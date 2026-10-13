@@ -1,0 +1,158 @@
+{
+  "tab": "security",
+  "id": "wireshark",
+  "order": 4,
+  "title": "Wireshark",
+  "summary": "Capture and read network traffic packet by packet, using sample captures in your browser.",
+  "lessons": [
+    {
+      "id": "packet-analysis",
+      "title": "Reading a capture: a web visit",
+      "level": "intermediate",
+      "minutes": 16,
+      "concept": {
+        "text": "**Wireshark** is a free tool that captures the traffic passing through a network interface and shows every packet in detail. It is how network engineers find out why something is slow or broken, and how security analysts see what really happened.\n\nThe window has three panes: the **packet list** (one row per packet), the **packet details** (each protocol layer, expandable) and the raw bytes. The key skill is filtering: a busy network produces thousands of packets a second, and a **display filter** such as `dns` or `ip.addr==10.0.0.5` shows only the ones that matter.",
+        "analogy": "Wireshark is a slow-motion replay of a conversation between computers. In real time it is a blur, but frame by frame you can see exactly who said what, in what order, and where it went wrong."
+      },
+      "visual": {
+        "type": "layers",
+        "caption": "Wireshark's detail pane shows the same layers as the OSI model, for a single packet.",
+        "layers": [
+          { "name": "Frame", "detail": "Capture metadata: size, time", "tag": "Layer 1" },
+          { "name": "Ethernet II", "detail": "Source and destination MAC addresses", "tag": "Layer 2" },
+          { "name": "Internet Protocol", "detail": "Source and destination IP addresses, TTL", "tag": "Layer 3" },
+          { "name": "TCP or UDP", "detail": "Ports, flags, sequence numbers", "tag": "Layer 4" },
+          { "name": "Application data", "detail": "DNS, HTTP, TLS…", "tag": "Layer 7" }
+        ]
+      },
+      "steps": [
+        { "title": "Capture", "text": "In the real tool, choose your network interface and press the blue fin. Only capture on networks you own or are authorised to monitor. The sample below is a recorded visit to a website." },
+        { "title": "Follow the story", "text": "Read the Info column from the top. An **ARP** request finds the gateway's MAC address. A **DNS** query and response turn the name into an IP. Three **TCP** packets (SYN, SYN-ACK, ACK) open the connection. **TLS** hellos set up encryption. After that, only 'Application Data' is visible." },
+        { "title": "Filter", "text": "Type a display filter to narrow the list. Combine conditions with `&&`.", "code": "dns\ntcp.port==443\nip.addr==192.168.1.10 && tcp\nhttp" },
+        { "title": "Spot what stands out", "text": "Filter for `http`. Packet 13 is an unencrypted login: the username and password are readable by anyone on the path. Then filter for `tcp.port==23` to find a Telnet connection attempt being refused." }
+      ],
+      "interactive": {
+        "type": "packets",
+        "filters": ["arp", "dns", "tcp", "tls", "http", "tcp.port==443", "ip.addr==93.184.215.14"],
+        "packets": [
+          { "no": 1, "time": "0.000", "src": "192.168.1.10", "dst": "Broadcast", "proto": "ARP", "info": "Who has 192.168.1.1? Tell 192.168.1.10", "stack": ["eth", "arp"],
+            "detail": [{ "layer": "Ethernet II", "fields": ["Source: a4:5e:60:c1:22:9f", "Destination: ff:ff:ff:ff:ff:ff (Broadcast)"] }, { "layer": "Address Resolution Protocol (request)", "fields": ["Sender IP: 192.168.1.10", "Target IP: 192.168.1.1", "Target MAC: 00:00:00:00:00:00 (unknown)"] }],
+            "note": "The PC needs the gateway's MAC address before it can send anything off its own network." },
+          { "no": 2, "time": "0.001", "src": "192.168.1.1", "dst": "192.168.1.10", "proto": "ARP", "info": "192.168.1.1 is at 3c:84:6a:0b:7d:10", "stack": ["eth", "arp"],
+            "detail": [{ "layer": "Ethernet II", "fields": ["Source: 3c:84:6a:0b:7d:10", "Destination: a4:5e:60:c1:22:9f"] }, { "layer": "Address Resolution Protocol (reply)", "fields": ["Sender MAC: 3c:84:6a:0b:7d:10", "Sender IP: 192.168.1.1"] }],
+            "note": "The reply is unicast, straight back to the asker." },
+          { "no": 3, "time": "0.014", "src": "192.168.1.10", "dst": "192.168.1.1", "proto": "DNS", "info": "Standard query A example.com", "stack": ["eth", "ip", "udp", "dns"], "sport": 51514, "dport": 53,
+            "detail": [{ "layer": "Internet Protocol", "fields": ["Source: 192.168.1.10", "Destination: 192.168.1.1", "TTL: 128"] }, { "layer": "User Datagram Protocol", "fields": ["Source port: 51514", "Destination port: 53"] }, { "layer": "Domain Name System (query)", "fields": ["Name: example.com", "Type: A (IPv4 address)"] }],
+            "note": "DNS uses UDP port 53. The source port is a random ephemeral port." },
+          { "no": 4, "time": "0.038", "src": "192.168.1.1", "dst": "192.168.1.10", "proto": "DNS", "info": "Standard query response A 93.184.215.14", "stack": ["eth", "ip", "udp", "dns"], "sport": 53, "dport": 51514,
+            "detail": [{ "layer": "User Datagram Protocol", "fields": ["Source port: 53", "Destination port: 51514"] }, { "layer": "Domain Name System (response)", "fields": ["Name: example.com", "Address: 93.184.215.14", "Time to live: 3600 seconds"] }],
+            "note": "The answer can be cached for 3600 seconds (its TTL)." },
+          { "no": 5, "time": "0.040", "src": "192.168.1.10", "dst": "93.184.215.14", "proto": "TCP", "info": "52100 → 443 [SYN] Seq=0", "stack": ["eth", "ip", "tcp"], "sport": 52100, "dport": 443,
+            "detail": [{ "layer": "Internet Protocol", "fields": ["Source: 192.168.1.10", "Destination: 93.184.215.14"] }, { "layer": "Transmission Control Protocol", "fields": ["Source port: 52100", "Destination port: 443", "Flags: SYN", "Sequence number: 0"] }],
+            "note": "Step 1 of the three-way handshake." },
+          { "no": 6, "time": "0.062", "src": "93.184.215.14", "dst": "192.168.1.10", "proto": "TCP", "info": "443 → 52100 [SYN, ACK] Seq=0 Ack=1", "stack": ["eth", "ip", "tcp"], "sport": 443, "dport": 52100,
+            "detail": [{ "layer": "Transmission Control Protocol", "fields": ["Flags: SYN, ACK", "Sequence number: 0", "Acknowledgment number: 1"] }],
+            "note": "Step 2: the server agrees and acknowledges. The 22 ms gap is the round-trip time to the server." },
+          { "no": 7, "time": "0.062", "src": "192.168.1.10", "dst": "93.184.215.14", "proto": "TCP", "info": "52100 → 443 [ACK] Seq=1 Ack=1", "stack": ["eth", "ip", "tcp"], "sport": 52100, "dport": 443,
+            "detail": [{ "layer": "Transmission Control Protocol", "fields": ["Flags: ACK", "Sequence number: 1", "Acknowledgment number: 1"] }],
+            "note": "Step 3: connection established." },
+          { "no": 8, "time": "0.064", "src": "192.168.1.10", "dst": "93.184.215.14", "proto": "TLSv1.3", "info": "Client Hello (SNI=example.com)", "stack": ["eth", "ip", "tcp", "tls"], "sport": 52100, "dport": 443,
+            "detail": [{ "layer": "Transport Layer Security", "fields": ["Handshake type: Client Hello", "Supported versions: TLS 1.3, TLS 1.2", "Server Name Indication: example.com", "Cipher suites: 16 offered", "Extension: key_share (x25519)"] }],
+            "note": "The server name is visible here even though the rest of the session will be encrypted." },
+          { "no": 9, "time": "0.088", "src": "93.184.215.14", "dst": "192.168.1.10", "proto": "TLSv1.3", "info": "Server Hello, Change Cipher Spec, Application Data", "stack": ["eth", "ip", "tcp", "tls"], "sport": 443, "dport": 52100,
+            "detail": [{ "layer": "Transport Layer Security", "fields": ["Handshake type: Server Hello", "Cipher suite: TLS_AES_256_GCM_SHA384", "Extension: key_share (x25519)", "Encrypted: certificate and handshake finish"] }],
+            "note": "In TLS 1.3 the certificate is already encrypted, so Wireshark shows it as Application Data." },
+          { "no": 10, "time": "0.091", "src": "192.168.1.10", "dst": "93.184.215.14", "proto": "TLSv1.3", "info": "Application Data", "stack": ["eth", "ip", "tcp", "tls"], "sport": 52100, "dport": 443,
+            "detail": [{ "layer": "Transport Layer Security", "fields": ["Content type: Application Data", "Length: 517", "Encrypted application data: 8f2a41…"] }],
+            "note": "This is the HTTP request, but all you can see is that it exists and how big it is." },
+          { "no": 11, "time": "0.118", "src": "93.184.215.14", "dst": "192.168.1.10", "proto": "TLSv1.3", "info": "Application Data", "stack": ["eth", "ip", "tcp", "tls"], "sport": 443, "dport": 52100,
+            "detail": [{ "layer": "Transport Layer Security", "fields": ["Content type: Application Data", "Length: 1256", "Encrypted application data: c07be9…"] }],
+            "note": "The encrypted response: the web page." },
+          { "no": 12, "time": "2.300", "src": "192.168.1.10", "dst": "203.0.113.80", "proto": "TCP", "info": "52144 → 80 [SYN] Seq=0", "stack": ["eth", "ip", "tcp"], "sport": 52144, "dport": 80,
+            "detail": [{ "layer": "Transmission Control Protocol", "fields": ["Source port: 52144", "Destination port: 80", "Flags: SYN"] }],
+            "note": "Port 80: this next connection is plain, unencrypted HTTP." },
+          { "no": 13, "time": "2.351", "src": "192.168.1.10", "dst": "203.0.113.80", "proto": "HTTP", "info": "POST /login HTTP/1.1 (application/x-www-form-urlencoded)", "stack": ["eth", "ip", "tcp", "http"], "sport": 52144, "dport": 80,
+            "detail": [{ "layer": "Transmission Control Protocol", "fields": ["Source port: 52144", "Destination port: 80", "Flags: PSH, ACK"] }, { "layer": "Hypertext Transfer Protocol", "fields": ["POST /login HTTP/1.1", "Host: intranet.example.org", "Content-Type: application/x-www-form-urlencoded"] }, { "layer": "HTML Form URL Encoded", "fields": ["username = jsmith", "password = Summer2024!"] }],
+            "note": "A login over HTTP. The password is in clear text for anyone on the path. Compare this with packets 10 and 11." },
+          { "no": 14, "time": "2.398", "src": "203.0.113.80", "dst": "192.168.1.10", "proto": "HTTP", "info": "HTTP/1.1 302 Found", "stack": ["eth", "ip", "tcp", "http"], "sport": 80, "dport": 52144,
+            "detail": [{ "layer": "Hypertext Transfer Protocol", "fields": ["HTTP/1.1 302 Found", "Location: /dashboard", "Set-Cookie: session=7b1f9c…"] }],
+            "note": "The session cookie is also sent in clear text, so it could be stolen and reused." },
+          { "no": 15, "time": "5.010", "src": "192.168.1.10", "dst": "192.168.1.50", "proto": "TCP", "info": "52160 → 23 [SYN] Seq=0", "stack": ["eth", "ip", "tcp"], "sport": 52160, "dport": 23,
+            "detail": [{ "layer": "Transmission Control Protocol", "fields": ["Source port: 52160", "Destination port: 23 (Telnet)", "Flags: SYN"] }],
+            "note": "Something is trying to open Telnet, an insecure legacy protocol." },
+          { "no": 16, "time": "5.011", "src": "192.168.1.50", "dst": "192.168.1.10", "proto": "TCP", "info": "23 → 52160 [RST, ACK] Seq=1 Ack=1", "stack": ["eth", "ip", "tcp"], "sport": 23, "dport": 52160,
+            "detail": [{ "layer": "Transmission Control Protocol", "fields": ["Source port: 23", "Destination port: 52160", "Flags: RST, ACK"] }],
+            "note": "RST means the port is closed: nothing is listening. Many SYNs to different ports answered by RSTs is the signature of a port scan." }
+        ]
+      },
+      "challenge": {
+        "prompt": "Using the sample capture: (1) which display filter shows only the encrypted web session to example.com? (2) What are the username and password in the insecure login, and which packet holds them? (3) How can you tell the Telnet port on 192.168.1.50 is closed?",
+        "hint": "Try the `tcp.port==443` and `http` filter buttons, click the packet numbers to inspect them, and look at the TCP flags in the last packet.",
+        "solution": "1. `tcp.port==443` (or `ip.addr==93.184.215.14`) shows packets 5 to 11: the handshake, the TLS hellos and the encrypted application data.\n\n2. **Packet 13**: username `jsmith`, password `Summer2024!`, visible because the form was sent over plain HTTP on port 80.\n\n3. **Packet 16** is a TCP segment with the **RST** flag, sent in immediate reply to the SYN in packet 15. A reset means no service is listening on port 23. An open port would have answered with SYN-ACK."
+      },
+      "takeaways": [
+        "Wireshark shows each packet layer by layer. Display filters find the ones that matter.",
+        "A web visit is ARP, DNS, a TCP handshake, a TLS handshake, then encrypted data.",
+        "Plain HTTP and Telnet expose credentials. SYN answered by RST means a closed port."
+      ]
+    },
+    {
+      "id": "suspicious-traffic",
+      "title": "Spotting an attack in a capture",
+      "level": "advanced",
+      "minutes": 14,
+      "concept": {
+        "text": "Analysts rarely read captures packet by packet. They look for **patterns** that do not belong: one host talking to many ports, many failed logins, a workstation contacting an address nobody recognises, or large DNS queries with strange names.\n\nThis capture records the early stages of an intrusion on a small network: an attacker **scans** a server to find open ports, then tries to get in. Recognising these stages early is what gives defenders time to respond.",
+        "analogy": "A burglar walks down a street trying every door handle. One attempt means nothing. The pattern, one person and every door within a minute, is what a watchful neighbour notices. A port scan is exactly that pattern on a network."
+      },
+      "visual": {
+        "type": "compare",
+        "caption": "How a SYN scan reveals port states.",
+        "columns": ["Reply from target", "Meaning"],
+        "rows": [
+          ["Open port", "SYN, ACK", "A service is listening. The scanner then sends RST instead of finishing."],
+          ["Closed port", "RST, ACK", "The host is up but nothing is listening."],
+          ["Filtered port", "No reply at all", "A firewall silently dropped the packet."]
+        ]
+      },
+      "steps": [
+        { "title": "Find the talker", "text": "In real Wireshark, **Statistics, Conversations** ranks hosts by traffic. Here, notice that `10.0.0.66` starts every exchange. Apply `ip.src==10.0.0.66`." },
+        { "title": "Recognise the scan", "text": "Packets 1 to 10: one source, one target, six different destination ports in a few milliseconds. Closed ports answer RST. Ports 22 and 80 answer SYN-ACK, so they are open." },
+        { "title": "See what happens next", "text": "Filter `tcp.port==22`. After the scan, the same host opens repeated SSH connections seconds apart. Repeated short sessions to an authentication service is the pattern of **password guessing**." },
+        { "title": "Check for the worst case", "text": "Packet 15 is different: the server itself opens a connection **outbound** to the attacker on port 4444. A server starting a connection to an unknown host on an unusual port suggests a **reverse shell**. This is the moment to isolate the machine." }
+      ],
+      "interactive": {
+        "type": "packets",
+        "filters": ["tcp", "ip.src==10.0.0.66", "ip.src==10.0.0.20", "tcp.port==22", "tcp.port==4444"],
+        "packets": [
+          { "no": 1, "time": "0.000", "src": "10.0.0.66", "dst": "10.0.0.20", "proto": "TCP", "info": "40112 → 21 [SYN]", "stack": ["ip", "tcp"], "sport": 40112, "dport": 21, "detail": [{ "layer": "Transmission Control Protocol", "fields": ["Destination port: 21 (FTP)", "Flags: SYN"] }], "note": "The first of a burst of SYNs to different ports." },
+          { "no": 2, "time": "0.001", "src": "10.0.0.20", "dst": "10.0.0.66", "proto": "TCP", "info": "21 → 40112 [RST, ACK]", "stack": ["ip", "tcp"], "sport": 21, "dport": 40112, "detail": [{ "layer": "Transmission Control Protocol", "fields": ["Flags: RST, ACK"] }], "note": "Closed." },
+          { "no": 3, "time": "0.002", "src": "10.0.0.66", "dst": "10.0.0.20", "proto": "TCP", "info": "40112 → 22 [SYN]", "stack": ["ip", "tcp"], "sport": 40112, "dport": 22, "detail": [{ "layer": "Transmission Control Protocol", "fields": ["Destination port: 22 (SSH)", "Flags: SYN"] }] },
+          { "no": 4, "time": "0.003", "src": "10.0.0.20", "dst": "10.0.0.66", "proto": "TCP", "info": "22 → 40112 [SYN, ACK]", "stack": ["ip", "tcp"], "sport": 22, "dport": 40112, "detail": [{ "layer": "Transmission Control Protocol", "fields": ["Flags: SYN, ACK"] }], "note": "Open: SSH is listening." },
+          { "no": 5, "time": "0.003", "src": "10.0.0.66", "dst": "10.0.0.20", "proto": "TCP", "info": "40112 → 22 [RST]", "stack": ["ip", "tcp"], "sport": 40112, "dport": 22, "detail": [{ "layer": "Transmission Control Protocol", "fields": ["Flags: RST"] }], "note": "The scanner tears the connection down without completing it: a half-open (SYN) scan." },
+          { "no": 6, "time": "0.004", "src": "10.0.0.66", "dst": "10.0.0.20", "proto": "TCP", "info": "40112 → 23 [SYN]", "stack": ["ip", "tcp"], "sport": 40112, "dport": 23, "detail": [{ "layer": "Transmission Control Protocol", "fields": ["Destination port: 23 (Telnet)", "Flags: SYN"] }] },
+          { "no": 7, "time": "0.005", "src": "10.0.0.20", "dst": "10.0.0.66", "proto": "TCP", "info": "23 → 40112 [RST, ACK]", "stack": ["ip", "tcp"], "sport": 23, "dport": 40112, "detail": [{ "layer": "Transmission Control Protocol", "fields": ["Flags: RST, ACK"] }], "note": "Closed." },
+          { "no": 8, "time": "0.006", "src": "10.0.0.66", "dst": "10.0.0.20", "proto": "TCP", "info": "40112 → 80 [SYN]", "stack": ["ip", "tcp"], "sport": 40112, "dport": 80, "detail": [{ "layer": "Transmission Control Protocol", "fields": ["Destination port: 80 (HTTP)", "Flags: SYN"] }] },
+          { "no": 9, "time": "0.007", "src": "10.0.0.20", "dst": "10.0.0.66", "proto": "TCP", "info": "80 → 40112 [SYN, ACK]", "stack": ["ip", "tcp"], "sport": 80, "dport": 40112, "detail": [{ "layer": "Transmission Control Protocol", "fields": ["Flags: SYN, ACK"] }], "note": "Open: a web server." },
+          { "no": 10, "time": "0.008", "src": "10.0.0.66", "dst": "10.0.0.20", "proto": "TCP", "info": "40112 → 3389 [SYN]", "stack": ["ip", "tcp"], "sport": 40112, "dport": 3389, "detail": [{ "layer": "Transmission Control Protocol", "fields": ["Destination port: 3389 (RDP)", "Flags: SYN", "No reply was captured"] }], "note": "No reply at all: filtered by a firewall." },
+          { "no": 11, "time": "12.400", "src": "10.0.0.66", "dst": "10.0.0.20", "proto": "SSH", "info": "Client: Protocol (SSH-2.0-libssh_0.9.6)", "stack": ["ip", "tcp", "ssh"], "sport": 40500, "dport": 22, "detail": [{ "layer": "SSH Protocol", "fields": ["Protocol: SSH-2.0-libssh_0.9.6"] }], "note": "A scripting library, not a normal SSH client, is a hint of automation." },
+          { "no": 12, "time": "13.900", "src": "10.0.0.66", "dst": "10.0.0.20", "proto": "SSH", "info": "Client: Protocol (SSH-2.0-libssh_0.9.6)", "stack": ["ip", "tcp", "ssh"], "sport": 40502, "dport": 22, "detail": [{ "layer": "SSH Protocol", "fields": ["New connection, 1.5 s after the last one"] }], "note": "A second connection from a new source port." },
+          { "no": 13, "time": "15.400", "src": "10.0.0.66", "dst": "10.0.0.20", "proto": "SSH", "info": "Client: Protocol (SSH-2.0-libssh_0.9.6)", "stack": ["ip", "tcp", "ssh"], "sport": 40504, "dport": 22, "detail": [{ "layer": "SSH Protocol", "fields": ["New connection, 1.5 s after the last one"] }], "note": "A third. Regular intervals and short sessions suggest a password-guessing tool." },
+          { "no": 14, "time": "16.900", "src": "10.0.0.66", "dst": "10.0.0.20", "proto": "SSH", "info": "Encrypted packet (len=1420)", "stack": ["ip", "tcp", "ssh"], "sport": 40506, "dport": 22, "detail": [{ "layer": "SSH Protocol", "fields": ["Encrypted packet", "Session continues for 40 seconds"] }], "note": "This session lasts much longer than the others. A guess may have succeeded." },
+          { "no": 15, "time": "58.200", "src": "10.0.0.20", "dst": "10.0.0.66", "proto": "TCP", "info": "49822 → 4444 [SYN]", "stack": ["ip", "tcp"], "sport": 49822, "dport": 4444, "detail": [{ "layer": "Transmission Control Protocol", "fields": ["Source: 10.0.0.20 (the server)", "Destination port: 4444", "Flags: SYN"] }], "note": "The direction has reversed: the server is now calling the attacker. Port 4444 is a common default for reverse shells." },
+          { "no": 16, "time": "58.201", "src": "10.0.0.66", "dst": "10.0.0.20", "proto": "TCP", "info": "4444 → 49822 [SYN, ACK]", "stack": ["ip", "tcp"], "sport": 4444, "dport": 49822, "detail": [{ "layer": "Transmission Control Protocol", "fields": ["Flags: SYN, ACK"] }], "note": "The attacker was listening and accepts the connection." }
+        ]
+      },
+      "challenge": {
+        "prompt": "From the capture: (1) which ports on 10.0.0.20 are open, closed and filtered? (2) Which filter isolates the suspected reverse shell? (3) Write a three-line summary of the incident for your team lead.",
+        "hint": "Use the reply table above for part 1. For part 2, look for traffic that the server started.",
+        "solution": "1. **Open**: 22 (SSH) and 80 (HTTP), which replied SYN-ACK. **Closed**: 21 and 23, which replied RST. **Filtered**: 3389, which gave no reply.\n\n2. `tcp.port==4444`, or `ip.src==10.0.0.20` to see everything the server initiated.\n\n3. Example summary: \"Host 10.0.0.66 port-scanned server 10.0.0.20, then made repeated automated SSH login attempts, one of which appears to have succeeded. About 40 seconds later the server opened an outbound connection to 10.0.0.66 on port 4444, consistent with a reverse shell. Recommend isolating 10.0.0.20 now, blocking 10.0.0.66, preserving logs and resetting all SSH credentials.\""
+      },
+      "takeaways": [
+        "Look for patterns: one source, many ports, many attempts, or a reversed direction.",
+        "SYN scan replies: SYN-ACK is open, RST is closed, silence is filtered.",
+        "A server starting a connection to an unknown host on an odd port is a red flag."
+      ]
+    }
+  ]
+}

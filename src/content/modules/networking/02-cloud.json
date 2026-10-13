@@ -1,0 +1,206 @@
+{
+  "tab": "networking",
+  "id": "cloud",
+  "order": 2,
+  "title": "Cloud",
+  "summary": "Service models, the core services of AWS, Azure and GCP, cloud networking and architecture patterns.",
+  "lessons": [
+    {
+      "id": "service-models",
+      "title": "IaaS, PaaS and SaaS",
+      "level": "beginner",
+      "minutes": 10,
+      "concept": {
+        "text": "Cloud computing means renting computing resources over the internet and paying for what you use, instead of buying and running your own hardware. The three service models differ in how much the provider manages for you.\n\nIaaS rents you raw building blocks: virtual machines, storage and networks. PaaS runs your code for you, handling servers and scaling. SaaS is finished software you simply use. The more the provider manages, the less control and the less work you have. Who secures what is called the **shared responsibility model**.",
+        "analogy": "Pizza as a service. Made at home: you do everything (on-premises). Take-and-bake: you get the pizza and use your own oven (IaaS). Delivery: it arrives hot and you provide the table (PaaS). Dining out: you just show up and eat (SaaS)."
+      },
+      "visual": {
+        "type": "compare",
+        "caption": "Who manages what. 'You' means more control and more work.",
+        "columns": ["On-premises", "IaaS", "PaaS", "SaaS"],
+        "rows": [
+          ["Application and data", "You", "You", "You", "Provider (your data is still yours)"],
+          ["Runtime and middleware", "You", "You", "Provider", "Provider"],
+          ["Operating system", "You", "You", "Provider", "Provider"],
+          ["Virtualisation and servers", "You", "Provider", "Provider", "Provider"],
+          ["Network and data centre", "You", "Provider", "Provider", "Provider"],
+          ["Examples", "Your server room", "EC2, Azure VMs, Compute Engine", "App Service, Cloud Run, Heroku", "Gmail, Microsoft 365, Salesforce"]
+        ]
+      },
+      "steps": [
+        { "title": "Know the benefits", "text": "**Elasticity** (scale up and down on demand), **pay-as-you-go** pricing, global reach, and no hardware to buy or maintain." },
+        { "title": "Know the deployment models", "text": "**Public** cloud is shared infrastructure from a provider. **Private** cloud is dedicated to one organisation. **Hybrid** mixes both. **Multi-cloud** uses several providers." },
+        { "title": "Understand shared responsibility", "text": "The provider secures the cloud itself: buildings, hardware, hypervisor. You secure what you put in it: data, identities, configuration. Most cloud breaches are customer misconfigurations." },
+        { "title": "Move from CapEx to OpEx", "text": "Buying servers is a large up-front capital expense. Cloud is an ongoing operating expense, which needs monitoring, or the bill grows quietly." }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "You rent a virtual machine and install your own operating system updates and software. Which model?", "options": ["SaaS", "PaaS", "IaaS", "On-premises"], "answer": 2, "explain": "With IaaS you manage the OS and everything above it." },
+          { "q": "You push your code and the platform builds, runs and scales it. Which model?", "options": ["IaaS", "PaaS", "SaaS", "Colocation"], "answer": 1, "explain": "PaaS hides the servers and operating system." },
+          { "q": "A storage bucket is left publicly readable and data leaks. Under shared responsibility, whose fault is it?", "options": ["The cloud provider's", "The customer's", "The ISP's", "Nobody's"], "answer": 1, "explain": "Configuration and data access are the customer's responsibility in every model." }
+        ]
+      },
+      "challenge": {
+        "prompt": "A three-person startup wants to launch a web app quickly, has no operations staff, and expects unpredictable traffic. Which service model would you recommend, and what do they give up?",
+        "hint": "Their scarce resource is time and people, not control.",
+        "solution": "**PaaS** (or serverless). They deploy code and the platform handles servers, patching, scaling and load balancing, so three people can focus on the product. They give up some control: less choice of OS and runtime versions, possible higher cost per unit at large scale, and some lock-in to the platform's way of doing things. They can move parts to IaaS later if they outgrow it."
+      },
+      "takeaways": [
+        "IaaS: you manage the OS and up. PaaS: you manage code and data. SaaS: you just use it.",
+        "The provider secures the cloud. You secure what you put in the cloud.",
+        "Cloud trades up-front hardware cost for flexible, pay-as-you-go spending."
+      ]
+    },
+    {
+      "id": "core-services",
+      "title": "AWS, Azure and GCP core services",
+      "level": "beginner",
+      "minutes": 14,
+      "concept": {
+        "text": "Amazon Web Services (AWS), Microsoft Azure and Google Cloud Platform (GCP) are the three largest cloud providers. Each offers hundreds of services, but they are built on the same handful of ideas: compute, storage, databases, networking and identity.\n\nLearn the concepts once and the rest is translation. An AWS EC2 instance, an Azure Virtual Machine and a GCP Compute Engine instance are the same thing with different names and consoles.",
+        "analogy": "The three clouds are three supermarket chains. The layout and own-brand names differ, but each has a bakery, a dairy aisle and a checkout. Once you can shop in one, you can find your way round the others."
+      },
+      "visual": {
+        "type": "compare",
+        "caption": "A translation table for the core services.",
+        "columns": ["AWS", "Azure", "GCP"],
+        "rows": [
+          ["Virtual machines", "EC2", "Virtual Machines", "Compute Engine"],
+          ["Object storage", "S3", "Blob Storage", "Cloud Storage"],
+          ["Managed SQL database", "RDS", "Azure SQL Database", "Cloud SQL"],
+          ["NoSQL database", "DynamoDB", "Cosmos DB", "Firestore"],
+          ["Serverless functions", "Lambda", "Functions", "Cloud Run functions"],
+          ["Containers (Kubernetes)", "EKS", "AKS", "GKE"],
+          ["Virtual network", "VPC", "Virtual Network (VNet)", "VPC"],
+          ["Identity and access", "IAM", "Microsoft Entra ID + RBAC", "Cloud IAM"],
+          ["DNS", "Route 53", "Azure DNS", "Cloud DNS"]
+        ]
+      },
+      "steps": [
+        { "title": "Regions and availability zones", "text": "A **region** is a geographic area such as Ireland or Virginia. Each has several **availability zones**: separate data centres. Spread across zones to survive one failing." },
+        { "title": "Compute options", "text": "From most to least control: virtual machines, containers, then serverless functions that run only when triggered and bill per request." },
+        { "title": "Storage types", "text": "**Object** storage (S3) holds files of any size and is the cheapest. **Block** storage is a virtual disk attached to a VM. **File** storage is a shared network drive." },
+        { "title": "Start safely", "text": "All three have free tiers. Create a **budget alert** first, turn on MFA for your account, and never use the root or owner account for daily work." }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "Which is the Azure equivalent of AWS S3?", "options": ["Cosmos DB", "Blob Storage", "AKS", "Entra ID"], "answer": 1, "explain": "Both are object storage services." },
+          { "q": "You need code to run only when a file is uploaded, and to pay nothing while idle. Which kind of service?", "options": ["A virtual machine", "Serverless functions", "Block storage", "A VPN"], "answer": 1, "explain": "Functions such as Lambda are event-driven and billed per invocation." },
+          { "q": "Why deploy across multiple availability zones?", "options": ["It is cheaper", "To stay online if one data centre fails", "To use more IP addresses", "It is required by DNS"], "answer": 1, "explain": "Zones are isolated from each other's failures." },
+          { "q": "What is the first thing to set up on a new cloud account?", "options": ["A Kubernetes cluster", "MFA and a budget alert", "A GPU instance", "A public bucket"], "answer": 1, "explain": "Protect the account and your wallet before building anything." }
+        ]
+      },
+      "challenge": {
+        "prompt": "Pick a provider's service for each need of a photo-sharing app: (a) storing uploaded photos, (b) a relational database of users, (c) a resize job that runs on each upload, (d) logins and permissions for staff.",
+        "hint": "Use the translation table. Any provider is fine as long as the service type matches.",
+        "solution": "Using AWS names (Azure / GCP in brackets):\n\n(a) **S3** (Blob Storage / Cloud Storage): object storage.\n\n(b) **RDS** (Azure SQL Database / Cloud SQL): managed relational database.\n\n(c) **Lambda** triggered by the upload event (Functions / Cloud Run functions): serverless.\n\n(d) **IAM** (Entra ID with RBAC / Cloud IAM): identity and access management."
+      },
+      "takeaways": [
+        "All three clouds offer the same core building blocks under different names.",
+        "Regions contain availability zones. Spread across zones for resilience.",
+        "Secure the account with MFA and set a budget alert before anything else."
+      ]
+    },
+    {
+      "id": "vpc-load-balancing",
+      "title": "VPCs and load balancing",
+      "level": "intermediate",
+      "minutes": 14,
+      "concept": {
+        "text": "A VPC is your own private network inside a cloud provider. You choose its IP range, split it into subnets, and control what can talk to what. It is everything from the fundamentals module, defined in software.\n\nA **public subnet** has a route to the internet. A **private subnet** does not, so databases and application servers placed there cannot be reached from outside. A load balancer sits in the public subnet, receives all incoming traffic, and spreads it across healthy servers in the private subnets.",
+        "analogy": "A VPC is a gated office campus. The reception building (public subnet) faces the street. The offices and the vault (private subnets) are inside the fence. The receptionist (load balancer) sends each visitor to whichever clerk is free."
+      },
+      "visual": {
+        "type": "flow",
+        "caption": "The standard path of a web request into a VPC.",
+        "nodes": [
+          { "label": "User", "detail": "Anywhere on the internet" },
+          { "label": "Internet gateway", "detail": "The VPC's front door" },
+          { "label": "Load balancer", "detail": "Public subnet, checks health" },
+          { "label": "App servers", "detail": "Private subnet, 2+ zones" },
+          { "label": "Database", "detail": "Private subnet, no internet route" }
+        ]
+      },
+      "steps": [
+        { "title": "Plan the address space", "text": "Pick a private range such as `10.0.0.0/16`, then carve subnets such as `10.0.1.0/24` (public) and `10.0.10.0/24` (private) in each availability zone." },
+        { "title": "Route tables decide public or private", "text": "A subnet is public if its route table sends `0.0.0.0/0` to an **internet gateway**. Private subnets reach out for updates through a **NAT gateway**, which allows outbound traffic only." },
+        { "title": "Filter traffic", "text": "**Security groups** are stateful firewalls attached to resources: allow 443 from the load balancer to the app, and 5432 from the app to the database, and nothing else." },
+        { "title": "Balance the load", "text": "A layer 7 (application) load balancer routes by URL and terminates TLS. A layer 4 (network) one routes by IP and port, very fast. Both run **health checks** and stop sending traffic to failed servers." }
+      ],
+      "interactive": {
+        "type": "order",
+        "prompt": "Order the hops a visitor's request takes to reach the data.",
+        "items": [
+          "User's browser resolves the site's DNS name",
+          "Request enters the VPC through the internet gateway",
+          "Load balancer in a public subnet accepts the connection",
+          "Load balancer forwards to a healthy app server in a private subnet",
+          "App server queries the database in a private subnet",
+          "Response travels back through the load balancer to the user"
+        ]
+      },
+      "challenge": {
+        "prompt": "Write the security group rules (source, port) for a three-tier app: load balancer, app servers on port 8080, and a PostgreSQL database on port 5432. Apply least privilege.",
+        "hint": "Each tier should accept traffic only from the tier directly in front of it.",
+        "code": true,
+        "solution": "Load balancer SG:  allow TCP 443 from 0.0.0.0/0 (the internet)\nApp server SG:     allow TCP 8080 from the load balancer SG only\nDatabase SG:       allow TCP 5432 from the app server SG only\n\nNo SSH from the internet. Use a bastion host, VPN or the\nprovider's session manager for admin access."
+      },
+      "takeaways": [
+        "A VPC is a software-defined private network with subnets, route tables and gateways.",
+        "Public subnets route to an internet gateway. Private subnets do not.",
+        "Load balancers spread traffic across healthy servers in multiple zones."
+      ]
+    },
+    {
+      "id": "architecture-patterns",
+      "title": "Cloud architecture patterns",
+      "level": "advanced",
+      "minutes": 14,
+      "concept": {
+        "text": "An architecture pattern is a proven way of arranging cloud services to meet a goal such as surviving failures, handling traffic spikes or cutting cost. You rarely invent a design from nothing. You combine patterns.\n\nThe guiding ideas are: assume everything fails and design for it, scale **horizontally** by adding more small servers instead of one giant one, keep servers **stateless** so any of them can handle any request, and **decouple** components so one slow part does not stall the rest.",
+        "analogy": "Patterns are the standard plays in a team sport. Nobody improvises every move. You learn the plays that work, then choose the right one for the situation on the pitch."
+      },
+      "visual": {
+        "type": "cards",
+        "caption": "Patterns you will meet in almost every design.",
+        "items": [
+          { "title": "Three-tier", "text": "Web, application and database layers, each scaled and secured separately." },
+          { "title": "Auto scaling", "text": "Add servers when load rises, remove them when it falls. Needs stateless servers." },
+          { "title": "Multi-AZ", "text": "Run in two or more availability zones so one data centre failure is survivable." },
+          { "title": "Queue-based decoupling", "text": "Producers drop jobs on a queue and workers process them at their own pace." },
+          { "title": "Caching and CDN", "text": "Serve repeated content from memory or from edge locations near users." },
+          { "title": "Serverless / event-driven", "text": "Functions triggered by events. No servers to manage, and you pay per use." },
+          { "title": "Microservices", "text": "Many small services deployed independently. Flexible, but operationally complex." },
+          { "title": "Infrastructure as code", "text": "Define everything in files (Terraform, CloudFormation, Bicep) for repeatable deployments." }
+        ]
+      },
+      "steps": [
+        { "title": "Start from requirements", "text": "How much downtime is acceptable (**RTO**)? How much data loss (**RPO**)? What is the peak load? What is the budget? These decide the pattern, not fashion." },
+        { "title": "Remove single points of failure", "text": "Two of everything, in different zones, behind a load balancer. Use a managed database with automatic failover." },
+        { "title": "Decouple with queues", "text": "A user uploads a video: the web tier replies instantly and puts a job on a queue. Workers transcode in the background and scale with queue length." },
+        { "title": "Use the well-architected pillars", "text": "All three providers publish frameworks built on the same pillars: operational excellence, security, reliability, performance efficiency, cost optimisation and sustainability." }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "Traffic is 10 times higher on Black Friday than on a normal day. Which pattern handles this cost-effectively?", "options": ["One very large server all year", "Auto scaling a group of stateless servers", "A bigger database password", "Turning off logging"], "answer": 1, "explain": "Scale out for the peak and back in afterwards, paying only for what you use." },
+          { "q": "Why must servers be stateless to scale horizontally?", "options": ["It makes them cheaper", "So any server can handle any request, and servers can be added or removed freely", "Stateless servers do not need security", "It is not required"], "answer": 1, "explain": "Session data kept on one server breaks when the next request lands elsewhere. Store state in a database or cache." },
+          { "q": "Image processing is slow and makes the web page hang. Which pattern helps?", "options": ["Queue-based decoupling", "A bigger monitor", "Removing the load balancer", "Single AZ"], "answer": 0, "explain": "Hand the slow job to background workers through a queue and respond immediately." },
+          { "q": "What does infrastructure as code give you?", "options": ["Slower deployments", "Repeatable, reviewable, version-controlled environments", "Fewer features", "No need for backups"], "answer": 1, "explain": "The whole environment can be rebuilt from files and reviewed like any other code." }
+        ]
+      },
+      "challenge": {
+        "prompt": "Sketch an architecture for an online ticket shop that gets huge spikes when sales open, must not sell the same seat twice, and should survive a data centre failure. Name the patterns you would use.",
+        "hint": "Deal with the spike, the consistency requirement and the failure requirement separately.",
+        "solution": "**Spikes**: a CDN for static content, a load balancer in front of an **auto scaling** group of stateless web servers, and a **queue** or virtual waiting room to smooth the surge.\n\n**No double-selling**: a relational database with transactions, so that reserving a seat is atomic. Keep short-lived seat holds in a cache with expiry.\n\n**Resilience**: **multi-AZ** for web servers and for the database with automatic failover.\n\n**Operations**: all defined with infrastructure as code, with monitoring and alerts on queue length and error rate."
+      },
+      "takeaways": [
+        "Design for failure: no single points of failure, spread across zones.",
+        "Scale horizontally with stateless servers and decouple slow work with queues.",
+        "Let requirements (RTO, RPO, load, budget) choose the pattern."
+      ]
+    }
+  ]
+}

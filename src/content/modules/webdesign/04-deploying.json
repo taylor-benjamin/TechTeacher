@@ -1,0 +1,105 @@
+{
+  "tab": "webdesign",
+  "id": "deploying",
+  "order": 4,
+  "title": "Deploying a Site",
+  "summary": "Put your site on the internet for free with GitHub Pages, Netlify or Vercel.",
+  "lessons": [
+    {
+      "id": "github-pages",
+      "title": "Deploying with GitHub Pages",
+      "level": "beginner",
+      "minutes": 12,
+      "concept": {
+        "text": "Deploying means copying your site's files to a server that is always on, so that anyone can reach it at a public address. **GitHub Pages** does this free of charge for any GitHub repository: push your files and they are published.\n\nIt hosts **static** sites: HTML, CSS, JavaScript and images that are sent to the browser as they are. That covers portfolios, documentation, landing pages and the built output of React or Vue apps. It cannot run server-side code or a database.",
+        "analogy": "Your site on your laptop is a poster rolled up in your bedroom. Deploying is pinning it to a public notice board that never closes. GitHub Pages is a free notice board attached to the filing cabinet (repository) where you already keep your work."
+      },
+      "visual": {
+        "type": "flow",
+        "caption": "From your computer to a public URL.",
+        "nodes": [
+          { "label": "Local files", "detail": "index.html, style.css…" },
+          { "label": "git push", "detail": "Upload to GitHub" },
+          { "label": "Pages build", "detail": "Runs automatically" },
+          { "label": "Live site", "detail": "username.github.io/repo" }
+        ]
+      },
+      "steps": [
+        { "title": "Put the site in a repository", "text": "The home page must be named `index.html` and sit at the top level (or in a `docs` folder).", "code": "git init\ngit add .\ngit commit -m \"First version of my site\"\ngit branch -M main\ngit remote add origin https://github.com/USERNAME/my-site.git\ngit push -u origin main" },
+        { "title": "Turn on Pages", "text": "On GitHub open the repository, then **Settings, Pages**. Under **Build and deployment**, choose **Deploy from a branch**, select `main` and the `/ (root)` folder, and save." },
+        { "title": "Visit your site", "text": "After a minute it is live at `https://USERNAME.github.io/my-site/`. Every later push to `main` redeploys automatically." },
+        { "title": "Fix the common problem", "text": "If styles or images are missing, your paths probably start with `/`. A project site lives in a subfolder, so use relative paths such as `style.css` or `./images/photo.jpg`." }
+      ],
+      "interactive": {
+        "type": "order",
+        "prompt": "Order the steps to publish a site with GitHub Pages.",
+        "items": [
+          "Create index.html and your other files",
+          "git init, git add ., git commit",
+          "Create a repository on GitHub and add it as the remote",
+          "git push -u origin main",
+          "Settings, Pages: deploy from the main branch",
+          "Open https://USERNAME.github.io/REPO/"
+        ]
+      },
+      "challenge": {
+        "prompt": "A site works on your computer, but on GitHub Pages at `https://sam.github.io/portfolio/` the CSS does not load. The HTML contains `<link rel=\"stylesheet\" href=\"/css/style.css\">`. Why does it fail, and what is the fix?",
+        "hint": "Work out the full URL the browser requests for a path that starts with a slash.",
+        "solution": "A path starting with `/` is resolved from the **domain root**, so the browser requests `https://sam.github.io/css/style.css`. The file is really at `https://sam.github.io/portfolio/css/style.css`, so the request returns 404.\n\n**Fix**: use a relative path with no leading slash: `href=\"css/style.css\"`. The same applies to images and scripts."
+      },
+      "takeaways": [
+        "GitHub Pages hosts static sites free, straight from a repository.",
+        "Push to main and the site redeploys automatically.",
+        "Use relative paths, because project sites live in a subfolder."
+      ]
+    },
+    {
+      "id": "netlify-vercel",
+      "title": "Netlify and Vercel",
+      "level": "intermediate",
+      "minutes": 12,
+      "concept": {
+        "text": "**Netlify** and **Vercel** are hosting platforms built for modern front-end projects. You connect a Git repository once. From then on, every push triggers a build and a deployment to a global CDN, usually in under a minute. This is called **continuous deployment**.\n\nBeyond static files, they add **preview deployments** (a unique URL for every pull request), **serverless functions** for backend code, environment variables for secrets, custom domains and automatic HTTPS, all with generous free tiers.",
+        "analogy": "GitHub Pages is a self-service photocopier: reliable and free, but it only copies what you give it. Netlify and Vercel are a full print shop: hand over the raw files and they assemble, print and deliver worldwide, and give you a proof to check before the final run."
+      },
+      "visual": {
+        "type": "compare",
+        "columns": ["GitHub Pages", "Netlify", "Vercel"],
+        "rows": [
+          ["Best for", "Simple static sites and docs", "Static sites and JAMstack apps", "Next.js and React apps"],
+          ["Build step", "Basic, or GitHub Actions", "Automatic for most frameworks", "Automatic for most frameworks"],
+          ["Preview URL per pull request", "No", "Yes", "Yes"],
+          ["Serverless functions", "No", "Yes", "Yes"],
+          ["Built-in extras", "None", "Forms, redirects, identity", "Image optimisation, analytics"],
+          ["Free tier", "Yes", "Yes", "Yes, for personal projects"]
+        ]
+      },
+      "steps": [
+        { "title": "Push the project to GitHub", "text": "Both platforms deploy from a Git repository, so start there." },
+        { "title": "Import the repository", "text": "Sign in to Netlify or Vercel with GitHub, choose **Add new site** or **New project**, and pick the repository. The platform detects the framework." },
+        { "title": "Confirm the build settings", "text": "For a Vite project these are the usual values. A plain HTML site needs no build command.", "code": "Build command:     npm run build\nOutput directory:  dist" },
+        { "title": "Add environment variables", "text": "Put API keys in the dashboard's environment settings, never in the repository. Remember that anything shipped to the browser is public, so truly secret keys belong in a serverless function." },
+        { "title": "Add a custom domain", "text": "Add your domain in the dashboard and create the DNS records it shows you. HTTPS certificates are issued and renewed automatically." }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "What is a preview deployment?", "options": ["A screenshot of your site", "A temporary live URL built from a branch or pull request", "A paid plan", "A local server"], "answer": 1, "explain": "Reviewers can click a real link and test changes before they merge." },
+          { "q": "For a project built with Vite, what is the usual output directory?", "options": ["src", "node_modules", "dist", "public"], "answer": 2, "explain": "Vite writes the production build to dist." },
+          { "q": "Where should a secret API key for a payment provider live?", "options": ["In index.html", "In frontend JavaScript", "In an environment variable used by a serverless function", "In the README"], "answer": 2, "explain": "Anything sent to the browser can be read by visitors." },
+          { "q": "What does continuous deployment mean?", "options": ["You upload files by hand every day", "Every push to the repository automatically builds and publishes the site", "The site is rebuilt every second", "Deployment never finishes"], "answer": 1, "explain": "Git becomes the single trigger for releases." }
+        ]
+      },
+      "challenge": {
+        "prompt": "You have a React site built with Vite that calls a weather API needing a secret key. Describe how you would deploy it so that the site auto-updates on push and the key stays private.",
+        "hint": "Two parts: the hosting pipeline, and where the key is used.",
+        "solution": "1. Push the project to GitHub and import it into Netlify or Vercel. Build command `npm run build`, output directory `dist`. Every push to `main` now redeploys, and each pull request gets a preview URL.\n\n2. Create a **serverless function**, for example `/api/weather`, that reads the key from an **environment variable** and calls the weather API on the server.\n\n3. Set the variable in the platform's dashboard, not in the repository.\n\n4. Have the React app call `/api/weather` instead of the weather service directly. The key never reaches the browser."
+      },
+      "takeaways": [
+        "Connect a repository once and every push deploys automatically.",
+        "Preview deployments let you test changes on a real URL before merging.",
+        "Keep secrets in environment variables and use them only in serverless functions."
+      ]
+    }
+  ]
+}

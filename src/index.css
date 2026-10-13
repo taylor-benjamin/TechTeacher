@@ -1,0 +1,115 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+  --font-sans: "Outfit", ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+  --color-surface: var(--surface);
+  --color-panel: var(--panel);
+  --color-line: var(--line);
+  --color-edge: var(--edge);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-ok: var(--ok);
+  --color-bad: var(--bad);
+}
+
+/* Theme: a dark "operations console" look. Near-black green-tinted surfaces,
+   luminous accents, thin type, pill controls and a dot-grid backdrop.
+   All text/background pairs meet WCAG AA (4.5:1) in both modes.
+   --accent carries --on-accent text; --accent-ink is accent-coloured text on the page. */
+:root {
+  --surface: #f3f6f4;
+  --panel: #ffffff;
+  --line: #d5ddd9;
+  --edge: #6b7a74;
+  --ink: #0d1512;
+  --muted: #4a5853;
+  --ok: #047857;
+  --bad: #b91c1c;
+  --on-accent: #ffffff;
+  --dot: rgb(13 21 18 / 0.09);
+  --accent: #0f766e;
+  --accent-ink: #0f766e;
+  --accent-soft: #ccfbf1;
+}
+.dark {
+  --surface: #090c0b;
+  --panel: #111514;
+  --line: #242b28;
+  --edge: #66756f;
+  --ink: #e9f0ec;
+  --muted: #9aa8a2;
+  --ok: #86efac;
+  --bad: #fca5a5;
+  --on-accent: #07100d;
+  --dot: rgb(233 240 236 / 0.07);
+  --accent: #2dd4bf;
+  --accent-ink: #2dd4bf;
+  --accent-soft: #0f2a25;
+}
+
+/* One colour per tab, drawn from the console palette: emerald, sky, lime, amber, coral. */
+[data-tab="software"]   { --accent: #047857; --accent-ink: #047857; --accent-soft: #d1fae5; }
+[data-tab="ai"]         { --accent: #0369a1; --accent-ink: #0369a1; --accent-soft: #e0f2fe; }
+[data-tab="networking"] { --accent: #4d7c0f; --accent-ink: #4d7c0f; --accent-soft: #ecfccb; }
+[data-tab="webdesign"]  { --accent: #b45309; --accent-ink: #b45309; --accent-soft: #fef3c7; }
+[data-tab="security"]   { --accent: #c2410c; --accent-ink: #c2410c; --accent-soft: #ffedd5; }
+[data-tab="home"]       { --accent: #0f766e; --accent-ink: #0f766e; --accent-soft: #ccfbf1; }
+.dark [data-tab="software"]   { --accent: #34d399; --accent-ink: #34d399; --accent-soft: #0d2a20; }
+.dark [data-tab="ai"]         { --accent: #38bdf8; --accent-ink: #38bdf8; --accent-soft: #0c2536; }
+.dark [data-tab="networking"] { --accent: #a3e635; --accent-ink: #a3e635; --accent-soft: #1f2a0c; }
+.dark [data-tab="webdesign"]  { --accent: #fbbf24; --accent-ink: #fbbf24; --accent-soft: #2e2409; }
+.dark [data-tab="security"]   { --accent: #fb7c5c; --accent-ink: #fb7c5c; --accent-soft: #33160f; }
+.dark [data-tab="home"]       { --accent: #2dd4bf; --accent-ink: #2dd4bf; --accent-soft: #0f2a25; }
+
+html { scroll-padding-top: 7rem; }
+body { background: var(--surface); color: var(--ink); font-family: var(--font-sans); }
+
+/* Page backdrop: a glow in the current tab's colour over a dot grid. */
+.app-bg {
+  background-color: var(--surface);
+  background-image:
+    radial-gradient(ellipse 70% 420px at 50% -80px, color-mix(in srgb, var(--accent) 22%, transparent), transparent),
+    radial-gradient(var(--dot) 1px, transparent 1.5px);
+  background-size: auto, 22px 22px;
+  background-repeat: no-repeat, repeat;
+}
+.glass {
+  background: color-mix(in srgb, var(--panel) 82%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+.dark .glow { box-shadow: 0 0 22px -6px var(--accent); }
+
+:focus-visible {
+  outline: 2px solid var(--accent-ink);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.prose-tt p + p { margin-top: 0.75rem; }
+.prose-tt code, .code-inline {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.875em;
+  background: var(--accent-soft);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+}
+.term {
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+  cursor: help;
+}
+
+/* Code editor surfaces follow the theme. */
+.cm-editor { background: var(--panel) !important; }
+.cm-editor .cm-gutters { background: var(--surface) !important; border-right: 1px solid var(--line) !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

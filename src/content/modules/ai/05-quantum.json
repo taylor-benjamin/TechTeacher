@@ -1,0 +1,98 @@
+{
+  "tab": "ai",
+  "id": "quantum",
+  "order": 5,
+  "title": "Quantum Computing",
+  "summary": "Qubits, superposition and entanglement in plain language, and what quantum really means for AI.",
+  "lessons": [
+    {
+      "id": "quantum-basics",
+      "title": "Quantum computing basics",
+      "level": "intermediate",
+      "minutes": 12,
+      "concept": {
+        "text": "A classical bit is 0 or 1. A qubit can be in a superposition: a blend of 0 and 1 described by two amplitudes. When you **measure** it, the blend collapses to a plain 0 or 1, with probabilities set by those amplitudes.\n\nQubits can also be **entangled**, so that their measurement results are linked however far apart they are. A quantum algorithm arranges for wrong answers to cancel out and right answers to reinforce, a process called **interference**, so that measuring is likely to give the right result.",
+        "analogy": "A bit is a coin lying flat: heads or tails. A qubit is a coin spinning on the table: neither, until you slap it down. A quantum algorithm is a clever way of spinning many coins together so they are more likely to land on the answer you want."
+      },
+      "visual": {
+        "type": "compare",
+        "columns": ["Classical bit", "Qubit"],
+        "rows": [
+          ["State", "0 or 1", "A blend of 0 and 1 until measured"],
+          ["n units can represent", "One of 2ⁿ values at a time", "A superposition over all 2ⁿ values"],
+          ["Reading it", "Does not change it", "Collapses it to 0 or 1"],
+          ["Copying", "Easy", "Impossible in general (no-cloning)"],
+          ["Main enemy", "Rare hardware faults", "Noise: states decay in a fraction of a second"]
+        ]
+      },
+      "steps": [
+        { "title": "Create a superposition", "text": "A **Hadamard gate** turns a definite 0 into an equal blend of 0 and 1. Measure it and you get each result half the time." },
+        { "title": "Entangle two qubits", "text": "Apply a Hadamard to one qubit, then a **CNOT** gate. The pair is now in a Bell state: you will measure 00 or 11, never 01 or 10.", "code": "q0: |0> --H--●--  measure\n             |\nq1: |0> -----X--  measure\n\nResults: 00 (50%) or 11 (50%)" },
+        { "title": "Use interference", "text": "Algorithms such as Grover's search and Shor's factoring choreograph the amplitudes so that wrong answers cancel." },
+        { "title": "Know the limits", "text": "Quantum computers are not faster at everything. They offer big speed-ups for specific problems. Today's machines are noisy and small, and large-scale use needs **error correction**, which is still being developed." }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "What happens when you measure a qubit that is in superposition?", "options": ["Nothing changes", "It collapses to 0 or 1", "It becomes two qubits", "It is copied"], "answer": 1, "explain": "Measurement gives a definite classical result and destroys the superposition." },
+          { "q": "Two qubits are entangled in a Bell state. You measure the first and get 1. The second will be…", "options": ["0", "1", "Random", "Unmeasurable"], "answer": 1, "explain": "In that state the results are always the same: 00 or 11." },
+          { "q": "Which statement is accurate?", "options": ["Quantum computers are faster at every task", "Quantum computers try all answers and read off the best one", "Quantum computers offer speed-ups for particular kinds of problem", "Quantum computers already replace laptops"], "answer": 2, "explain": "You only get one measurement result, so algorithms must use interference cleverly, and that only works for some problems." }
+        ]
+      },
+      "challenge": {
+        "prompt": "Someone claims: 'A quantum computer with 300 qubits stores more values than there are atoms in the universe, so it can check every password at once.' What is right and what is wrong with this claim?",
+        "hint": "Think about what you actually get out when you measure.",
+        "solution": "**Right**: 300 qubits can be in a superposition over 2³⁰⁰ states, which is indeed an astronomically large number.\n\n**Wrong**: you cannot read those states out. Measuring gives just one 300-bit result, chosen at random unless the algorithm has used interference to boost the right answer. For unstructured search, Grover's algorithm gives only a square-root speed-up, not an instant answer. So a quantum computer weakens brute-force resistance but does not 'check everything at once'."
+      },
+      "takeaways": [
+        "Qubits use superposition and entanglement. Measurement collapses them to ordinary bits.",
+        "Quantum algorithms use interference to make correct answers more likely.",
+        "The advantage applies to specific problems, and today's hardware is still noisy and small."
+      ]
+    },
+    {
+      "id": "quantum-and-ai",
+      "title": "Quantum computing and AI",
+      "level": "advanced",
+      "minutes": 10,
+      "concept": {
+        "text": "Quantum computing and AI are often mentioned together, but they are different technologies at very different stages of maturity. Today's AI runs entirely on classical chips such as GPUs. No current quantum computer trains or runs a large language model.\n\nThe relationship works in three directions. Quantum machines may one day speed up specific tasks inside AI and science. AI is already helping to build better quantum computers. And both collide in security, because a large quantum computer would break much of today's public-key cryptography.",
+        "analogy": "AI today is a mature motorway network carrying most of the traffic. Quantum computing is an experimental aircraft: unbeatable for certain journeys one day, but not something you can commute in yet, and never a replacement for roads."
+      },
+      "visual": {
+        "type": "cards",
+        "caption": "Where quantum and AI really meet.",
+        "items": [
+          { "title": "Quantum for AI", "text": "Research into speeding up optimisation, sampling and linear algebra. Promising in theory, with no practical advantage for mainstream machine learning yet." },
+          { "title": "AI for quantum", "text": "Machine learning is used now to decode errors, calibrate qubits and design circuits." },
+          { "title": "Quantum for science", "text": "Simulating molecules and materials is the most natural use, and could feed data to AI models for drug and battery research." },
+          { "title": "Security impact", "text": "Shor's algorithm would break RSA and elliptic-curve cryptography. Post-quantum algorithms are being rolled out now." }
+        ]
+      },
+      "steps": [
+        { "title": "Separate the hype from the state of the art", "text": "Machines today have limited numbers of noisy qubits. Useful, large-scale work needs error-corrected **logical qubits**, each built from many physical ones." },
+        { "title": "Understand quantum machine learning", "text": "QML explores circuits with tunable parameters, trained somewhat like neural networks. Loading large classical datasets into quantum states is itself a major unsolved bottleneck." },
+        { "title": "See AI helping quantum", "text": "Neural networks are used to decode error-correction signals and tune hardware faster than humans can, a real and current benefit." },
+        { "title": "Prepare for post-quantum cryptography", "text": "Standards bodies have published quantum-resistant algorithms, such as ML-KEM for key exchange. Encrypted data stolen today could be decrypted later ('harvest now, decrypt later'), so migration has already begun." }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "What hardware do today's large AI models run on?", "options": ["Quantum processors", "Classical chips such as GPUs", "Both equally", "Neither"], "answer": 1, "explain": "All mainstream AI training and inference is classical." },
+          { "q": "Which is a real, current link between the two fields?", "options": ["Quantum computers train ChatGPT", "AI helps decode errors and calibrate quantum hardware", "Qubits replace tokens", "Quantum computers have no errors"], "answer": 1, "explain": "Machine learning is an active tool in quantum error correction and control." },
+          { "q": "What does 'harvest now, decrypt later' mean?", "options": ["Farming with AI", "Storing encrypted data today to decrypt once quantum computers can break it", "Delaying software updates", "Caching model outputs"], "answer": 1, "explain": "It is the reason to adopt post-quantum cryptography before large quantum computers exist." }
+        ]
+      },
+      "challenge": {
+        "prompt": "A startup pitch says: 'Our quantum AI trains large language models 1,000 times faster than GPUs, available today.' List three questions you would ask to test the claim.",
+        "hint": "Think about scale, data loading, and evidence.",
+        "solution": "1. **How many error-corrected logical qubits does this need, and how many exist?** Training at LLM scale would need far more reliable qubits than any current machine has.\n\n2. **How is the training data loaded into quantum states?** Encoding huge classical datasets is a known bottleneck that can cancel any speed-up.\n\n3. **Where is the independent, reproducible benchmark against a well-tuned classical baseline?** Many claimed quantum advantages disappear when compared with the best classical methods."
+      },
+      "takeaways": [
+        "Modern AI runs on classical hardware. Quantum computers do not train or run LLMs today.",
+        "AI is already useful for building quantum computers. The reverse is still research.",
+        "The most urgent overlap is security: plan the move to post-quantum cryptography."
+      ]
+    }
+  ]
+}

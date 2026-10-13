@@ -1,0 +1,332 @@
+{
+  "tab": "networking",
+  "id": "fundamentals",
+  "order": 1,
+  "title": "Network Fundamentals",
+  "summary": "Network+ level essentials: the models, addressing, subnetting, DNS, DHCP, routing, switching and ports.",
+  "lessons": [
+    {
+      "id": "osi-tcp-ip-models",
+      "title": "The OSI and TCP/IP models",
+      "level": "beginner",
+      "minutes": 12,
+      "concept": {
+        "text": "Sending data across a network involves many jobs: turning bits into electrical signals, finding a route, making sure nothing is lost, and presenting the data to an app. The OSI model splits these jobs into seven layers. Each layer does one job and relies on the layer below.\n\nThe real internet uses the simpler four-layer **TCP/IP model**, but engineers describe problems using OSI numbers every day. 'It's a layer 2 issue' means the problem is in switching, not routing. As data goes down the layers, each one wraps it in its own header, a process called **encapsulation**.",
+        "analogy": "Posting a parcel: you write a letter (application), put it in an envelope with an address (network), the courier puts it in a van with other parcels (data link), and the van drives down a road (physical). At the destination the wrapping is removed in reverse order."
+      },
+      "visual": {
+        "type": "layers",
+        "caption": "The seven OSI layers, top to bottom. Mnemonic: All People Seem To Need Data Processing.",
+        "layers": [
+          { "name": "7 Application", "detail": "What the user's app speaks: HTTP, DNS, SMTP", "tag": "Data" },
+          { "name": "6 Presentation", "detail": "Format, encryption, compression: TLS, JPEG", "tag": "Data" },
+          { "name": "5 Session", "detail": "Starts, keeps and ends conversations", "tag": "Data" },
+          { "name": "4 Transport", "detail": "Ports and reliability: TCP, UDP", "tag": "Segment" },
+          { "name": "3 Network", "detail": "IP addresses and routing: IP, ICMP, routers", "tag": "Packet" },
+          { "name": "2 Data Link", "detail": "MAC addresses on the local network: Ethernet, switches", "tag": "Frame" },
+          { "name": "1 Physical", "detail": "Cables, radio and signals: copper, fibre, Wi-Fi", "tag": "Bits" }
+        ]
+      },
+      "steps": [
+        { "title": "Map OSI to TCP/IP", "text": "TCP/IP merges layers: **Application** (OSI 5-7), **Transport** (4), **Internet** (3), and **Network Access** or Link (1-2)." },
+        { "title": "Follow encapsulation", "text": "Your browser makes HTTP data. Transport adds a TCP header with ports, making a **segment**. Network adds an IP header with addresses, making a packet. Data Link adds a MAC header and trailer, making a **frame**. Physical sends it as bits." },
+        { "title": "Place the devices", "text": "Hubs and cables work at layer 1. A switch works at layer 2. A router works at layer 3. A firewall typically works at layers 3-4, and next-generation firewalls up to layer 7." },
+        { "title": "Troubleshoot bottom-up", "text": "Is the cable plugged in (1)? Is there a link light and a MAC address (2)? Do you have an IP and can you ping the gateway (3)? Is the port open (4)? Is the app responding (7)?" }
+      ],
+      "interactive": {
+        "type": "order",
+        "prompt": "Arrange the OSI layers from layer 7 (top) down to layer 1 (bottom).",
+        "items": ["Application", "Presentation", "Session", "Transport", "Network", "Data Link", "Physical"]
+      },
+      "challenge": {
+        "prompt": "A user can ping 8.8.8.8 successfully but cannot open any website by name. Which layers are proven to be working, and where is the fault most likely?",
+        "hint": "Ping uses IP addresses. Websites are reached by name first.",
+        "solution": "A successful ping to 8.8.8.8 proves layers **1 to 3** work: cabling or Wi-Fi, local switching, IP addressing and routing to the internet. The failure is name resolution, an **application-layer service: DNS**. Check the DNS server setting and test with `nslookup example.com`."
+      },
+      "takeaways": [
+        "OSI has 7 layers. TCP/IP has 4. Both describe the same journey.",
+        "Each layer wraps the data: segment (4), packet (3), frame (2), bits (1).",
+        "Switches are layer 2, routers are layer 3. Troubleshoot from the bottom up."
+      ]
+    },
+    {
+      "id": "ip-addressing",
+      "title": "IP addressing",
+      "level": "beginner",
+      "minutes": 12,
+      "concept": {
+        "text": "Every device on a network needs an IP address so that data can find it. An **IPv4** address is 32 bits, written as four numbers from 0 to 255, such as `192.168.1.20`. Part of the address identifies the network and the rest identifies the host on it. The **subnet mask** (or CIDR prefix like `/24`) marks where the split is.\n\nThere are only about 4.3 billion IPv4 addresses, so homes and offices use **private** ranges internally and share one public address through NAT. **IPv6** solves the shortage with 128-bit addresses.",
+        "analogy": "An IP address is a postal address. The network part is the street and the host part is the house number. A private address is a flat number inside a building: it only makes sense once you have reached the building's public street address."
+      },
+      "visual": {
+        "type": "compare",
+        "caption": "The private IPv4 ranges (RFC 1918) and other addresses worth memorising.",
+        "columns": ["Range", "Typical use"],
+        "rows": [
+          ["Private class A", "10.0.0.0/8", "Large enterprises and cloud networks"],
+          ["Private class B", "172.16.0.0/12", "Medium networks, Docker defaults"],
+          ["Private class C", "192.168.0.0/16", "Home and small office"],
+          ["Loopback", "127.0.0.0/8", "'This computer' (localhost)"],
+          ["Link-local (APIPA)", "169.254.0.0/16", "Self-assigned when DHCP fails"]
+        ]
+      },
+      "steps": [
+        { "title": "Read an address", "text": "In `192.168.1.20/24`, the first 24 bits (`192.168.1`) are the network, and the last 8 bits (`.20`) are the host. The mask is `255.255.255.0`." },
+        { "title": "Find your own", "text": "Look for the IPv4 address, subnet mask and default gateway.", "code": "ipconfig          # Windows\nip addr           # Linux\nifconfig          # macOS" },
+        { "title": "Understand NAT", "text": "Your router rewrites the private source address of outgoing packets to its single public address, and remembers which internal device each reply belongs to." },
+        { "title": "Meet IPv6", "text": "Eight groups of hexadecimal, such as `2001:db8::1`. A double colon replaces one run of zero groups. `::1` is loopback and `fe80::/10` is link-local." }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "Which of these is a private IP address?", "options": ["8.8.8.8", "172.20.5.9", "172.32.0.1", "193.168.1.1"], "answer": 1, "explain": "172.16.0.0/12 covers 172.16.x.x to 172.31.x.x. 172.32 is outside it." },
+          { "q": "A PC shows the address 169.254.33.7. What does this tell you?", "options": ["It is working normally", "It could not reach a DHCP server", "It is using IPv6", "It is the router"], "answer": 1, "explain": "169.254.x.x is an automatic address assigned when DHCP fails." },
+          { "q": "What does NAT allow?", "options": ["Faster Wi-Fi", "Many private devices to share one public IP address", "Encryption of traffic", "Longer cables"], "answer": 1, "explain": "NAT translates private addresses to a public one at the router." },
+          { "q": "How many bits are in an IPv6 address?", "options": ["32", "64", "128", "256"], "answer": 2, "explain": "IPv6 is 128 bits, giving a practically unlimited address space." }
+        ]
+      },
+      "challenge": {
+        "prompt": "Your laptop has the address 192.168.1.50/24 and gateway 192.168.1.1. For each destination, say whether traffic is delivered directly or sent to the gateway: (a) 192.168.1.200 (b) 192.168.2.10 (c) 1.1.1.1",
+        "hint": "With /24, the first three numbers must match for a device to be on your network.",
+        "solution": "(a) **Direct**: 192.168.1.200 is on the same 192.168.1.0/24 network, so your laptop finds its MAC address with ARP and sends the frame straight to it.\n\n(b) **Gateway**: 192.168.2.x is a different network.\n\n(c) **Gateway**: a public address, which the router forwards to the internet using NAT."
+      },
+      "takeaways": [
+        "An IPv4 address is 32 bits, split into a network part and a host part by the mask.",
+        "Private ranges: 10/8, 172.16/12, 192.168/16. NAT lets them share a public address.",
+        "169.254.x.x means DHCP failed. IPv6 uses 128-bit addresses."
+      ]
+    },
+    {
+      "id": "subnetting",
+      "title": "Subnetting with a calculator",
+      "level": "intermediate",
+      "minutes": 16,
+      "concept": {
+        "text": "Subnetting divides one network into smaller ones. You do it to separate departments, limit broadcast traffic, improve security and avoid wasting addresses.\n\nThe CIDR prefix says how many of the 32 bits belong to the network. The remaining **host bits** set the size: a subnet has 2 to the power of host bits addresses. Two are reserved, the first as the **network address** and the last as the **broadcast address**, so usable hosts = 2ʰ − 2. Borrow one more bit for the network and each subnet halves in size.",
+        "analogy": "Subnetting is cutting a cake. The cake (your address block) is a fixed size. Each cut doubles the number of slices and halves their size. A /24 is the whole cake of 256, a /25 is two slices of 128, a /26 is four slices of 64."
+      },
+      "visual": {
+        "type": "compare",
+        "caption": "The table to memorise. Block size is how far apart subnets start.",
+        "columns": ["Mask", "Block size", "Usable hosts"],
+        "rows": [
+          ["/24", "255.255.255.0", "256", "254"],
+          ["/25", "255.255.255.128", "128", "126"],
+          ["/26", "255.255.255.192", "64", "62"],
+          ["/27", "255.255.255.224", "32", "30"],
+          ["/28", "255.255.255.240", "16", "14"],
+          ["/29", "255.255.255.248", "8", "6"],
+          ["/30", "255.255.255.252", "4", "2"]
+        ]
+      },
+      "steps": [
+        { "title": "Find the block size", "text": "Subtract the interesting mask octet from 256. For /26 the mask ends in 192, so the block size is 256 − 192 = **64**." },
+        { "title": "List where subnets start", "text": "Count up in blocks: .0, .64, .128, .192. These are the network addresses." },
+        { "title": "Place the address", "text": "For `192.168.10.77/26`: 77 falls between 64 and 127, so the network is **192.168.10.64**, the broadcast is **192.168.10.127** (one below the next network), and usable hosts are **.65 to .126**." },
+        { "title": "Check with the calculator", "text": "Enter the address below and study the binary view. The network bits stay fixed, and the host bits are all 0 for the network address and all 1 for the broadcast." }
+      ],
+      "interactive": { "type": "subnet" },
+      "challenge": {
+        "prompt": "You are given 10.20.30.0/24 and need four equal subnets for Sales, HR, IT and Guests. What prefix do you use, what are the four network addresses, and how many usable hosts does each have? Work it out, then check each one in the calculator.",
+        "hint": "Four subnets needs 2 extra network bits, because 2² = 4.",
+        "solution": "Borrow 2 bits: **/26**, mask 255.255.255.192, block size 64.\n\nNetworks: **10.20.30.0/26**, **10.20.30.64/26**, **10.20.30.128/26**, **10.20.30.192/26**.\n\nEach has 6 host bits: 2⁶ − 2 = **62 usable hosts**. For example, Sales is .1 to .62 with broadcast .63."
+      },
+      "takeaways": [
+        "Usable hosts = 2^(host bits) − 2. The first address is the network, the last is broadcast.",
+        "Block size = 256 − mask octet. Subnets start at multiples of the block size.",
+        "Each bit you borrow doubles the number of subnets and halves their size."
+      ]
+    },
+    {
+      "id": "dns-dhcp",
+      "title": "DNS and DHCP",
+      "level": "beginner",
+      "minutes": 12,
+      "concept": {
+        "text": "Two services make networks usable for humans. DHCP automatically gives each device its IP address, subnet mask, default gateway and DNS server when it joins the network. Without it you would configure every phone and laptop by hand.\n\nDNS translates names into IP addresses. You type `example.com`, and DNS answers with an address like `93.184.215.14`. It is a worldwide, hierarchical system, and when it breaks, 'the internet is down' even though every cable is fine.",
+        "analogy": "DHCP is a hotel reception desk handing you a room number when you check in. DNS is the phone's contacts app: you tap a name, and it looks up the number for you."
+      },
+      "visual": {
+        "type": "sequence",
+        "caption": "Resolving a name nobody has cached yet.",
+        "actors": ["Your PC", "Resolver", "Root", ".com TLD", "Authoritative"],
+        "messages": [
+          { "from": 0, "to": 1, "label": "example.com?" },
+          { "from": 1, "to": 2, "label": "Where is .com?" },
+          { "from": 1, "to": 3, "label": "Where is example.com?" },
+          { "from": 1, "to": 4, "label": "A record?" },
+          { "from": 4, "to": 1, "label": "93.184.215.14" },
+          { "from": 1, "to": 0, "label": "Answer (then cached)" }
+        ]
+      },
+      "steps": [
+        { "title": "DHCP in four messages: DORA", "text": "**D**iscover (client broadcasts 'any DHCP servers?'), **O**ffer (server proposes an address), **R**equest (client accepts), **A**cknowledge (server confirms the **lease**). DHCP uses UDP ports 67 and 68." },
+        { "title": "Leases expire", "text": "An address is lent for a set time. The client renews it halfway through. A **reservation** always gives the same address to a known MAC address, which is useful for printers and servers." },
+        { "title": "Know the DNS record types", "text": "**A** maps a name to IPv4. **AAAA** maps to IPv6. **CNAME** is an alias to another name. **MX** names the mail server. **TXT** holds text such as SPF. **NS** names the authoritative servers. **PTR** is the reverse lookup." },
+        { "title": "Query DNS yourself", "text": "DNS uses port 53. **TTL** is how long an answer may be cached.", "code": "nslookup example.com\ndig example.com MX" }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "What is the correct order of the DHCP process?", "options": ["Offer, Discover, Acknowledge, Request", "Discover, Offer, Request, Acknowledge", "Request, Offer, Discover, Acknowledge", "Discover, Request, Offer, Acknowledge"], "answer": 1, "explain": "DORA: Discover, Offer, Request, Acknowledge." },
+          { "q": "Which DNS record points a name at an IPv4 address?", "options": ["MX", "CNAME", "A", "PTR"], "answer": 2, "explain": "A is IPv4, AAAA is IPv6." },
+          { "q": "Which record tells other mail servers where to deliver email for a domain?", "options": ["MX", "TXT", "NS", "AAAA"], "answer": 0, "explain": "MX stands for Mail Exchanger." },
+          { "q": "Websites open by IP address but not by name. Which service has failed?", "options": ["DHCP", "DNS", "NAT", "ARP"], "answer": 1, "explain": "Name resolution is DNS's job." }
+        ]
+      },
+      "challenge": {
+        "prompt": "You change a website's A record to a new server, but some visitors still reach the old server hours later. Why, and how could you have reduced the delay?",
+        "hint": "Resolvers do not ask the authoritative server every time.",
+        "solution": "Resolvers and devices **cache** the old answer until its **TTL** expires, so if the TTL was 24 hours, some users keep the old address for up to a day. To reduce the delay, lower the TTL (for example to 300 seconds) a day or two **before** the change, make the change, then raise it again afterwards."
+      },
+      "takeaways": [
+        "DHCP hands out IP settings automatically using DORA.",
+        "DNS turns names into addresses through a hierarchy of servers, with caching.",
+        "Key records: A, AAAA, CNAME, MX, TXT, NS. DNS uses port 53."
+      ]
+    },
+    {
+      "id": "routing",
+      "title": "Routing",
+      "level": "intermediate",
+      "minutes": 12,
+      "concept": {
+        "text": "A router connects different networks and forwards each packet one hop closer to its destination. It decides using a **routing table**: a list of destination networks and the next hop to reach each.\n\nIf several routes match, the most specific one wins (**longest prefix match**). If none match, the packet goes to the **default route**, `0.0.0.0/0`. Routes are entered by hand (**static**) or learned automatically from other routers with a **dynamic routing protocol**.",
+        "analogy": "Routers are road junctions with signposts. A junction does not know the whole route to your destination. It only knows which exit gets you closer, and the next junction does the same."
+      },
+      "visual": {
+        "type": "compare",
+        "caption": "A small routing table. A packet for 10.1.2.50 matches the first two rows, and the /24 wins.",
+        "columns": ["Next hop", "Meaning"],
+        "rows": [
+          ["10.1.2.0/24", "192.168.0.2", "Most specific match for 10.1.2.x"],
+          ["10.1.0.0/16", "192.168.0.3", "Used for other 10.1.x.x addresses"],
+          ["192.168.0.0/24", "Directly connected", "The router is on this network"],
+          ["0.0.0.0/0", "203.0.113.1", "Default route: everything else, to the ISP"]
+        ]
+      },
+      "steps": [
+        { "title": "Host decision", "text": "Your PC compares the destination with its own subnet. Same subnet: deliver directly. Different: send to the **default gateway**." },
+        { "title": "Router decision", "text": "The router looks up the destination, picks the longest matching prefix, lowers the packet's **TTL** by one and forwards it. A TTL of 0 means the packet is dropped, which prevents endless loops." },
+        { "title": "Dynamic protocols", "text": "**OSPF** is used inside an organisation and finds the shortest path by link cost. **BGP** connects organisations and is the protocol that holds the internet together. **RIP** is an old protocol that counts hops." },
+        { "title": "Trace a path", "text": "See every router between you and a destination.", "code": "tracert example.com      # Windows\ntraceroute example.com   # Linux / macOS" }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "Using the table above, where does a packet for 10.1.9.9 go?", "options": ["192.168.0.2", "192.168.0.3", "203.0.113.1", "It is dropped"], "answer": 1, "explain": "It does not match 10.1.2.0/24, but does match 10.1.0.0/16." },
+          { "q": "Where does a packet for 8.8.8.8 go?", "options": ["192.168.0.2", "192.168.0.3", "203.0.113.1", "It is dropped"], "answer": 2, "explain": "No specific route matches, so the default route is used." },
+          { "q": "Which protocol exchanges routes between internet providers?", "options": ["OSPF", "RIP", "BGP", "DHCP"], "answer": 2, "explain": "BGP is the internet's exterior gateway protocol." },
+          { "q": "What stops a packet circling forever in a routing loop?", "options": ["The MAC address", "The TTL field reaching zero", "DNS", "The subnet mask"], "answer": 1, "explain": "Each router lowers TTL by one and drops the packet at zero." }
+        ]
+      },
+      "challenge": {
+        "prompt": "A PC at 192.168.1.10/24 can reach other devices on its own network but nothing beyond it. Its gateway is set to 192.168.2.1. What is wrong?",
+        "hint": "How does a PC reach its default gateway?",
+        "solution": "The default gateway must be **on the PC's own subnet**, because the PC delivers frames to the gateway directly. 192.168.2.1 is on a different network, so the PC has no way to reach it. Set the gateway to the router's address on this network, such as 192.168.1.1."
+      },
+      "takeaways": [
+        "Routers forward packets between networks using a routing table.",
+        "The longest prefix match wins. 0.0.0.0/0 is the default route.",
+        "OSPF runs inside organisations. BGP runs between them."
+      ]
+    },
+    {
+      "id": "switching-vlans",
+      "title": "Switching and VLANs",
+      "level": "intermediate",
+      "minutes": 12,
+      "concept": {
+        "text": "A switch connects devices inside one network. It learns which MAC address lives on which port by reading the source address of every frame, and stores that in its **MAC address table**. It can then send each frame only to the right port instead of everywhere.\n\nA VLAN splits one physical switch into several separate logical networks. Devices in different VLANs cannot talk directly, even on the same switch, without going through a router. This separates staff from guests, or cameras from servers, without buying more hardware.",
+        "analogy": "A switch is an office mailroom that learns which desk each person sits at. VLANs are departments sharing the same building: Finance mail never lands on an Engineering desk unless it goes through reception (the router) first."
+      },
+      "visual": {
+        "type": "compare",
+        "caption": "Two kinds of switch port.",
+        "columns": ["Access port", "Trunk port"],
+        "rows": [
+          ["Carries", "One VLAN", "Many VLANs"],
+          ["Connects to", "End devices: PCs, printers", "Other switches, routers, hypervisors"],
+          ["Frame tagging", "Untagged", "802.1Q tag shows the VLAN ID"],
+          ["Example", "Port 5 is in VLAN 10 (Staff)", "Port 24 carries VLANs 10, 20, 30"]
+        ]
+      },
+      "steps": [
+        { "title": "Learning and forwarding", "text": "Frame arrives: record the source MAC against the port. Destination known: forward to that port. Destination unknown, or a broadcast: **flood** to every port in the VLAN except the one it came in on." },
+        { "title": "ARP links layers 2 and 3", "text": "To send to an IP on the local network, a device broadcasts an **ARP** request: 'who has 192.168.1.20?' The owner replies with its MAC address." },
+        { "title": "Create VLANs", "text": "Assign access ports to VLANs, and configure trunks between switches. Routing between VLANs needs a router or a **layer 3 switch**.", "code": "vlan 10\n name STAFF\ninterface gi0/5\n switchport mode access\n switchport access vlan 10\ninterface gi0/24\n switchport mode trunk" },
+        { "title": "Prevent loops", "text": "Redundant links between switches would make broadcasts circle forever. **Spanning Tree Protocol** (STP) blocks the extra path until it is needed." }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "A switch receives a frame for a MAC address that is not in its table. What does it do?", "options": ["Drops it", "Floods it out of all other ports in the VLAN", "Sends it to the router", "Returns it to the sender"], "answer": 1, "explain": "Unknown destinations are flooded. The reply teaches the switch where the device is." },
+          { "q": "A PC in VLAN 10 needs to reach a server in VLAN 20. What is required?", "options": ["Nothing, same switch", "A router or layer 3 switch", "A longer cable", "A hub"], "answer": 1, "explain": "VLANs are separate networks, so traffic between them must be routed." },
+          { "q": "Which standard tags frames with a VLAN ID on a trunk?", "options": ["802.11", "802.1Q", "802.3af", "802.1X"], "answer": 1, "explain": "802.1Q inserts a tag carrying the VLAN ID." },
+          { "q": "What does Spanning Tree Protocol prevent?", "options": ["IP conflicts", "Switching loops", "Slow DNS", "Weak passwords"], "answer": 1, "explain": "STP blocks redundant paths so broadcasts cannot loop." }
+        ]
+      },
+      "challenge": {
+        "prompt": "A small office has one 24-port managed switch and wants staff PCs, guest Wi-Fi and security cameras kept apart. Design the VLANs and say which ports need to be trunks.",
+        "hint": "Which connections need to carry more than one VLAN at once?",
+        "solution": "Create three VLANs, for example **10 Staff**, **20 Guest**, **30 Cameras**, each with its own subnet such as 192.168.10.0/24, 192.168.20.0/24 and 192.168.30.0/24.\n\n**Access ports**: PCs in VLAN 10, cameras in VLAN 30.\n\n**Trunk ports**: the uplink to the router or firewall (it routes between VLANs and applies rules), and the port to the Wi-Fi access point if it broadcasts both staff and guest networks.\n\nThen add firewall rules: guests reach the internet only, and cameras reach only the recorder."
+      },
+      "takeaways": [
+        "Switches learn MAC addresses per port and forward frames only where needed.",
+        "VLANs create separate networks on shared hardware. Routing is needed between them.",
+        "Access ports carry one VLAN. Trunks carry many, tagged with 802.1Q."
+      ]
+    },
+    {
+      "id": "ports-protocols",
+      "title": "Ports, TCP and UDP",
+      "level": "beginner",
+      "minutes": 12,
+      "concept": {
+        "text": "An IP address gets data to the right computer. A port number gets it to the right program on that computer. A web server listens on port 443, an SSH server on port 22, and both can run on the same machine.\n\nTwo transport protocols carry almost everything. **TCP** sets up a connection, numbers every byte, and resends anything lost: reliable but with overhead. **UDP** just sends, with no guarantees: fast and simple, which suits live audio, video, games and DNS lookups.",
+        "analogy": "The IP address is a building's street address and the port is the flat number. TCP is a phone call: you connect, confirm the other person is there, and repeat anything they missed. UDP is shouting across the street: quick, but you never know if they heard."
+      },
+      "visual": {
+        "type": "compare",
+        "caption": "Ports every network technician should know.",
+        "columns": ["Port", "Transport", "Purpose"],
+        "rows": [
+          ["SSH", "22", "TCP", "Secure remote login"],
+          ["DNS", "53", "UDP and TCP", "Name resolution"],
+          ["DHCP", "67 / 68", "UDP", "Automatic IP configuration"],
+          ["HTTP", "80", "TCP", "Unencrypted web"],
+          ["HTTPS", "443", "TCP", "Encrypted web"],
+          ["SMTP", "25 / 587", "TCP", "Sending email"],
+          ["RDP", "3389", "TCP", "Windows remote desktop"],
+          ["SMB", "445", "TCP", "Windows file sharing"],
+          ["NTP", "123", "UDP", "Time synchronisation"]
+        ]
+      },
+      "steps": [
+        { "title": "The three-way handshake", "text": "TCP opens a connection with **SYN**, **SYN-ACK**, **ACK**. Only then does data flow. It closes with FIN." },
+        { "title": "Port ranges", "text": "**0-1023** are well-known ports for standard services. **1024-49151** are registered ports. **49152-65535** are ephemeral: your computer picks one at random as the source port for each outgoing connection." },
+        { "title": "A connection is four numbers", "text": "Source IP, source port, destination IP and destination port. That is how your browser keeps 20 tabs to the same site separate." },
+        { "title": "Check ports yourself", "text": "See what is listening, or test whether a remote port is reachable.", "code": "netstat -an                          # listening ports\nTest-NetConnection example.com -Port 443   # PowerShell\nnc -vz example.com 443               # Linux / macOS" }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "Which port does HTTPS use by default?", "options": ["22", "80", "443", "3389"], "answer": 2, "explain": "443 is HTTPS. 80 is plain HTTP." },
+          { "q": "Which is the correct TCP handshake?", "options": ["ACK, SYN, FIN", "SYN, SYN-ACK, ACK", "SYN, ACK, SYN", "HELLO, OK, GO"], "answer": 1, "explain": "The client sends SYN, the server replies SYN-ACK, and the client confirms with ACK." },
+          { "q": "A live video call would rather drop a late packet than wait for it. Which protocol suits it?", "options": ["TCP", "UDP", "ARP", "DHCP"], "answer": 1, "explain": "UDP has no retransmission delay, which suits real-time media." },
+          { "q": "You must allow remote desktop to a Windows server through a firewall. Which port?", "options": ["21", "445", "3389", "53"], "answer": 2, "explain": "RDP uses TCP 3389. Exposing it directly to the internet is risky." }
+        ]
+      },
+      "challenge": {
+        "prompt": "A new web server works when browsed from the server itself but not from other computers. `ping` to the server succeeds. Name two likely causes and how you would check each.",
+        "hint": "Ping proves layer 3. What sits between a remote client and the listening program?",
+        "solution": "1. **A firewall is blocking the port.** Ping (ICMP) is allowed but TCP 80/443 is not. Check with `Test-NetConnection server -Port 443` or `nc -vz server 443`, then review the host and network firewall rules.\n\n2. **The service is listening only on localhost (127.0.0.1)** instead of all interfaces. Check with `netstat -an` or `ss -tlnp`: you want `0.0.0.0:443`, not `127.0.0.1:443`."
+      },
+      "takeaways": [
+        "Ports identify services: 22 SSH, 53 DNS, 80 HTTP, 443 HTTPS, 3389 RDP.",
+        "TCP is reliable and connection-based (SYN, SYN-ACK, ACK). UDP is fast and connectionless.",
+        "A connection is defined by source and destination IP and port."
+      ]
+    }
+  ]
+}

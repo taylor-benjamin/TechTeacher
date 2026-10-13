@@ -1,0 +1,156 @@
+{
+  "tab": "security",
+  "id": "protocols",
+  "order": 3,
+  "title": "Secure Protocols",
+  "summary": "How TLS, HTTPS, SSH and DNSSEC protect data as it crosses untrusted networks.",
+  "lessons": [
+    {
+      "id": "tls-https",
+      "title": "TLS and HTTPS",
+      "level": "intermediate",
+      "minutes": 14,
+      "concept": {
+        "text": "TLS (Transport Layer Security) is the protocol that secures most internet traffic. HTTPS is simply HTTP carried inside a TLS connection, on port 443. TLS replaced the old SSL protocol, though people still say 'SSL certificate'.\n\nTLS provides three things: **confidentiality** (nobody on the path can read the data), **integrity** (nobody can alter it unnoticed) and **authentication** (you are talking to the real server, proved by its certificate). It does this with a **handshake** that uses asymmetric cryptography to agree on a symmetric session key.",
+        "analogy": "A TLS handshake is two strangers meeting in a crowded cafe. One shows official ID (the certificate). They then agree on a secret code using a method that eavesdroppers cannot follow, and hold the rest of their conversation in that code."
+      },
+      "visual": {
+        "type": "sequence",
+        "caption": "The TLS 1.3 handshake, simplified. It takes one round trip.",
+        "actors": ["Browser", "Server"],
+        "messages": [
+          { "from": 0, "to": 1, "label": "ClientHello: versions, ciphers, key share" },
+          { "from": 1, "to": 0, "label": "ServerHello: chosen cipher, key share" },
+          { "from": 1, "to": 0, "label": "Certificate + signature (encrypted)" },
+          { "from": 0, "to": 1, "label": "Finished: keys confirmed" },
+          { "from": 0, "to": 1, "label": "Encrypted HTTP request" },
+          { "from": 1, "to": 0, "label": "Encrypted HTTP response" }
+        ]
+      },
+      "steps": [
+        { "title": "Hello", "text": "The browser lists the TLS versions and **cipher suites** it supports and sends its half of a key exchange. The server picks a cipher suite and sends its half." },
+        { "title": "Key exchange", "text": "Both sides combine the halves using **ephemeral Diffie-Hellman** and arrive at the same secret, which is never sent over the network. Fresh keys for every session give **forward secrecy**: stealing the server's private key later cannot decrypt recorded traffic." },
+        { "title": "Authentication", "text": "The server sends its certificate and signs the handshake with its private key. The browser validates the certificate chain and checks the name." },
+        { "title": "Encrypted session", "text": "Everything after this uses fast symmetric encryption such as AES-GCM or ChaCha20-Poly1305. Use TLS 1.2 or 1.3 only. SSL and TLS 1.0 and 1.1 are deprecated." }
+      ],
+      "interactive": {
+        "type": "order",
+        "prompt": "Order the events when you open an HTTPS website.",
+        "items": [
+          "DNS resolves the site's name to an IP address",
+          "TCP three-way handshake to port 443",
+          "Browser sends ClientHello with its key share",
+          "Server replies with ServerHello and its certificate",
+          "Browser validates the certificate chain and name",
+          "Both sides derive the same session keys",
+          "Encrypted HTTP request and response are exchanged"
+        ]
+      },
+      "challenge": {
+        "prompt": "On public Wi-Fi, you visit an HTTPS site. List what an eavesdropper on the same network can and cannot see.",
+        "hint": "Think about what has to be visible for the connection to be routed, and what is inside the encrypted tunnel.",
+        "solution": "**Can see**: the server's IP address and port, the **domain name** (from the DNS lookup and the Server Name Indication field in the ClientHello, unless encrypted DNS and Encrypted Client Hello are in use), and the timing and size of the traffic.\n\n**Cannot see**: the full URL and path, page content, cookies, passwords, form data or anything else inside the HTTP messages.\n\nSo they may know you visited your bank, but not what you did there."
+      },
+      "takeaways": [
+        "TLS gives confidentiality, integrity and server authentication. HTTPS is HTTP over TLS.",
+        "The handshake uses asymmetric crypto to agree on a symmetric session key.",
+        "Use TLS 1.2 or 1.3. Forward secrecy protects past sessions."
+      ]
+    },
+    {
+      "id": "ssh",
+      "title": "SSH",
+      "level": "beginner",
+      "minutes": 12,
+      "concept": {
+        "text": "SSH (Secure Shell) gives you an encrypted command line on a remote computer. It is how administrators manage Linux servers, network devices and cloud machines, and how developers push code to GitHub. It listens on TCP port 22 and replaced Telnet, which sent everything, passwords included, in clear text.\n\nSSH can log you in with a password, but the better way is **key-based authentication**. You keep a private key on your machine and place the matching public key on the server. Nothing secret crosses the network.",
+        "analogy": "Password login is telling the guard a secret word that anyone nearby might overhear or guess. Key login is the guard handing you a puzzle that only your unique key can solve. You prove you hold the key without ever showing it."
+      },
+      "visual": {
+        "type": "sequence",
+        "caption": "Key-based login. The private key never leaves your computer.",
+        "actors": ["Your computer", "Server"],
+        "messages": [
+          { "from": 0, "to": 1, "label": "Connect to port 22" },
+          { "from": 1, "to": 0, "label": "Server host key (check fingerprint)" },
+          { "from": 0, "to": 1, "label": "Encrypted channel set up" },
+          { "from": 0, "to": 1, "label": "\"I have this public key\"" },
+          { "from": 1, "to": 0, "label": "Challenge" },
+          { "from": 0, "to": 1, "label": "Signed with private key" },
+          { "from": 1, "to": 0, "label": "Access granted: shell" }
+        ]
+      },
+      "steps": [
+        { "title": "Generate a key pair", "text": "Ed25519 is the modern default. Protect the private key with a passphrase.", "code": "ssh-keygen -t ed25519 -C \"you@example.com\"" },
+        { "title": "Install your public key", "text": "This appends the public key to `~/.ssh/authorized_keys` on the server.", "code": "ssh-copy-id user@server.example.com" },
+        { "title": "Connect", "text": "The first time, SSH shows the server's **host key fingerprint**. Verify it, so that you know you are not talking to an impostor. It is then saved in `known_hosts`.", "code": "ssh user@server.example.com" },
+        { "title": "Harden the server", "text": "In `/etc/ssh/sshd_config`: turn off password logins and root login once keys work.", "code": "PasswordAuthentication no\nPermitRootLogin no" },
+        { "title": "Copy files and tunnel", "text": "`scp` and `sftp` transfer files over SSH. Port forwarding (`ssh -L`) carries other traffic through the encrypted connection." }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "Which file on the server lists the public keys allowed to log in?", "options": ["known_hosts", "authorized_keys", "id_ed25519", "passwd"], "answer": 1, "explain": "known_hosts lives on the client and stores server fingerprints." },
+          { "q": "Which key do you copy to the server?", "options": ["The private key", "The public key", "Both", "Neither"], "answer": 1, "explain": "The private key never leaves your machine." },
+          { "q": "SSH warns: 'REMOTE HOST IDENTIFICATION HAS CHANGED'. What should you do?", "options": ["Delete the warning and continue", "Stop and find out why: it could be a rebuilt server or an interception", "Reboot your PC", "Disable SSH"], "answer": 1, "explain": "A changed host key may be innocent, but it is exactly what a man-in-the-middle attack looks like." },
+          { "q": "Why did SSH replace Telnet?", "options": ["Telnet was slower", "Telnet sends everything, passwords included, unencrypted", "Telnet needs a GUI", "SSH is older"], "answer": 1, "explain": "Anyone on the path could read a Telnet session." }
+        ]
+      },
+      "challenge": {
+        "prompt": "A cloud server's logs show thousands of failed SSH password attempts a day from around the world. List four changes that would secure SSH on this server.",
+        "hint": "Remove what the attackers are guessing at, limit who can reach the port, and slow down what is left.",
+        "solution": "1. **Use key authentication and set `PasswordAuthentication no`**, so there is no password to guess.\n\n2. **Set `PermitRootLogin no`** and log in as a normal user who uses `sudo`.\n\n3. **Restrict the source** with a firewall or security group: allow port 22 only from your own IP address or a VPN.\n\n4. **Install fail2ban** or similar to ban addresses after repeated failures, and keep the system patched.\n\nMoving SSH to another port reduces log noise but is not real security."
+      },
+      "takeaways": [
+        "SSH is encrypted remote administration on TCP port 22.",
+        "Use key pairs: public key on the server, private key kept on your machine.",
+        "Disable password and root logins, and limit who can reach the port."
+      ]
+    },
+    {
+      "id": "dnssec",
+      "title": "DNSSEC",
+      "level": "advanced",
+      "minutes": 12,
+      "concept": {
+        "text": "Ordinary DNS has no way of proving an answer is genuine. An attacker who slips a forged answer into a resolver's cache can send everyone using it to a fake site. This is **DNS cache poisoning**.\n\n**DNSSEC** (DNS Security Extensions) adds digital signatures to DNS records. Each zone signs its records with a private key, and resolvers verify the signatures, following a **chain of trust** from the root zone down. DNSSEC proves answers are authentic and unaltered. It does **not** encrypt them: that is the job of DNS over HTTPS or DNS over TLS.",
+        "analogy": "Plain DNS is asking a stranger for directions and trusting whatever they say. DNSSEC is being handed directions with a tamper-proof official seal: you can check that they came from the real authority and were not altered, though anyone can still read them over your shoulder."
+      },
+      "visual": {
+        "type": "layers",
+        "caption": "The DNSSEC chain of trust. Each level vouches for the key of the level below.",
+        "layers": [
+          { "name": "Root zone (.)", "detail": "Its key is the trust anchor built into validating resolvers", "tag": "trust anchor" },
+          { "name": ".com zone", "detail": "Root holds a DS record: a hash of .com's key", "tag": "DS in root" },
+          { "name": "example.com zone", "detail": ".com holds a DS record for example.com's key", "tag": "DS in .com" },
+          { "name": "www.example.com A record", "detail": "Signed by example.com's zone key (RRSIG)", "tag": "RRSIG" }
+        ]
+      },
+      "steps": [
+        { "title": "Learn the record types", "text": "**RRSIG** is the signature over a set of records. **DNSKEY** holds a zone's public keys. **DS** is a hash of a child zone's key, stored in the parent. **NSEC / NSEC3** prove that a name does not exist." },
+        { "title": "Two keys per zone", "text": "The **Zone Signing Key** (ZSK) signs the records. The **Key Signing Key** (KSK) signs the ZSK, and its hash is the DS record in the parent." },
+        { "title": "Validation", "text": "A validating resolver fetches the record and its RRSIG, checks it with the zone's DNSKEY, and checks that DNSKEY against the parent's DS, up to the root. If any link fails, it returns SERVFAIL instead of a possibly forged answer." },
+        { "title": "Check it yourself", "text": "The `ad` (authenticated data) flag in the reply means the resolver validated the answer.", "code": "dig +dnssec example.com A" }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "What does DNSSEC protect against?", "options": ["Eavesdropping on DNS queries", "Forged or altered DNS answers", "Slow DNS servers", "Expired domains"], "answer": 1, "explain": "It provides authenticity and integrity through signatures." },
+          { "q": "Does DNSSEC encrypt DNS traffic?", "options": ["Yes, fully", "No, it only signs it", "Only on Tuesdays", "Only for IPv6"], "answer": 1, "explain": "For privacy, use DNS over HTTPS (DoH) or DNS over TLS (DoT)." },
+          { "q": "Which record links a child zone's key to its parent zone?", "options": ["A", "MX", "DS", "CNAME"], "answer": 2, "explain": "The Delegation Signer record holds a hash of the child's key-signing key." },
+          { "q": "What does a validating resolver return if a signature check fails?", "options": ["The forged answer anyway", "SERVFAIL", "A random IP", "HTTP 404"], "answer": 1, "explain": "It refuses to answer, which is safer than returning data it cannot trust." }
+        ]
+      },
+      "challenge": {
+        "prompt": "A domain owner enables DNSSEC, later moves to a new DNS provider, and the whole domain stops resolving for many users. What most likely went wrong, and how should the move have been done?",
+        "hint": "Think about which record lives outside the zone and still points to the old keys.",
+        "solution": "The **DS record at the parent** (set through the registrar) still referred to the **old provider's key**. The new provider signs with different keys, or does not sign at all, so validating resolvers found a broken chain of trust and returned SERVFAIL.\n\nA correct migration: either (a) remove the DS record at the registrar, wait for its TTL to expire, move providers, then enable DNSSEC again and publish the new DS; or (b) do a coordinated key rollover in which both providers' keys are published during the transition."
+      },
+      "takeaways": [
+        "DNSSEC signs DNS records so that resolvers can detect forgeries.",
+        "Trust chains from the root through DS records in each parent zone.",
+        "It gives authenticity and integrity, not privacy. Use DoH or DoT for that."
+      ]
+    }
+  ]
+}

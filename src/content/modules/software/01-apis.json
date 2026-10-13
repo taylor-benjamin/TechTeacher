@@ -1,0 +1,236 @@
+{
+  "tab": "software",
+  "id": "apis",
+  "order": 1,
+  "title": "APIs",
+  "summary": "How programs talk to each other: requests, responses, REST, GraphQL and authentication.",
+  "lessons": [
+    {
+      "id": "what-is-an-api",
+      "title": "What is an API?",
+      "level": "beginner",
+      "minutes": 8,
+      "concept": {
+        "text": "An API (Application Programming Interface) is a set of rules that lets one program ask another program for data or to do something. Your weather app does not own any weather stations. It sends a request to a weather service's API and shows you what comes back.\n\nWeb APIs speak HTTP, the same protocol your browser uses. The app sends a **request** to an endpoint (a URL), and the server sends back a **response**, usually formatted as JSON.",
+        "analogy": "An API is a restaurant waiter. You (the client) do not walk into the kitchen (the server). You read the menu (the API docs), give the waiter your order (the request), and the waiter brings back your food (the response)."
+      },
+      "visual": {
+        "type": "sequence",
+        "caption": "One round trip: the client asks, the API fetches, the client gets JSON back.",
+        "actors": ["Your app", "API server", "Database"],
+        "messages": [
+          { "from": 0, "to": 1, "label": "GET /weather?city=Paris" },
+          { "from": 1, "to": 2, "label": "look up Paris" },
+          { "from": 2, "to": 1, "label": "18°C, cloudy" },
+          { "from": 1, "to": 0, "label": "200 OK + JSON" }
+        ]
+      },
+      "steps": [
+        { "title": "The client builds a request", "text": "A request has a method (what to do), a URL (which resource), headers (extra info) and sometimes a body (data to send).", "code": "GET https://api.example.com/weather?city=Paris\nAccept: application/json" },
+        { "title": "The server does the work", "text": "The API checks the request is valid and allowed, then runs code, often reading from a database." },
+        { "title": "The server responds", "text": "The response has a status code (did it work?), headers, and a body with the data.", "code": "HTTP/1.1 200 OK\nContent-Type: application/json\n\n{ \"city\": \"Paris\", \"tempC\": 18, \"sky\": \"cloudy\" }" },
+        { "title": "The client uses the data", "text": "Your code reads the JSON and updates the screen. The user never sees the API, only the result." }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "In the restaurant analogy, what is the menu?", "options": ["The database", "The API documentation", "The response body", "The client"], "answer": 1, "explain": "The docs list what you are allowed to ask for and how." },
+          { "q": "What format do most web APIs use for response data?", "options": ["PDF", "JSON", "MP4", "CSV only"], "answer": 1, "explain": "JSON is lightweight text that every language can read." },
+          { "q": "Which part of a request says which resource you want?", "options": ["The status code", "The URL (endpoint)", "The response body", "The cookie"], "answer": 1, "explain": "The endpoint URL names the resource, such as /weather or /users/1." }
+        ]
+      },
+      "challenge": {
+        "prompt": "Open a new browser tab and visit `https://jsonplaceholder.typicode.com/users/1`. Your browser just made an API request. What is this user's `name`, and which field holds their city?",
+        "hint": "The response is JSON. Look for nested objects: one field contains another set of fields.",
+        "solution": "The name is **Leanne Graham**. The city is nested at `address.city` (Gwenborough). Typing a URL into the address bar always sends a GET request."
+      },
+      "takeaways": [
+        "An API lets programs request data or actions from other programs using agreed rules.",
+        "Web APIs use HTTP: a request goes to an endpoint and a response comes back, usually as JSON.",
+        "The client never touches the server's database directly. The API is the controlled front door."
+      ]
+    },
+    {
+      "id": "http-methods-status-codes",
+      "title": "HTTP methods and status codes",
+      "level": "beginner",
+      "minutes": 10,
+      "concept": {
+        "text": "Every HTTP request starts with a **method**: a verb that tells the server what you want to do with a resource. Every response starts with a **status code**: a three-digit number that says how it went.\n\nThe four core actions on data are Create, Read, Update and Delete (CRUD). They map to POST, GET, PUT/PATCH and DELETE. Status codes are grouped by first digit: 2xx worked, 3xx go elsewhere, 4xx you made a mistake, 5xx the server made a mistake.",
+        "analogy": "Methods are the verbs you use with a librarian: show me a book (GET), add this book (POST), replace this book (PUT), fix a typo in it (PATCH), remove it (DELETE). Status codes are the librarian's reply: here you go (200), added (201), we do not have that (404), the library is on fire (500)."
+      },
+      "visual": {
+        "type": "compare",
+        "caption": "The five methods you will use 99% of the time.",
+        "columns": ["CRUD action", "Typical success code", "Safe to repeat?"],
+        "rows": [
+          ["GET", "Read", "200 OK", "Yes, changes nothing"],
+          ["POST", "Create", "201 Created", "No, creates a duplicate"],
+          ["PUT", "Replace whole item", "200 OK", "Yes, same result each time"],
+          ["PATCH", "Update part of item", "200 OK", "Usually"],
+          ["DELETE", "Delete", "204 No Content", "Yes, it stays deleted"]
+        ]
+      },
+      "steps": [
+        { "title": "Pick the verb from the action", "text": "Reading data is GET. Sending new data is POST. Changing existing data is PUT (all of it) or PATCH (some of it). Removing is DELETE." },
+        { "title": "Read the first digit of the status", "text": "**2xx** success. **3xx** redirect. **4xx** client error: fix your request. **5xx** server error: not your fault, retry later." },
+        { "title": "Learn the famous ones", "text": "`200` OK, `201` Created, `204` No Content, `301` Moved Permanently, `400` Bad Request, `401` Unauthorized (who are you?), `403` Forbidden (I know you, and no), `404` Not Found, `429` Too Many Requests, `500` Internal Server Error, `503` Service Unavailable." },
+        { "title": "Know idempotency", "text": "An idempotent request has the same effect whether you send it once or ten times. GET, PUT and DELETE are idempotent, so they are safe to retry. POST is not." }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "You submit a sign-up form that creates a new account. Which method?", "options": ["GET", "POST", "DELETE", "PATCH"], "answer": 1, "explain": "POST creates a new resource." },
+          { "q": "You get a 401. What is the most likely fix?", "options": ["Wait for the server to be repaired", "Send valid credentials or an API key", "Change GET to POST", "Nothing, 401 means success"], "answer": 1, "explain": "401 means the server does not know who you are." },
+          { "q": "Which status code family means the server itself failed?", "options": ["2xx", "3xx", "4xx", "5xx"], "answer": 3, "explain": "5xx codes are server-side errors." },
+          { "q": "Why is retrying a POST risky?", "options": ["It is slow", "It may create the same thing twice", "POST cannot be retried", "It deletes data"], "answer": 1, "explain": "POST is not idempotent, so a retry can double-charge or double-create." }
+        ]
+      },
+      "challenge": {
+        "prompt": "A mobile app lets users change only their profile photo. Which method fits best, what URL shape would you expect, and which status code should a success return?",
+        "hint": "Only one field of the user changes, not the whole user.",
+        "solution": "`PATCH /users/42` with a body like `{ \"photoUrl\": \"...\" }`, returning `200 OK` with the updated user (or `204 No Content`). PUT would require sending the entire user object."
+      },
+      "takeaways": [
+        "GET reads, POST creates, PUT replaces, PATCH edits, DELETE removes.",
+        "Status code first digit: 2 success, 3 redirect, 4 your error, 5 server error.",
+        "Idempotent methods (GET, PUT, DELETE) are safe to retry. POST is not."
+      ]
+    },
+    {
+      "id": "live-api-tester",
+      "title": "Call a live API",
+      "level": "beginner",
+      "minutes": 12,
+      "concept": {
+        "text": "Reading about requests only gets you so far. In this lesson you send real HTTP requests to a real public API and read the real responses.\n\nYou will use JSONPlaceholder, a free practice REST API. It accepts every method but only pretends to save changes, so you cannot break anything.",
+        "analogy": "This is the driving lesson after the theory test. The car has dual controls (the practice API will not really delete anything), but the road and the traffic are real."
+      },
+      "visual": {
+        "type": "flow",
+        "caption": "The anatomy of the URL you are about to send.",
+        "nodes": [
+          { "label": "https://", "detail": "Protocol: encrypted HTTP" },
+          { "label": "jsonplaceholder.typicode.com", "detail": "Host: which server" },
+          { "label": "/todos", "detail": "Path: which resource" },
+          { "label": "?userId=1", "detail": "Query: filter the results" }
+        ]
+      },
+      "steps": [
+        { "title": "Send a GET", "text": "Press **Get one post**, then **Send**. Look at the status (200), the time it took, and the JSON body." },
+        { "title": "Filter with a query string", "text": "Press **List a user's todos**. The `?userId=1` part asks the server to return only matching items. Change the 1 to a 2 and send again." },
+        { "title": "Create with POST", "text": "Press **Create a post**. Notice the request now has a JSON body, and the response status is `201 Created` with a new `id`." },
+        { "title": "Cause an error on purpose", "text": "Press **Trigger a 404**. Errors are normal. Good developers read the status code before anything else." }
+      ],
+      "interactive": { "type": "api-tester" },
+      "challenge": {
+        "prompt": "Using the tester, find the **email address of user 5** and the **title of that user's first album**. You will need two requests.",
+        "hint": "Resources follow a pattern: `/users/5` for one user, and `/albums?userId=5` to filter albums by owner.",
+        "solution": "GET `https://jsonplaceholder.typicode.com/users/5` returns the email `Lucio_Hettinger@annie.ca`. GET `https://jsonplaceholder.typicode.com/albums?userId=5` returns a list; the first album's title is the first item's `title` field."
+      },
+      "takeaways": [
+        "A URL is protocol + host + path + optional query string.",
+        "Always check the status code first, then read the body.",
+        "GET requests have no body. POST, PUT and PATCH send JSON with a Content-Type header."
+      ]
+    },
+    {
+      "id": "rest-vs-graphql",
+      "title": "REST vs GraphQL",
+      "level": "intermediate",
+      "minutes": 10,
+      "concept": {
+        "text": "REST and GraphQL are two styles for designing a web API. In **REST**, every resource has its own URL and you use HTTP methods on it: `GET /users/1`, `GET /users/1/posts`. The server decides what each response contains.\n\nIn **GraphQL**, there is one endpoint. The client sends a query describing exactly which fields it wants, and gets back exactly that shape. This avoids over-fetching (getting fields you do not need) and under-fetching (needing several round trips).",
+        "analogy": "REST is a set menu: order dish number 4 and you get everything on that plate. GraphQL is a build-your-own bowl: you list exactly the ingredients you want and get one bowl with just those."
+      },
+      "visual": {
+        "type": "compare",
+        "columns": ["REST", "GraphQL"],
+        "rows": [
+          ["Endpoints", "Many: one URL per resource", "One: usually /graphql"],
+          ["Who shapes the response", "The server", "The client's query"],
+          ["Fetching related data", "Often several requests", "One nested query"],
+          ["HTTP caching", "Easy: URLs cache naturally", "Harder: needs client libraries"],
+          ["Errors", "HTTP status codes", "Usually 200 with an errors array"],
+          ["Best for", "Simple, public, cache-heavy APIs", "Complex UIs with many related objects"]
+        ]
+      },
+      "steps": [
+        { "title": "REST: one request per resource", "text": "To show a user and their post titles you might call two endpoints and stitch the results together.", "code": "GET /users/1\nGET /users/1/posts" },
+        { "title": "GraphQL: describe the shape", "text": "The same screen in GraphQL is one request. The response mirrors the query.", "code": "query {\n  user(id: 1) {\n    name\n    posts { title }\n  }\n}" },
+        { "title": "The schema is the contract", "text": "A GraphQL server publishes a typed schema listing every type and field. Tools use it for autocomplete and validation before you send anything." },
+        { "title": "Choose by need, not hype", "text": "REST is simpler to build, cache and debug. GraphQL pays off when many different clients need different slices of connected data." }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "A mobile screen needs a user's name, their last 3 orders, and each order's item names. Which style can do this in one request by design?", "options": ["REST", "GraphQL", "Neither", "Both always need three requests"], "answer": 1, "explain": "A nested GraphQL query returns all of it in one round trip." },
+          { "q": "Which is a real disadvantage of GraphQL?", "options": ["It cannot return JSON", "Standard HTTP caching is harder", "It only works with JavaScript", "It has no types"], "answer": 1, "explain": "Everything goes through one POST endpoint, so URL-based caching does not apply." },
+          { "q": "\"Over-fetching\" means…", "options": ["Sending too many requests", "Receiving more fields than you need", "Hitting a rate limit", "Using too much CPU"], "answer": 1, "explain": "REST endpoints return a fixed shape, which may include data you will not use." }
+        ]
+      },
+      "challenge": {
+        "prompt": "Write a GraphQL query that fetches a `post` with id 7, returning its `title`, and the `name` and `email` of its `author`.",
+        "hint": "Nest the author fields inside the post, the same way posts were nested inside user above.",
+        "code": true,
+        "solution": "query {\n  post(id: 7) {\n    title\n    author {\n      name\n      email\n    }\n  }\n}"
+      },
+      "takeaways": [
+        "REST: many URLs, server-defined responses, great caching, simple to learn.",
+        "GraphQL: one endpoint, client-defined responses, no over- or under-fetching.",
+        "Neither is better in general. Pick based on how complex and varied your clients are."
+      ]
+    },
+    {
+      "id": "api-authentication",
+      "title": "API authentication: keys and OAuth",
+      "level": "intermediate",
+      "minutes": 12,
+      "concept": {
+        "text": "Most APIs need to know who is calling so they can limit usage and protect private data. The two most common methods are API keys and OAuth.\n\nAn **API key** is a long secret string that identifies your application. You send it in a header on every request. **OAuth 2.0** solves a different problem: letting an app act on behalf of a user without ever seeing the user's password. The user approves access, and the app receives a short-lived access token with limited permissions (scopes).",
+        "analogy": "An API key is a house key: anyone holding it gets in, so guard it. OAuth is a hotel key card: the front desk (authorization server) checks your ID, then issues a card that opens only your room, only until checkout."
+      },
+      "visual": {
+        "type": "sequence",
+        "caption": "OAuth 2.0 authorization code flow: the app never sees the password.",
+        "actors": ["User", "App", "Auth server", "API"],
+        "messages": [
+          { "from": 0, "to": 1, "label": "Click 'Sign in with GitHub'" },
+          { "from": 1, "to": 2, "label": "Redirect user to log in" },
+          { "from": 0, "to": 2, "label": "Log in + approve scopes" },
+          { "from": 2, "to": 1, "label": "Authorization code" },
+          { "from": 1, "to": 2, "label": "Swap code for access token" },
+          { "from": 1, "to": 3, "label": "Request + Bearer token" }
+        ]
+      },
+      "steps": [
+        { "title": "Send an API key in a header", "text": "Never put keys in the URL: URLs end up in logs and browser history.", "code": "GET /v1/forecast HTTP/1.1\nHost: api.example.com\nX-API-Key: sk_live_9f8a...c21" },
+        { "title": "Keep keys out of code", "text": "Store secrets in environment variables or a secrets manager, never in Git. A key in frontend JavaScript is public: anyone can read it in the browser." },
+        { "title": "Use OAuth when acting for a user", "text": "The app redirects the user to the provider, the user approves specific scopes such as `read:email`, and the app gets a token." },
+        { "title": "Send the token as a Bearer", "text": "Access tokens expire quickly. A refresh token gets a new one without bothering the user again.", "code": "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..." }
+      ],
+      "interactive": {
+        "type": "order",
+        "prompt": "Put the OAuth authorization code flow in order.",
+        "items": [
+          "User clicks 'Sign in with Google' in the app",
+          "App redirects the user to Google's login page",
+          "User logs in and approves the requested scopes",
+          "Google redirects back to the app with an authorization code",
+          "App exchanges the code for an access token",
+          "App calls the API with the token in the Authorization header"
+        ]
+      },
+      "challenge": {
+        "prompt": "A teammate commits this to a public GitHub repo: `const API_KEY = 'sk_live_51Hx...'`. List the three things that should happen next, in order.",
+        "hint": "Deleting the line in a new commit does not remove it from Git history, and bots scan GitHub for keys within minutes.",
+        "solution": "1. **Revoke/rotate the key immediately** in the provider's dashboard: assume it is already stolen.\n\n2. **Move the new key to an environment variable** (for example `.env`, listed in `.gitignore`) or a secrets manager.\n\n3. **Check usage logs** for abuse, and optionally scrub the old key from history. Rotation is what actually fixes it."
+      },
+      "takeaways": [
+        "API keys identify an application. Treat them like passwords and send them in headers.",
+        "OAuth lets an app act for a user with a scoped, expiring token and no password sharing.",
+        "401 means not authenticated. 403 means authenticated but not allowed."
+      ]
+    }
+  ]
+}

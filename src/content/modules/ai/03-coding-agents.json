@@ -1,0 +1,104 @@
+{
+  "tab": "ai",
+  "id": "coding-agents",
+  "order": 3,
+  "title": "Coding Agents",
+  "summary": "How AI agents read, write and run code in a loop, and how to get reliable work from them.",
+  "lessons": [
+    {
+      "id": "how-agents-work",
+      "title": "How coding agents work",
+      "level": "intermediate",
+      "minutes": 12,
+      "concept": {
+        "text": "A chatbot answers once. An agent works toward a goal in a loop: it decides on an action, uses a tool, looks at the result, and decides again, until the job is done.\n\nA coding agent such as Claude Code, Cursor's agent mode or GitHub Copilot's agent is an LLM connected to a small set of tools: read a file, search the codebase, edit a file, run a shell command. It finds the relevant code, makes a change, runs the tests, reads the failure, and fixes it, without you copying and pasting between windows.",
+        "analogy": "A chatbot is a consultant on the phone: they give advice and you do the work. An agent is a contractor on site with their own tools: they look around, do the work, check it, and call you over when a decision is needed."
+      },
+      "visual": {
+        "type": "flow",
+        "caption": "The agent loop. It runs until the task is done or the agent needs you.",
+        "nodes": [
+          { "label": "Goal", "detail": "\"Fix the failing login test\"" },
+          { "label": "Think", "detail": "Decide the next action" },
+          { "label": "Act", "detail": "Read, search, edit or run" },
+          { "label": "Observe", "detail": "Tool output enters the context" },
+          { "label": "Repeat or finish", "detail": "Loop until verified" }
+        ]
+      },
+      "steps": [
+        { "title": "Gather context", "text": "The agent cannot see your whole project at once. It searches and reads files to build a picture, like a new developer exploring a codebase." },
+        { "title": "Take action", "text": "It edits files and runs commands through tools. Each tool result is appended to its context window." },
+        { "title": "Verify", "text": "Good agents run tests, type-checkers and linters, then read the output. Verification is what turns plausible code into working code." },
+        { "title": "Stay within permissions", "text": "You control what the agent may do without asking: read-only, edit files, or run commands. Risky actions prompt for approval." }
+      ],
+      "interactive": {
+        "type": "order",
+        "prompt": "An agent is asked to fix a bug. Order its actions.",
+        "items": [
+          "Read the bug report and restate the goal",
+          "Search the codebase for the relevant function",
+          "Read the file and the failing test",
+          "Edit the code to fix the bug",
+          "Run the test suite",
+          "Read the test output and fix anything still failing",
+          "Summarise what changed and why"
+        ]
+      },
+      "challenge": {
+        "prompt": "An agent working on a long task starts repeating earlier mistakes and forgetting instructions from the start of the session. What is the most likely cause, and what can you do about it?",
+        "hint": "Every file read and every command output takes up space somewhere finite.",
+        "solution": "The **context window** is filling up. Every tool result is added to it, and when it is nearly full, older material gets summarised or dropped. Fixes: start a fresh session for a new task; keep durable instructions in a project memory file such as `CLAUDE.md` or `AGENTS.md` that is loaded every time; break the work into smaller tasks; and have the agent write its plan and progress to a file it can re-read."
+      },
+      "takeaways": [
+        "An agent is an LLM in a loop with tools: think, act, observe, repeat.",
+        "Coding agents explore the codebase, edit files and run commands to verify their work.",
+        "The context window is the agent's working memory, and it is finite."
+      ]
+    },
+    {
+      "id": "using-agents-effectively",
+      "title": "Using coding agents effectively",
+      "level": "intermediate",
+      "minutes": 12,
+      "concept": {
+        "text": "An agent amplifies how clearly you can describe what you want and how well you can check the result. The developers who get the most from agents treat them like a capable teammate: they give context, agree a plan before big changes, provide a way to verify, and review the output.\n\nYou remain responsible for the code. Read the diff before you accept it.",
+        "analogy": "Delegating to an agent is like delegating to a talented new hire. 'Make the app better' wastes a day. A ticket with the goal, the constraints, the relevant files and a definition of done gets shipped."
+      },
+      "visual": {
+        "type": "flow",
+        "caption": "A reliable workflow for any non-trivial task.",
+        "nodes": [
+          { "label": "Explore", "detail": "Have it read the code first" },
+          { "label": "Plan", "detail": "Review the approach before edits" },
+          { "label": "Implement", "detail": "Small, focused changes" },
+          { "label": "Verify", "detail": "Tests, build, run the app" },
+          { "label": "Review & commit", "detail": "Read the diff yourself" }
+        ]
+      },
+      "steps": [
+        { "title": "Write a real brief", "text": "State the goal, the constraints and what done looks like.", "code": "Weak:   fix the login bug\n\nStrong: Users are logged out after 5 minutes instead of 24 hours.\n        The session code is in src/auth/session.ts.\n        Find the cause, fix it, and add a test that fails\n        before the fix and passes after. Don't change the API." },
+        { "title": "Give it a way to check itself", "text": "Tests, a build command or a screenshot to match. An agent that can verify will iterate until it is right." },
+        { "title": "Set up project memory", "text": "A file such as `CLAUDE.md` holds the things you would tell any new developer: how to run tests, code style, and what never to touch." },
+        { "title": "Commit often and course-correct early", "text": "Commit working states so you can roll back. If the agent heads the wrong way, stop it and redirect instead of letting errors pile up." }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          { "q": "Which gives an agent the best chance of producing correct code?", "options": ["A longer deadline", "A way to verify its work, such as tests", "Capital letters in the prompt", "Hiding the codebase from it"], "answer": 1, "explain": "With feedback from tests, the agent can find and fix its own mistakes." },
+          { "q": "Before a large refactor, what should you ask the agent to do first?", "options": ["Start editing immediately", "Explore the code and propose a plan for review", "Delete the tests", "Push to main"], "answer": 1, "explain": "Catching a wrong approach at the plan stage is far cheaper than after 30 file edits." },
+          { "q": "Who is responsible for code an agent wrote and you merged?", "options": ["The agent", "The model provider", "You", "Nobody"], "answer": 2, "explain": "You own what you ship. Review it like any other pull request." }
+        ]
+      },
+      "challenge": {
+        "prompt": "Rewrite this request so a coding agent can succeed first time: **'Add dark mode.'**",
+        "hint": "Where is the styling? How is the preference chosen and remembered? How will you both know it works?",
+        "solution": "\"Add a dark mode to this React + Tailwind app. First read `src/index.css` and `App.jsx` and tell me your plan. Requirements: a toggle button in the header; default to the operating system preference; save the choice in localStorage; all text must keep at least 4.5:1 contrast in both themes. Use CSS variables for colours instead of hard-coding them per component. When finished, run `npm run build` and confirm it passes, then list the files you changed.\""
+      },
+      "takeaways": [
+        "Explore, plan, implement, verify, review: in that order.",
+        "Specific briefs and a way to verify matter more than clever wording.",
+        "Keep project knowledge in a memory file and commit often."
+      ]
+    }
+  ]
+}
