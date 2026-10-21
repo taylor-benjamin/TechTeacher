@@ -18,54 +18,55 @@
   --color-bad: var(--bad);
 }
 
-/* Theme: a dark "operations console" look. Near-black green-tinted surfaces,
-   luminous accents, thin type, pill controls and a dot-grid backdrop.
+/* Theme: an "operations console" on deep indigo. Indigo/purple surfaces, luminous lime and
+   green accents, thin type, pill controls and a dot-grid backdrop.
+   Palette: #92b602 #16a34a #a3e635 #581c87 #1e1b4b (OKLCH ramp; light-mode accents darkened in OKLCH to pass AA).
    All text/background pairs meet WCAG AA (4.5:1) in both modes.
    --accent carries --on-accent text; --accent-ink is accent-coloured text on the page. */
 :root {
-  --surface: #f3f6f4;
+  --surface: #f6f6fd;
   --panel: #ffffff;
-  --line: #d5ddd9;
-  --edge: #6b7a74;
-  --ink: #0d1512;
-  --muted: #4a5853;
-  --ok: #047857;
+  --line: #dddcee;
+  --edge: #717191;
+  --ink: #1e1b4b;
+  --muted: #575277;
+  --ok: #008100;
   --bad: #b91c1c;
   --on-accent: #ffffff;
-  --dot: rgb(13 21 18 / 0.09);
-  --accent: #0f766e;
-  --accent-ink: #0f766e;
-  --accent-soft: #ccfbf1;
+  --dot: rgb(30 27 75 / 0.09);
+  --accent: #427d00;
+  --accent-ink: #427d00;
+  --accent-soft: #e7f7d7;
 }
 .dark {
-  --surface: #090c0b;
-  --panel: #111514;
-  --line: #242b28;
-  --edge: #66756f;
-  --ink: #e9f0ec;
-  --muted: #9aa8a2;
-  --ok: #86efac;
+  --surface: #1e1b4b;
+  --panel: #291d5a;
+  --line: #491e7b;
+  --edge: #857fae;
+  --ink: #f5f4ff;
+  --muted: #bfb8db;
+  --ok: #41df6d;
   --bad: #fca5a5;
-  --on-accent: #07100d;
-  --dot: rgb(233 240 236 / 0.07);
-  --accent: #2dd4bf;
-  --accent-ink: #2dd4bf;
-  --accent-soft: #0f2a25;
+  --on-accent: #1e1b4b;
+  --dot: rgb(245 244 255 / 0.07);
+  --accent: #a3e635;
+  --accent-ink: #a3e635;
+  --accent-soft: #581c87;
 }
 
-/* One colour per tab, drawn from the console palette: emerald, sky, lime, amber, coral. */
-[data-tab="software"]   { --accent: #047857; --accent-ink: #047857; --accent-soft: #d1fae5; }
-[data-tab="ai"]         { --accent: #0369a1; --accent-ink: #0369a1; --accent-soft: #e0f2fe; }
-[data-tab="networking"] { --accent: #4d7c0f; --accent-ink: #4d7c0f; --accent-soft: #ecfccb; }
-[data-tab="webdesign"]  { --accent: #b45309; --accent-ink: #b45309; --accent-soft: #fef3c7; }
-[data-tab="security"]   { --accent: #c2410c; --accent-ink: #c2410c; --accent-soft: #ffedd5; }
-[data-tab="home"]       { --accent: #0f766e; --accent-ink: #0f766e; --accent-soft: #ccfbf1; }
-.dark [data-tab="software"]   { --accent: #34d399; --accent-ink: #34d399; --accent-soft: #0d2a20; }
-.dark [data-tab="ai"]         { --accent: #38bdf8; --accent-ink: #38bdf8; --accent-soft: #0c2536; }
-.dark [data-tab="networking"] { --accent: #a3e635; --accent-ink: #a3e635; --accent-soft: #1f2a0c; }
-.dark [data-tab="webdesign"]  { --accent: #fbbf24; --accent-ink: #fbbf24; --accent-soft: #2e2409; }
-.dark [data-tab="security"]   { --accent: #fb7c5c; --accent-ink: #fb7c5c; --accent-soft: #33160f; }
-.dark [data-tab="home"]       { --accent: #2dd4bf; --accent-ink: #2dd4bf; --accent-soft: #0f2a25; }
+/* One colour per tab, drawn from the palette ramp: green, teal, olive, blue, purple. */
+[data-tab="software"]   { --accent: #00822a; --accent-ink: #00822a; --accent-soft: #dcf9e0; }
+[data-tab="ai"]         { --accent: #007d72; --accent-ink: #007d72; --accent-soft: #cffbf5; }
+[data-tab="networking"] { --accent: #5a7900; --accent-ink: #5a7900; --accent-soft: #eaf6d5; }
+[data-tab="webdesign"]  { --accent: #0075b6; --accent-ink: #0075b6; --accent-soft: #d6f5ff; }
+[data-tab="security"]   { --accent: #581c87; --accent-ink: #581c87; --accent-soft: #f7e9ff; }
+[data-tab="home"]       { --accent: #427d00; --accent-ink: #427d00; --accent-soft: #e7f7d7; }
+.dark [data-tab="software"]   { --accent: #1aa54c; --accent-ink: #1aa54c; --accent-soft: #0f401d; }
+.dark [data-tab="ai"]         { --accent: #00bfb2; --accent-ink: #00bfb2; --accent-soft: #00423c; }
+.dark [data-tab="networking"] { --accent: #92b602; --accent-ink: #92b602; --accent-soft: #2e3b01; }
+.dark [data-tab="webdesign"]  { --accent: #1e99dc; --accent-ink: #1e99dc; --accent-soft: #003a5a; }
+.dark [data-tab="security"]   { --accent: #ae77e6; --accent-ink: #ae77e6; --accent-soft: #3f2956; }
+.dark [data-tab="home"]       { --accent: #a3e635; --accent-ink: #a3e635; --accent-soft: #581c87; }
 
 html { scroll-padding-top: 7rem; }
 body { background: var(--surface); color: var(--ink); font-family: var(--font-sans); }
