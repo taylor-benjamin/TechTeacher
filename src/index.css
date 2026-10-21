@@ -18,7 +18,7 @@
   --color-bad: var(--bad);
 }
 
-/* Theme: an "operations console" on deep indigo. Indigo/purple surfaces, luminous lime and
+/* Theme: an "operations console" on indigo-tinted black. Near-black surfaces, luminous lime and
    green accents, thin type, pill controls and a dot-grid backdrop.
    Palette: #92b602 #16a34a #a3e635 #581c87 #1e1b4b (OKLCH ramp; light-mode accents darkened in OKLCH to pass AA).
    All text/background pairs meet WCAG AA (4.5:1) in both modes.
@@ -39,15 +39,15 @@
   --accent-soft: #e7f7d7;
 }
 .dark {
-  --surface: #1e1b4b;
-  --panel: #291d5a;
-  --line: #491e7b;
+  --surface: #07060f;
+  --panel: #110f22;
+  --line: #2c2750;
   --edge: #857fae;
   --ink: #f5f4ff;
   --muted: #bfb8db;
   --ok: #41df6d;
   --bad: #fca5a5;
-  --on-accent: #1e1b4b;
+  --on-accent: #07060f;
   --dot: rgb(245 244 255 / 0.07);
   --accent: #a3e635;
   --accent-ink: #a3e635;
