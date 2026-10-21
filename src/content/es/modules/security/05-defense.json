@@ -1,0 +1,276 @@
+{
+  "title": "Amenazas y defensa",
+  "summary": "Cómo funcionan los ataques y cómo los defensores los detienen, los detectan y responden a ellos.",
+  "lessons": {
+    "threats-attacks": {
+      "title": "Amenazas y ataques",
+      "concept": {
+        "text": "La seguridad existe para proteger tres propiedades, conocidas como la **tríada CIA**. **Confidencialidad**: solo las personas autorizadas pueden leer los datos. **Integridad**: los datos son exactos y no se han alterado. **Disponibilidad**: los sistemas funcionan cuando se necesitan. Todo ataque daña al menos una de ellas.\n\nLos atacantes van desde delincuentes oportunistas hasta grupos organizados y personas de dentro. La mayoría de los ataques con éxito no son magia técnica. Se aprovechan de las personas (phishing), de contraseñas débiles o reutilizadas y de software que nunca se actualizó.",
+        "analogy": "Proteger una red es como proteger una casa. La mayoría de los ladrones no fuerzan cerraduras. Prueban el picaporte (contraseñas por defecto), buscan una ventana abierta (software sin parchear) o simplemente llaman y dicen que vienen de la compañía del gas (phishing)."
+      },
+      "visual": {
+        "caption": "Los ataques con los que te encontrarás más a menudo.",
+        "items": [
+          { "title": "Phishing", "text": "Mensajes falsos que te engañan para que entregues credenciales o abras malware. La principal puerta de entrada." },
+          { "title": "Ransomware", "text": "Malware que cifra tus archivos y exige un pago. Ataca la disponibilidad." },
+          { "title": "Ataques a credenciales", "text": "Credential stuffing, password spraying y fuerza bruta contra páginas de inicio de sesión." },
+          { "title": "Inyección SQL", "text": "Una entrada que se trata como un comando de base de datos. Roba o altera datos." },
+          { "title": "Cross-site scripting (XSS)", "text": "El script del atacante se ejecuta en el navegador de otro usuario." },
+          { "title": "Denegación de servicio (DDoS)", "text": "Inundar un servicio hasta que no puede responder. Ataca la disponibilidad." },
+          { "title": "Intermediario (man in the middle)", "text": "Interceptar el tráfico entre dos partes. Ataca la confidencialidad y la integridad." },
+          { "title": "Ingeniería social", "text": "Manipular a las personas: pretextos, colarse detrás de alguien (tailgating), urgencia, autoridad." }
+        ]
+      },
+      "steps": [
+        { "title": "Aprende el vocabulario", "text": "Una **vulnerabilidad** es una debilidad. Una **amenaza** es algo que podría aprovecharla. Un **exploit** es el método que se usa. El **riesgo** es la probabilidad de que ocurra multiplicada por su impacto." },
+        { "title": "Detecta un phishing", "text": "Fíjate en un remitente que no cuadra, la urgencia o las amenazas, un enlace cuyo destino real no coincide con su texto, adjuntos inesperados y peticiones de credenciales o de pagos." },
+        { "title": "Entiende los tipos de malware", "text": "Un **virus** se adhiere a archivos. Un **gusano** se propaga solo por las redes. Un **troyano** se hace pasar por software útil. El **ransomware** cifra datos. El **spyware** y los **keyloggers** roban información." },
+        { "title": "Aplica la defensa en profundidad", "text": "Ningún control basta por sí solo. Ponlos en capas: parches, MFA, mínimo privilegio, filtrado de correo, protección de los equipos, segmentación de la red, copias de seguridad y formación de los usuarios." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "Un ransomware cifra los historiales de los pacientes de un hospital. ¿Qué parte de la tríada CIA se ve afectada primero?",
+            "options": ["Confidencialidad", "Integridad", "Disponibilidad", "Ninguna"],
+            "explain": "El personal no puede acceder a los datos que necesita. El ransomware moderno a menudo también roba datos, lo que afecta además a la confidencialidad."
+          },
+          {
+            "q": "Un correo de «Soporte de TI» dice que tu cuenta se borrará en una hora salvo que inicies sesión mediante un enlace. ¿Qué técnica es?",
+            "options": ["Inyección SQL", "Phishing que usa la urgencia", "Un ataque DDoS", "Un gusano"],
+            "explain": "La urgencia y la autoridad son tácticas de presión clásicas de la ingeniería social."
+          },
+          {
+            "q": "Un formulario de inicio de sesión acepta `' OR '1'='1` como nombre de usuario y deja entrar al atacante. ¿Cuál es el fallo?",
+            "options": ["Cross-site scripting", "Inyección SQL", "Desbordamiento de búfer", "Phishing"],
+            "explain": "La entrada del usuario se metió directamente en una consulta de base de datos. Las consultas parametrizadas lo evitan."
+          },
+          {
+            "q": "¿Qué malware se propaga por una red sin que el usuario haga nada?",
+            "options": ["Troyano", "Gusano", "Adware", "Keylogger"],
+            "explain": "Los gusanos se autopropagan aprovechando vulnerabilidades."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Una pequeña empresa sufre un ransomware que llegó en un correo de phishing. Nombra un control en cada una de cuatro capas que podría haberlo detenido o limitado.",
+        "hint": "Sigue el ataque: llega el correo, un usuario hace clic, se ejecuta el malware, se propaga y se cifran los archivos.",
+        "solution": "1. **Correo**: filtrado y análisis de adjuntos en un entorno aislado (sandbox) para que el mensaje no llegue, además de SPF, DKIM y DMARC.\n\n2. **Usuario**: formación de concienciación y un botón sencillo de «informar de phishing».\n\n3. **Equipo**: parches al día y detección y respuesta en el endpoint (EDR) para bloquear el malware, además de no dar permisos de administrador local a los usuarios normales.\n\n4. **Red y datos**: segmentación y mínimo privilegio para que no se extienda a todas las carpetas compartidas, y **copias de seguridad sin conexión y probadas** para que la empresa pueda recuperarse sin pagar."
+      },
+      "takeaways": [
+        "La tríada CIA: confidencialidad, integridad y disponibilidad.",
+        "La mayoría de las brechas empiezan con phishing, credenciales débiles o software sin parchear.",
+        "La defensa en profundidad pone muchos controles en capas para que ningún fallo aislado sea fatal."
+      ]
+    },
+    "firewalls-ids-ips": {
+      "title": "Firewalls, IDS e IPS",
+      "concept": {
+        "text": "Un firewall decide qué tráfico de red puede pasar, según unas reglas. Es la herramienta básica para separar las redes de confianza de las que no lo son, y para separar entre sí las partes de tu propia red.\n\nUn firewall solo aplica reglas sobre direcciones, puertos y aplicaciones. Para darte cuenta de un ataque escondido dentro del tráfico permitido, necesitas inspección. Un IDS vigila el tráfico y **alerta**. Un IPS está directamente en el camino del tráfico y puede **bloquearlo**. Los firewalls modernos de nueva generación combinan los tres.",
+        "analogy": "Un firewall es un portero con una lista de invitados: los nombres de la lista entran. Un IDS es una cámara de seguridad que ve una pelea y da la alarma. Un IPS es un guardia dentro del local que interviene y saca a quien causa problemas."
+      },
+      "visual": {
+        "columns": ["Firewall", "IDS", "IPS"],
+        "rows": [
+          ["Función principal", "Permitir o bloquear según reglas", "Detectar y alertar", "Detectar y bloquear"],
+          ["Ubicación", "En línea, en los límites de la red", "Fuera de banda, sobre una copia del tráfico", "En línea, en el camino del tráfico"],
+          ["Qué examina", "IP, puertos, estado, aplicaciones", "Contenido y comportamiento de los paquetes", "Contenido y comportamiento de los paquetes"],
+          ["Si falla o se equivoca", "El tráfico se bloquea o se permite por error", "Una alerta perdida o falsa", "Se bloquea tráfico legítimo"],
+          ["Ejemplos", "pfSense, Palo Alto, Firewall de Windows", "Snort o Suricata en modo detección, Zeek", "Suricata en línea, la mayoría de los NGFW"]
+        ]
+      },
+      "steps": [
+        { "title": "Lee un conjunto de reglas", "text": "Las reglas se procesan de arriba abajo y gana la primera que coincide. La última regla es una **denegación implícita**: todo lo que no se permite expresamente queda bloqueado." },
+        { "title": "Sin estado frente a con estado", "text": "Un filtro **sin estado** juzga cada paquete por separado. Un firewall **con estado** sigue las conexiones, así que las respuestas al tráfico que tú iniciaste se dejan entrar automáticamente." },
+        { "title": "Dos métodos de detección", "text": "La detección **basada en firmas** busca patrones de ataque conocidos: rápida y precisa, pero ciega ante ataques nuevos. La detección **basada en anomalías** marca lo que se desvía del comportamiento normal: atrapa ataques nuevos pero da más falsas alarmas." },
+        { "title": "Conoce los tipos especializados", "text": "Un **WAF** (firewall de aplicaciones web) protege los sitios web frente a ataques como la inyección SQL. Un firewall **basado en host** funciona en cada máquina. Una **DMZ** es una red aparte para los servidores de cara al público." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "Con el conjunto de reglas de arriba, llega un paquete de 10.0.9.7 para db-server en el puerto 5432. ¿Qué pasa?",
+            "options": ["Lo permite la regla 1", "Lo permite la regla 2", "Lo deniega la regla 3", "Se permite por defecto"],
+            "explain": "10.0.9.7 no está en 10.0.5.0/24, así que la regla 2 no coincide, y la regla 3 deniega todo lo demás."
+          },
+          {
+            "q": "¿Qué dispositivo puede detener un ataque en curso sin intervención humana?",
+            "options": ["IDS", "IPS", "Un tap de red", "Un hub"],
+            "explain": "Un IPS está en línea y puede descartar el tráfico malicioso. Un IDS solo alerta."
+          },
+          {
+            "q": "El IPS bloquea como ataque una transferencia de archivos legítima. ¿Cómo se llama esto?",
+            "options": ["Un falso positivo", "Un falso negativo", "Un verdadero positivo", "Un zero-day"],
+            "explain": "Un falso positivo marca una actividad inofensiva. Un falso negativo deja pasar un ataque real."
+          },
+          {
+            "q": "¿Qué método de detección puede atrapar un ataque completamente nuevo, nunca visto?",
+            "options": ["Basado en firmas", "Basado en anomalías", "Ninguno", "Filtrado por MAC"],
+            "explain": "La detección de anomalías no necesita un patrón conocido, solo una referencia de lo normal."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Escribe las reglas de firewall de una oficina pequeña con estas necesidades: el personal (192.168.10.0/24) puede navegar por la web; solo la subred de TI (192.168.99.0/24) puede hacer SSH a los servidores (192.168.50.0/24); los invitados (192.168.20.0/24) tienen solo internet y nada interno.",
+        "hint": "Pon las reglas de bloqueo concretas por encima de las reglas amplias de permiso, y termina con un «denegar todo»."
+      },
+      "takeaways": [
+        "Los firewalls aplican las reglas de arriba abajo y terminan con una denegación implícita.",
+        "Un IDS detecta y alerta. Un IPS está en línea y bloquea.",
+        "Las firmas atrapan ataques conocidos. La detección de anomalías atrapa los nuevos, con más falsos positivos."
+      ]
+    },
+    "siem": {
+      "title": "SIEM y análisis de registros",
+      "concept": {
+        "text": "Todos los dispositivos y aplicaciones escriben registros (logs): firewalls, servidores, portátiles, servicios en la nube, sistemas de acceso a puertas. Por separado, la mayoría de las líneas de registro no significan nada. Un SIEM los reúne todos en un solo lugar, los convierte a un formato común y **correlaciona** eventos de distintas fuentes para encontrar los patrones que revelan un ataque.\n\nUn SIEM es la herramienta principal de un Centro de Operaciones de Seguridad (SOC). Los analistas clasifican sus alertas, investigan lo que pasó y escalan los incidentes reales. Entre los productos populares están Splunk, Microsoft Sentinel, Elastic Security y el código abierto Wazuh.",
+        "analogy": "Cada registro es un testigo que vio una pequeña parte de un delito. Por separado, sus relatos no sirven de nada. El SIEM es el detective que entrevista a todos, alinea las cronologías y se da cuenta de que el mismo desconocido aparece en todas."
+      },
+      "visual": {
+        "caption": "El proceso de un SIEM.",
+        "nodes": [
+          { "label": "Recopilar", "detail": "Registros de todas las fuentes" },
+          { "label": "Normalizar", "detail": "Un formato común" },
+          { "label": "Correlacionar", "detail": "Las reglas enlazan eventos" },
+          { "label": "Alertar", "detail": "Ordenado por gravedad" },
+          { "label": "Investigar", "detail": "Clasificación y respuesta del analista" }
+        ]
+      },
+      "steps": [
+        { "title": "Recopila los registros adecuados", "text": "Empieza por los registros de autenticación, de firewall y proxy, las alertas de detección en los equipos, los registros DNS y los registros de auditoría de la nube. Tener la hora exacta (NTP) en todos los sistemas es esencial, o no se pueden construir cronologías." },
+        { "title": "Escribe una regla de correlación", "text": "Una regla describe un patrón entre eventos. Esta atrapa un ataque de adivinación de contraseñas que ha tenido éxito." },
+        { "title": "Busca en los registros", "text": "Cada SIEM tiene un lenguaje de consulta. Esta búsqueda al estilo Splunk cuenta los inicios de sesión fallidos por dirección de origen." },
+        { "title": "Clasifica las alertas", "text": "Para cada alerta, decide: ¿verdadero positivo o falso positivo? ¿Qué está afectado? ¿Qué gravedad tiene? Luego ciérrala, ajusta la regla o escálala. Demasiadas alertas ruidosas provocan **fatiga de alertas**, así que el ajuste es una tarea constante." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "¿Cuál es el principal valor que aporta un SIEM frente a leer registros sueltos?",
+            "options": ["Borra los registros antiguos", "Correlaciona eventos de muchas fuentes para revelar patrones", "Cifra el tráfico de red", "Sustituye a los firewalls"],
+            "explain": "La correlación entre fuentes es lo que convierte eventos dispersos en un ataque detectable."
+          },
+          {
+            "q": "Un usuario inicia sesión desde Londres y, cuatro minutos después, desde Sídney. ¿Cómo se llama esta detección?",
+            "options": ["Viaje imposible", "Escaneo de puertos", "Inyección SQL", "Envenenamiento DNS"],
+            "explain": "Nadie viaja tan lejos en cuatro minutos, así que probablemente las credenciales están comprometidas."
+          },
+          {
+            "q": "¿Por qué todas las fuentes de registros deben tener los relojes sincronizados?",
+            "options": ["Para ahorrar espacio en disco", "Para poder ordenar correctamente los eventos de distintos sistemas", "Para que los registros sean más cortos", "No es importante"],
+            "explain": "La correlación y las cronologías forenses dependen de marcas de tiempo exactas."
+          },
+          {
+            "q": "Los analistas ignoran las alertas porque el 95 % son falsos positivos. ¿Cómo se llama este problema?",
+            "options": ["Fatiga de alertas", "Acumulación de privilegios", "Shadow IT", "Exfiltración de datos"],
+            "explain": "Ajustar las reglas para reducir el ruido es esencial, o se pierden las alertas reales."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Aquí tienes cinco líneas de registro de sistemas distintos. Reconstruye la historia y di qué harías primero.\n\n`09:02` Pasarela de correo: el usuario jlee recibió un mensaje con el adjunto invoice.xlsm\n\n`09:05` Equipo: EXCEL.EXE inició powershell.exe en jlee-laptop\n\n`09:06` DNS: jlee-laptop consultó update-cdn-x9.top\n\n`09:06` Firewall: jlee-laptop se conectó a 185.220.x.x en el puerto 443\n\n`09:15` Servidor de archivos: jlee leyó 4200 archivos en 3 minutos",
+        "hint": "Cada línea por separado no llama la atención. Léelas como una sola cronología de un mismo usuario.",
+        "solution": "**La historia**: jlee recibió un correo de phishing con una hoja de cálculo con macros. Al abrirla se ejecutó una macro, como muestra que Excel lanzara PowerShell, algo que casi nunca es legítimo. El script contactó con un dominio sospechoso y recién visto: mando y control. Nueve minutos después, la cuenta leyó miles de archivos, lo que sugiere recopilación de datos para robarlos o preparación de un ransomware.\n\n**Primera acción**: **contener**. Aísla jlee-laptop de la red y desactiva o restablece la cuenta y las sesiones de jlee. Después bloquea el dominio y la dirección IP, busca el mismo correo y los mismos indicadores en otras máquinas y conserva las pruebas."
+      },
+      "takeaways": [
+        "Un SIEM centraliza, normaliza y correlaciona los registros para generar alertas.",
+        "Las reglas de correlación describen patrones de ataque entre varios eventos y fuentes.",
+        "Una buena clasificación y un ajuste constante evitan la fatiga de alertas."
+      ]
+    },
+    "incident-response": {
+      "title": "Respuesta a incidentes",
+      "concept": {
+        "text": "Un **incidente** es un evento que daña, o amenaza con dañar, la confidencialidad, la integridad o la disponibilidad de los sistemas o los datos. La respuesta a incidentes (IR) es la forma organizada de gestionarlo. Un equipo preparado y con un plan contiene un ataque en horas. Uno sin preparar improvisa durante semanas y lo empeora.\n\nEl modelo más enseñado tiene seis fases: **Preparación, Identificación, Contención, Erradicación, Recuperación y Lecciones aprendidas**. El orden importa. Sobre todo, contén antes de limpiar, y no destruyas pruebas por las prisas de volver a la normalidad.",
+        "analogy": "La respuesta a incidentes es como apagar un incendio. Entrenas y revisas el equipo de antemano, confirmas que de verdad hay fuego, impides que se extienda, lo apagas por completo, reconstruyes lo dañado y después averiguas cómo empezó para que no vuelva a pasar."
+      },
+      "visual": {
+        "caption": "Las seis fases (PICERL). La última alimenta de nuevo a la primera.",
+        "nodes": [
+          { "label": "Preparación", "detail": "Plan, equipo, herramientas, copias, simulacros" },
+          { "label": "Identificación", "detail": "¿Es real? ¿Cuál es su alcance?" },
+          { "label": "Contención", "detail": "Detén la propagación" },
+          { "label": "Erradicación", "detail": "Elimina al atacante y la causa" },
+          { "label": "Recuperación", "detail": "Restaura y vigila" },
+          { "label": "Lecciones aprendidas", "detail": "Revisa y mejora" }
+        ]
+      },
+      "steps": [
+        { "title": "Prepárate", "text": "Escribe un plan de IR y **playbooks** para los escenarios probables, como ransomware, phishing o un portátil perdido. Decide quién está al mando, quién habla con los clientes y los reguladores, y cómo contactar con la gente si el correo no funciona." },
+        { "title": "Identifica y delimita", "text": "Confirma la alerta y luego averigua qué sistemas y cuentas están afectados y cómo entró el atacante. Empieza una cronología y toma notas." },
+        { "title": "Contén y luego erradica", "text": "Aísla de la red las máquinas afectadas y desactiva las cuentas comprometidas. Conserva primero las pruebas: imágenes de memoria y de disco, con una **cadena de custodia** documentada. Después elimina el malware, cierra la puerta de entrada y restablece las credenciales." },
+        { "title": "Recupera y aprende", "text": "Restaura desde copias de seguridad limpias, aplica parches y vigila de cerca por si vuelve el atacante. En un plazo de dos semanas, haz una revisión sin culpables: ¿qué pasó, qué funcionó, qué va a cambiar?" }
+      ],
+      "interactive": {
+        "prompt": "Ordena las fases de la respuesta a incidentes.",
+        "items": ["Preparación", "Identificación", "Contención", "Erradicación", "Recuperación", "Lecciones aprendidas"]
+      },
+      "challenge": {
+        "prompt": "A las 2 de la madrugada, la monitorización muestra un ransomware cifrando archivos en un servidor de archivos y extendiéndose a las estaciones de trabajo. Un compañero que ha entrado en pánico quiere apagar todas las máquinas y reinstalar de inmediato. ¿Qué haces en su lugar y por qué?",
+        "hint": "Piensa en la propagación, las pruebas y la causa de fondo.",
+        "solution": "**Contén primero**: desconecta de la red las máquinas afectadas desenchufando cables, desactivando puertos del switch o usando la función de aislamiento del EDR. Eso detiene la propagación al instante.\n\n**No apagues ni borres todavía**: la memoria puede contener las claves de cifrado y pruebas de cómo entró el atacante. Haz imágenes si puedes.\n\n**Protege las copias de seguridad**: asegúrate de que están sin conexión y no se han visto afectadas.\n\n**Encuentra la puerta de entrada** antes de reconstruir. Si reinstalas sin cerrarla, el atacante vuelve enseguida.\n\nDespués erradica, restaura desde copias limpias, restablece las credenciales, avisa a quien exijan el plan y la ley, y haz la revisión."
+      },
+      "takeaways": [
+        "Las fases: Preparación, Identificación, Contención, Erradicación, Recuperación y Lecciones aprendidas.",
+        "Contén antes de erradicar y conserva las pruebas antes de borrar.",
+        "Un plan escrito y ensayado de antemano vale más que cualquier herramienta."
+      ]
+    },
+    "frameworks": {
+      "title": "Marcos de referencia: NIST CSF y MITRE ATT&CK",
+      "concept": {
+        "text": "Los marcos de seguridad dan a las organizaciones una estructura y un vocabulario comunes, para que no tengan que inventar un programa de seguridad desde cero. Dos de los más usados responden a preguntas distintas.\n\nEl **NIST Cybersecurity Framework** (CSF) responde a *¿qué debería cubrir nuestro programa de seguridad?* Organiza todo el trabajo de seguridad en seis funciones: Gobernar, Identificar, Proteger, Detectar, Responder y Recuperar. **MITRE ATT&CK** responde a *¿cómo se comportan realmente los atacantes?* Es una base de conocimiento pública de **tácticas** (sus objetivos) y **técnicas** (cómo los logran) de atacantes reales, que se usa para crear y probar detecciones.",
+        "analogy": "El NIST CSF es un código de edificación: te dice lo que debe tener un edificio seguro, como salidas, alarmas y rociadores. MITRE ATT&CK es un catálogo de cómo entran de verdad los ladrones, para que puedas comprobar si tus alarmas detectarían cada método."
+      },
+      "visual": {
+        "caption": "Las seis funciones del NIST CSF 2.0.",
+        "columns": ["Pregunta que responde", "Ejemplos"],
+        "rows": [
+          ["Gobernar", "¿Quién es responsable y cuál es nuestra estrategia?", "Políticas, roles, apetito de riesgo, riesgo de proveedores"],
+          ["Identificar", "¿Qué tenemos y qué podría salir mal?", "Inventario de activos, evaluación de riesgos"],
+          ["Proteger", "¿Cómo evitamos los incidentes?", "MFA, cifrado, formación, parches"],
+          ["Detectar", "¿Cómo nos damos cuenta de un ataque?", "SIEM, IDS, monitorización"],
+          ["Responder", "¿Qué hacemos cuando ocurre?", "Plan de respuesta a incidentes, comunicaciones"],
+          ["Recuperar", "¿Cómo volvemos a la normalidad?", "Copias de seguridad, restauración, mejoras"]
+        ]
+      },
+      "steps": [
+        { "title": "Usa el CSF para encontrar carencias", "text": "Puntúa a tu organización en cada función. Muchas son fuertes en Proteger y flojas en Detectar y Recuperar. Las carencias se convierten en tu hoja de ruta." },
+        { "title": "Lee la matriz ATT&CK", "text": "Las columnas son **tácticas**, más o menos en el orden de un ataque: Reconocimiento, Acceso inicial, Ejecución, Persistencia, Escalada de privilegios, Evasión de defensas, Acceso a credenciales, Descubrimiento, Movimiento lateral, Recopilación, Mando y control, Exfiltración e Impacto. Las celdas son **técnicas**, cada una con un ID." },
+        { "title": "Mapea un ataque", "text": "Un correo de phishing con un adjunto malicioso es **T1566.001** (Spearphishing Attachment) dentro de Acceso inicial. PowerShell ejecutando la carga útil es **T1059.001** dentro de Ejecución. Los analistas usan estos ID para describir los incidentes con precisión." },
+        { "title": "Conoce los demás", "text": "**ISO/IEC 27001** es una norma certificable de gestión de la seguridad. Los **CIS Controls** son una lista priorizada de salvaguardas prácticas. **PCI DSS** se aplica a los pagos con tarjeta, y **HIPAA** y el **RGPD** (GDPR) son leyes sobre datos de salud y datos personales." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "Tener un SIEM y vigilar las intrusiones pertenece a qué función del NIST CSF?",
+            "options": ["Identificar", "Proteger", "Detectar", "Recuperar"],
+            "explain": "Detectar abarca encontrar los eventos de seguridad en el momento en que ocurren."
+          },
+          {
+            "q": "En MITRE ATT&CK, ¿qué es una táctica?",
+            "options": ["Una herramienta concreta", "El objetivo del atacante en una fase, como la Persistencia", "Un parche de software", "Una ley de cumplimiento"],
+            "explain": "Las tácticas son el porqué. Las técnicas son el cómo."
+          },
+          {
+            "q": "Un atacante usa credenciales de administrador robadas para pasar de un servidor a otro. ¿Qué táctica de ATT&CK es?",
+            "options": ["Acceso inicial", "Movimiento lateral", "Exfiltración", "Reconocimiento"],
+            "explain": "El movimiento lateral es extenderse por la red después del primer punto de apoyo."
+          },
+          {
+            "q": "¿Qué función se añadió en el NIST CSF 2.0?",
+            "options": ["Gobernar", "Proteger", "Detectar", "Responder"],
+            "explain": "Gobernar se añadió en 2024 para dar más peso al liderazgo, la estrategia y la supervisión."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Asocia cada fase de este ataque con una táctica de MITRE ATT&CK: (1) el atacante envía por correo una hoja de cálculo maliciosa; (2) la macro ejecuta PowerShell; (3) añade una clave de registro para ejecutarse en cada arranque; (4) extrae contraseñas de la memoria; (5) copia archivos a un servidor en el extranjero.",
+        "hint": "Usa la lista de tácticas del paso a paso. Pregúntate qué intenta conseguir el atacante en cada fase.",
+        "solution": "1. **Acceso inicial** (phishing: adjunto de spearphishing).\n\n2. **Ejecución** (intérprete de comandos y scripts: PowerShell).\n\n3. **Persistencia** (inicio automático al arrancar o iniciar sesión: claves Run del registro).\n\n4. **Acceso a credenciales** (volcado de credenciales del sistema operativo).\n\n5. **Exfiltración** (exfiltración por un canal de mando y control o web).\n\nPara cada una, un defensor se pregunta: ¿qué fuente de registros y qué regla de detección lo habrían atrapado?"
+      },
+      "takeaways": [
+        "El NIST CSF organiza un programa de seguridad: Gobernar, Identificar, Proteger, Detectar, Responder y Recuperar.",
+        "MITRE ATT&CK cataloga las tácticas (objetivos) y técnicas (métodos) de atacantes reales.",
+        "Usa el CSF para encontrar carencias en el programa y ATT&CK para comprobar si detectarías ataques reales."
+      ]
+    }
+  }
+}

@@ -1,0 +1,164 @@
+{
+  "title": "Fundamentos de diseño",
+  "summary": "Maquetación, tipografía, color y UX: los principios que hay detrás de cualquier sitio atractivo y fácil de usar.",
+  "lessons": {
+    "layout": {
+      "title": "Maquetación: jerarquía, retículas y espacio en blanco",
+      "concept": {
+        "text": "La maquetación es cómo colocas las cosas en una página para que la gente vea primero lo más importante y entienda qué va junto. Una buena maquetación no es decoración. Le hace al lector el trabajo de ordenar.\n\nCuatro ideas hacen casi todo el trabajo. **Jerarquía**: haz lo importante más grande, más grueso o más arriba. **Alineación**: alinea las cosas en una retícula común. **Proximidad**: pon juntas las cosas relacionadas. **Espacio en blanco**: deja sitio para respirar, porque el espacio vacío es lo que hace legible el resto.",
+        "analogy": "Una buena maquetación es una tienda bien organizada. La oferta especial está junto a la puerta (jerarquía), los productos están en pasillos rectos (alineación), la pasta está junto a la salsa para pasta (proximidad) y los pasillos son lo bastante anchos para caminar (espacio en blanco)."
+      },
+      "visual": {
+        "caption": "CRAP: cuatro principios de la diseñadora Robin Williams, más otros dos.",
+        "items": [
+          { "title": "Contraste", "text": "Haz que las cosas distintas se vean claramente distintas. Los títulos no deberían parecerse al texto normal." },
+          { "title": "Repetición", "text": "Reutiliza los mismos estilos para el mismo tipo de cosas. La coherencia genera confianza." },
+          { "title": "Alineación", "text": "Cada elemento debe alinearse con algo. Nada colocado al azar." },
+          { "title": "Proximidad", "text": "Agrupa los elementos relacionados. El espacio entre grupos muestra dónde termina cada uno." },
+          { "title": "Jerarquía", "text": "El tamaño, el grosor y la posición le dicen a la vista dónde mirar primero, segundo y tercero." },
+          { "title": "Espacio en blanco", "text": "Un espaciado generoso transmite seguridad y facilita recorrer el contenido con la vista." }
+        ]
+      },
+      "steps": [
+        { "title": "Decide qué es lo principal", "text": "Cada página o sección tiene una acción o un mensaje principal. Haz que sea el elemento más destacado. Si todo grita, no se oye nada." },
+        { "title": "Usa una retícula", "text": "Una retícula de 12 columnas es el estándar web porque 12 se divide en mitades, tercios y cuartos. CSS Grid lo resuelve en una línea." },
+        { "title": "Usa una escala de espaciado", "text": "Elige un pequeño conjunto de valores de espaciado, como 4, 8, 16, 24, 32 y 48 píxeles, y usa solo esos. Un espaciado coherente hace que un diseño parezca profesional al instante." },
+        { "title": "Diseña primero para móvil", "text": "Empieza con una sola columna para móviles y añade columnas a medida que la pantalla se ensancha. Más de la mitad del tráfico web viene de móviles." }
+      ],
+      "challenge": {
+        "prompt": "En el editor de arriba, haz que la primera tarjeta sea el punto focal claro: debe ocupar todo el ancho de la retícula y tener un título más grande, mientras que las otras dos quedan una al lado de la otra debajo.",
+        "hint": "`grid-column: 1 / -1` hace que un elemento ocupe todas las columnas. Luego cambia la retícula a dos columnas."
+      },
+      "takeaways": [
+        "La jerarquía, la alineación, la proximidad y el espacio en blanco organizan una página para el lector.",
+        "Usa una retícula y una escala de espaciado fija para tener coherencia al instante.",
+        "Diseña primero para la pantalla más pequeña y luego amplía."
+      ]
+    },
+    "typography": {
+      "title": "Tipografía: texto fácil de leer",
+      "concept": {
+        "text": "La mayor parte de la web es texto, así que la mayor parte del diseño web es tipografía: elegir y colocar las letras para que leer no cueste. Necesitas muy pocas fuentes. Una buena tipografía en unos pocos tamaños y grosores gana a cinco fuentes peleándose.\n\nTres ajustes controlan la legibilidad: el **tamaño** (texto normal de al menos 16 píxeles), el **interlineado** (alrededor de 1,5 veces el tamaño de letra en los párrafos) y la **longitud de línea** (de 45 a 75 caracteres por línea). Si aciertas con esto, casi cualquier fuente queda bien.",
+        "analogy": "La tipografía es la voz de tu texto. La misma frase se puede susurrar, anunciar o gritar. La fuente, el tamaño y el grosor marcan el tono antes de que nadie lea una palabra."
+      },
+      "visual": {
+        "caption": "Ajustes que funcionan en casi cualquier sitio.",
+        "columns": ["Recomendado", "Por qué"],
+        "rows": [
+          ["Tamaño del texto", "16-18 px", "El texto más pequeño cansa la vista, sobre todo en el móvil"],
+          ["Interlineado", "1,5 para el texto, 1,1-1,3 para los títulos", "Las líneas necesitan aire, pero los títulos grandes necesitan menos"],
+          ["Longitud de línea", "45-75 caracteres (max-width: 65ch)", "Las líneas largas cuestan de seguir"],
+          ["Tipografías", "Una o dos familias", "Más parece caótico y ralentiza la carga de la página"],
+          ["Escala tipográfica", "Por ejemplo 16, 20, 24, 32, 48", "Una proporción coherente crea una jerarquía clara"],
+          ["Alineación", "Texto alineado a la izquierda", "Los párrafos centrados son difíciles de leer"]
+        ]
+      },
+      "steps": [
+        { "title": "Elige una tipografía", "text": "Las fuentes **sans-serif** como Inter se ven limpias y modernas. Las fuentes **serif** como Georgia transmiten tradición. Una pila de fuentes del sistema carga al instante y se ve nativa." },
+        { "title": "Define una escala tipográfica", "text": "Usa unidades `rem` para que el texto respete la configuración del navegador del usuario. Elige los tamaños de una escala en lugar de inventarte cada uno." },
+        { "title": "Limita la longitud de línea", "text": "`ch` es el ancho del carácter 0, así que esto mantiene las líneas cómodas con cualquier tamaño de letra." },
+        { "title": "Crea jerarquía con el grosor y el color", "text": "Usa negrita para los títulos y un color más suave para el texto secundario, en lugar de muchos tamaños distintos." }
+      ],
+      "challenge": {
+        "prompt": "El blog de un cliente usa texto gris de 12 px, interlineado de 1,1 y líneas que ocupan todo el ancho de un monitor panorámico. Escribe el CSS del párrafo que arregla los tres problemas.",
+        "hint": "Una propiedad para el tamaño, otra para el interlineado y otra para el ancho. Oscurece también el texto."
+      },
+      "takeaways": [
+        "Texto normal: al menos 16 px, interlineado de alrededor de 1,5 y entre 45 y 75 caracteres por línea.",
+        "Con una o dos tipografías y una escala coherente basta.",
+        "Usa unidades rem para que el texto se adapte a la configuración del usuario."
+      ]
+    },
+    "color": {
+      "title": "Color y contraste",
+      "concept": {
+        "text": "El color crea ambiente, guía la atención y transmite significado, como el rojo para los errores. Pero su trabajo más importante en la web es asegurar que la gente pueda leer. El texto necesita suficiente **contraste** con su fondo.\n\nLas Pautas de Accesibilidad para el Contenido Web (WCAG) miden el contraste como una proporción de 1:1 (invisible) a 21:1 (negro sobre blanco). El nivel AA exige **4,5:1** para el texto normal y **3:1** para el texto grande y los elementos de interfaz. Más o menos 1 de cada 12 hombres tiene algún tipo de daltonismo, así que nunca uses el color como única señal.",
+        "analogy": "Un texto con poco contraste es una conversación en un bar ruidoso. Las palabras se dicen, pero tu público tiene que esforzarse para captarlas, y muchos se rendirán. Un contraste alto es hablar en una sala en silencio."
+      },
+      "visual": {
+        "caption": "La regla 60-30-10 da equilibrio a cualquier paleta.",
+        "columns": ["Proporción de la página", "Se usa para", "Ejemplo"],
+        "rows": [
+          ["Dominante (neutro)", "60 %", "Fondos y superficies grandes", "Blanco, blanco roto o casi negro"],
+          ["Secundario", "30 %", "Tarjetas, secciones, texto", "Grises y un tono apagado de la marca"],
+          ["Acento", "10 %", "Botones, enlaces, resaltados", "Un color vivo de la marca"],
+          ["Semántico", "Según haga falta", "Mensajes de estado", "Verde para éxito, rojo para error, ámbar para aviso"]
+        ]
+      },
+      "steps": [
+        { "title": "Empieza por los neutros", "text": "Elige un fondo, un color de texto y dos o tres grises. La mayor parte de una interfaz profesional es neutra." },
+        { "title": "Añade un acento", "text": "Elige un único color de marca para las acciones. Si todo tiene color, nada destaca." },
+        { "title": "Comprueba el contraste", "text": "Prueba cada pareja de texto y fondo. El texto gris claro sobre blanco es el fallo más común de la web. Usa el comprobador de abajo." },
+        { "title": "No dependas solo del color", "text": "Acompaña el color con un icono, una etiqueta o un subrayado. Un error debe decir «Error» y mostrar un icono, no solo ponerse rojo." }
+      ],
+      "challenge": {
+        "prompt": "Con el comprobador: el gris por defecto #8a8a8a sobre blanco no aprueba AA para texto normal. Encuentra el gris más claro que alcanza 4,5:1 sobre blanco. Después encuentra un azul de marca que apruebe sobre blanco y que también apruebe con texto blanco encima (para un botón).",
+        "hint": "Oscurece poco a poco y mira la proporción. Para el botón, pon el azul como color de fondo y el blanco como color de texto.",
+        "solution": "Sobre blanco, los grises aprueban AA a partir de más o menos **#767676** (4,54:1) o más oscuros. #8a8a8a solo llega a unos 3,5:1.\n\nPara el azul, un tono medio-oscuro como **#1d4ed8** da unos 6,7:1 contra el blanco en ambos sentidos, así que sirve como texto de enlace sobre blanco y como fondo de botón con texto blanco. El contraste es simétrico: intercambiar texto y fondo da la misma proporción."
+      },
+      "takeaways": [
+        "WCAG AA: 4,5:1 para texto normal, 3:1 para texto grande y elementos de interfaz.",
+        "Construye las paletas con neutros más un acento (60-30-10).",
+        "Nunca uses el color como única forma de transmitir significado."
+      ]
+    },
+    "ux-basics": {
+      "title": "UX: diseñar para personas reales",
+      "concept": {
+        "text": "La experiencia de usuario (UX) es cómo se siente usar algo. Un sitio precioso que confunde a la gente tiene mala UX. Uno sencillo que permite terminar la tarea en segundos tiene buena UX.\n\nEl diseño UX parte del objetivo del usuario, no de lo que tú quieres enseñar. ¿Quién visita el sitio, qué intenta hacer y qué se lo impide? La regla más citada del sector es el título del libro de Steve Krug: **No me hagas pensar.**",
+        "analogy": "Una buena UX es una puerta bien diseñada. Una placa plana dice empuja y un tirador dice tira, y nunca te fijas en la puerta. Una mala UX es una puerta con tirador que hay que empujar: todo el mundo se equivoca, y nunca es culpa del usuario."
+      },
+      "visual": {
+        "caption": "El proceso de diseño UX es un ciclo, no una línea.",
+        "nodes": [
+          { "label": "Investigar", "detail": "¿Quiénes son los usuarios? ¿Qué necesitan?" },
+          { "label": "Definir", "detail": "Flujos de usuario y prioridades" },
+          { "label": "Wireframe", "detail": "Cajas a grandes rasgos, sin color" },
+          { "label": "Prototipo", "detail": "Maqueta en la que se puede hacer clic" },
+          { "label": "Probar", "detail": "Mira cómo lo usan 5 personas reales" },
+          { "label": "Iterar", "detail": "Corrige y repite" }
+        ]
+      },
+      "steps": [
+        { "title": "Sigue las convenciones", "text": "El logotipo arriba a la izquierda lleva al inicio. La navegación va arriba. Los enlaces parecen enlaces. La gente pasa la mayor parte del tiempo en otros sitios, así que espera que el tuyo funcione igual (ley de Jakob)." },
+        { "title": "Reduce las opciones y el esfuerzo", "text": "Más opciones significa decisiones más lentas (ley de Hick). Quita campos de los formularios, ofrece valores por defecto sensatos y haz que el botón principal sea evidente." },
+        { "title": "Da respuesta", "text": "Cada acción necesita una respuesta visible: un botón cambia al pulsarlo, un formulario dice qué falló y cómo arreglarlo, una página lenta muestra el progreso." },
+        { "title": "Diseña para todo el mundo", "text": "La accesibilidad es parte de la UX. Admite el teclado, añade texto alternativo a las imágenes, etiqueta los campos de los formularios y haz que las zonas táctiles midan al menos unos 44 píxeles." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "Un formulario de registro tiene 14 campos y la mayoría de los visitantes lo abandonan. ¿Cuál es la mejor primera solución?",
+            "options": ["Poner el botón en rojo", "Quitar todos los campos que no sean imprescindibles", "Añadir un vídeo", "Usar una letra más pequeña"],
+            "explain": "Cada campo extra cuesta esfuerzo. Pide solo lo que necesitas ahora."
+          },
+          {
+            "q": "¿Qué es un wireframe?",
+            "options": ["El diseño final con colores", "Un boceto de la estructura a grandes rasgos, sin estilos", "Un tipo de fuente", "Un framework de JavaScript"],
+            "explain": "Los wireframes resuelven la estructura con poco coste antes de que nadie discuta sobre colores."
+          },
+          {
+            "q": "¿Cuántos usuarios suelen hacer falta en una prueba para descubrir la mayoría de los problemas de usabilidad?",
+            "options": ["Unos 5", "Unos 500", "Exactamente 100", "Ninguno, las pruebas son opcionales"],
+            "explain": "La investigación de Nielsen descubrió que unos cinco usuarios revelan la mayoría de los problemas grandes."
+          },
+          {
+            "q": "Un error de formulario solo dice «Entrada no válida». ¿Por qué es mala UX?",
+            "options": ["Es demasiado largo", "No dice qué campo es ni cómo arreglarlo", "Usa texto", "Es buena UX"],
+            "explain": "Los buenos mensajes de error dicen qué falló y cómo arreglarlo, junto al campo."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Enumera los pasos que debe dar alguien que visita por primera vez la web de un restaurante para reservar mesa. Luego nombra tres cosas que harías para que ese flujo sea lo más corto y claro posible.",
+        "hint": "Cuenta los clics y las decisiones desde que llega a la página de inicio hasta que ve una confirmación.",
+        "solution": "Un flujo típico: llega a la página de inicio, encuentra el enlace de reservas, elige la fecha, la hora y el número de personas, introduce su nombre y sus datos de contacto, confirma y ve la confirmación.\n\nMejoras: (1) pon un botón bien visible de **Reservar mesa** arriba en todas las páginas; (2) pide solo lo imprescindible (fecha, hora, personas, nombre, teléfono) con valores por defecto sensatos, como esta noche y 2 personas; (3) muestra directamente las horas disponibles en lugar de un error después de enviar, y termina con una página de confirmación clara y un email."
+      },
+      "takeaways": [
+        "Una buena UX ayuda a la gente a lograr su objetivo con el menor esfuerzo y la menor reflexión posibles.",
+        "Sigue las convenciones, reduce las opciones y da siempre una respuesta.",
+        "Haz wireframes, prototipos y pruebas con personas reales antes de pulir."
+      ]
+    }
+  }
+}

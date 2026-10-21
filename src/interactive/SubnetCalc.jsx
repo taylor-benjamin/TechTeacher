@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { Trans, useTranslation } from 'react-i18next'
+import i18n from '../i18n'
 import { input } from '../lib/ui'
 
 const toInt = (ip) => ip.split('.').reduce((n, o) => n * 256 + Number(o), 0)
@@ -18,14 +20,14 @@ function calc(text) {
   return {
     prefix, ip, network, broadcast, mask,
     rows: [
-      ['Network address', toIp(network)],
-      ['Subnet mask', toIp(mask)],
-      ['Wildcard mask', toIp(size - 1)],
-      ['Broadcast address', p2p ? 'none' : toIp(broadcast)],
-      ['First usable host', toIp(p2p ? network : network + 1)],
-      ['Last usable host', toIp(p2p ? broadcast : broadcast - 1)],
-      ['Usable hosts', (p2p ? size : size - 2).toLocaleString()],
-      ['Total addresses', size.toLocaleString()],
+      ['network', toIp(network)],
+      ['mask', toIp(mask)],
+      ['wildcard', toIp(size - 1)],
+      ['broadcast', p2p ? i18n.t('subnet.none') : toIp(broadcast)],
+      ['first', toIp(p2p ? network : network + 1)],
+      ['last', toIp(p2p ? broadcast : broadcast - 1)],
+      ['usable', (p2p ? size : size - 2).toLocaleString(i18n.language)],
+      ['total', size.toLocaleString(i18n.language)],
     ],
   }
 }
@@ -47,16 +49,17 @@ function Bits({ label, value, prefix }) {
 }
 
 export default function SubnetCalc() {
+  const { t } = useTranslation()
   const [text, setText] = useState('192.168.10.77/26')
   const r = calc(text)
   return (
     <div className="space-y-4">
       <div>
-        <label htmlFor="subnet-in" className="block text-sm font-medium">IPv4 address in CIDR notation</label>
+        <label htmlFor="subnet-in" className="block text-sm font-medium">{t('subnet.label')}</label>
         <input id="subnet-in" className={`${input} mt-1 w-56 font-mono`} value={text} onChange={(e) => setText(e.target.value)}
           aria-invalid={!r} aria-describedby="subnet-help" />
         <p id="subnet-help" className={`mt-1 text-sm ${r ? 'text-muted' : 'text-bad'}`}>
-          {r ? 'Try changing the prefix: /24, /27, /30, /16…' : 'Enter an address like 10.0.5.20/24 (four numbers 0-255, then a prefix 0-32).'}
+          {r ? t('subnet.tip') : t('subnet.invalid')}
         </p>
       </div>
       {r && (
@@ -65,19 +68,19 @@ export default function SubnetCalc() {
             <tbody>
               {r.rows.map(([k, v]) => (
                 <tr key={k}>
-                  <th scope="row" className="border border-line bg-surface px-3 py-1.5 text-left font-medium">{k}</th>
+                  <th scope="row" className="border border-line bg-surface px-3 py-1.5 text-left font-medium">{t(`subnet.${k}`)}</th>
                   <td className="border border-line px-3 py-1.5 font-mono">{v}</td>
                 </tr>
               ))}
             </tbody>
           </table>
           <div className="overflow-x-auto rounded-lg border border-line bg-surface p-3 text-sm">
-            <Bits label="Address" value={r.ip} prefix={r.prefix} />
-            <Bits label="Mask" value={r.mask} prefix={r.prefix} />
-            <Bits label="Network" value={r.network} prefix={r.prefix} />
+            <Bits label={t('subnet.address')} value={r.ip} prefix={r.prefix} />
+            <Bits label={t('subnet.maskShort')} value={r.mask} prefix={r.prefix} />
+            <Bits label={t('subnet.networkShort')} value={r.network} prefix={r.prefix} />
             <p className="mt-2 text-muted">
-              <strong className="text-accent-ink">Bold bits</strong> are the {r.prefix} network bits (the “street”).{' '}
-              <span className="underline decoration-dotted">Dotted-underlined bits</span> are the {32 - r.prefix} host bits (the “house number”).
+              <Trans i18nKey="subnet.legend" values={{ net: r.prefix, host: 32 - r.prefix }}
+                components={[<strong className="text-accent-ink" />, <span className="underline decoration-dotted" />]} />
             </p>
           </div>
         </div>

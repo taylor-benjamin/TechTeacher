@@ -1,0 +1,119 @@
+{
+  "title": "Identidad y acceso",
+  "summary": "Autenticación, MFA, control de acceso basado en roles y el principio de mínimo privilegio.",
+  "lessons": {
+    "authentication-mfa": {
+      "title": "Autenticación y MFA",
+      "concept": {
+        "text": "La Gestión de Identidades y Accesos (IAM) responde a dos preguntas. **Autenticación**: ¿quién eres? **Autorización**: ¿qué puedes hacer? Son pasos distintos, y confundirlos provoca brechas reales.\n\nLas contraseñas por sí solas son débiles, porque se reutilizan, se adivinan y se roban con phishing. La MFA exige dos o más tipos distintos de prueba, así que una contraseña robada no basta. Es la defensa más eficaz contra el robo de cuentas.",
+        "analogy": "La autenticación es enseñar tu identificación en la puerta de un edificio. La autorización es qué salas abre tu tarjeta una vez dentro. La MFA es necesitar tu identificación y tu huella dactilar para pasar por la puerta."
+      },
+      "visual": {
+        "caption": "Factores de autenticación. MFA significa usar dos o más tipos distintos.",
+        "items": [
+          { "title": "Algo que sabes", "text": "Contraseña, PIN, pregunta de seguridad. El factor más débil: se puede robar con phishing o adivinar." },
+          { "title": "Algo que tienes", "text": "App de autenticación en el móvil, llave de seguridad física, tarjeta inteligente." },
+          { "title": "Algo que eres", "text": "Huella dactilar, cara, iris: biometría." },
+          { "title": "Dónde estás", "text": "La ubicación o la red, usada como señal adicional." },
+          { "title": "No es MFA", "text": "Una contraseña más una pregunta de seguridad son dos cosas que sabes: un solo factor, usado dos veces." }
+        ]
+      },
+      "steps": [
+        { "title": "Ordena los métodos de MFA", "text": "De más débil a más fuerte: **códigos por SMS** (vulnerables al duplicado de SIM), **códigos de app de autenticación** (TOTP), **notificaciones push con coincidencia de números** y **llaves de seguridad físicas o passkeys** (FIDO2), que resisten el phishing porque están ligadas al dominio del sitio web real." },
+        { "title": "Usa un gestor de contraseñas", "text": "Contraseñas largas, únicas y aleatorias para cada sitio, recordadas por software. La reutilización es lo que convierte una brecha en muchas. Las recomendaciones actuales priorizan la longitud frente a la complejidad obligatoria y los cambios periódicos." },
+        { "title": "Entiende el inicio de sesión único", "text": "El **SSO** te permite iniciar sesión una vez con un proveedor de identidad y acceder a muchas apps. Protocolos: **SAML** y **OpenID Connect**. Significa menos contraseñas y un solo lugar donde exigir MFA y dar de baja a quien se va." },
+        { "title": "Reconoce los ataques", "text": "El **credential stuffing** prueba contraseñas filtradas en otros sitios. El **password spraying** prueba una contraseña común en muchas cuentas. La **fatiga de MFA** bombardea a un usuario con avisos hasta que aprueba uno." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "¿Qué combinación es una autenticación multifactor de verdad?",
+            "options": ["Contraseña y PIN", "Contraseña y un código de una app de autenticación", "Dos contraseñas distintas", "Una pregunta de seguridad y un PIN"],
+            "explain": "Una contraseña es algo que sabes y la app es algo que tienes. Las demás opciones repiten un mismo factor."
+          },
+          {
+            "q": "¿Qué método de MFA resiste mejor el phishing?",
+            "options": ["Código por SMS", "Código por email", "Una llave de seguridad física o passkey (FIDO2)", "Una pregunta de seguridad"],
+            "explain": "Las credenciales FIDO2 están ligadas al dominio del sitio auténtico, así que un sitio falso no puede usarlas."
+          },
+          {
+            "q": "Un usuario inicia sesión correctamente y luego se le deniega el acceso a la carpeta de nóminas. ¿Qué paso se lo denegó?",
+            "options": ["Autenticación", "Autorización", "Registro (accounting)", "Cifrado"],
+            "explain": "Demostró quién es. Simplemente no tiene permiso para acceder a ese recurso."
+          },
+          {
+            "q": "Un atacante prueba la contraseña «Winter2025!» en 5000 cuentas. ¿Cómo se llama esto?",
+            "options": ["Fuerza bruta", "Password spraying", "Phishing", "Una tabla arcoíris"],
+            "explain": "Una contraseña en muchas cuentas evita que salten los bloqueos."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Una empleada recibe diez notificaciones push de MFA a las 3 de la madrugada y aprueba una para que paren. ¿Qué ataque es, qué tiene que haber pasado antes y qué tres controles lo evitarían?",
+        "hint": "Un aviso push solo aparece después de un primer paso correcto.",
+        "solution": "Es un ataque de **fatiga de MFA** (push bombing). El atacante **ya tiene la contraseña correcta**, probablemente por phishing o por una base de datos filtrada.\n\nControles: (1) **coincidencia de números**, para que el usuario tenga que escribir un código que aparece en la pantalla de inicio de sesión y no pueda aprobar a ciegas; (2) **MFA resistente al phishing**, como llaves FIDO2 o passkeys; (3) **limitación y alertas** ante avisos repetidos, además de formar a los usuarios para que informen de avisos inesperados y cambien la contraseña de inmediato."
+      },
+      "takeaways": [
+        "La autenticación demuestra quién eres. La autorización decide qué puedes hacer.",
+        "La MFA combina tipos distintos de factor: algo que sabes, que tienes y que eres.",
+        "Las passkeys y las llaves físicas son la opción más fuerte. El SMS es la más débil."
+      ]
+    },
+    "rbac-least-privilege": {
+      "title": "RBAC y mínimo privilegio",
+      "concept": {
+        "text": "Una vez que un usuario se ha autenticado, algo tiene que decidir qué puede hacer. Dar permisos persona por persona no escala y nadie puede auditarlo. El RBAC asigna los permisos a **roles** como Contable o Soporte técnico, y asigna personas a esos roles.\n\nLa regla que guía todo es el mínimo privilegio: cada usuario, programa y servicio recibe solo el acceso que exige su trabajo, y solo durante el tiempo que lo necesita. Cuando una cuenta queda comprometida, y siempre acaba pasando con alguna, el mínimo privilegio limita el daño que puede hacer el atacante.",
+        "analogy": "La tarjeta de un hotel abre tu habitación, el gimnasio y la puerta principal. No abre las habitaciones de otros huéspedes ni el despacho del gerente. El personal de limpieza tiene otra tarjeta. Nadie tiene una llave maestra salvo que su trabajo lo necesite de verdad, y esa llave está controlada."
+      },
+      "visual": {
+        "caption": "RBAC: las personas tienen roles y los roles tienen permisos.",
+        "nodes": [
+          { "label": "Usuario", "detail": "Priya (entra en Finanzas)" },
+          { "label": "Grupo / rol", "detail": "Contable" },
+          { "label": "Permisos", "detail": "Leer y escribir facturas, leer informes" },
+          { "label": "Recursos", "detail": "Sistema financiero, unidad compartida" }
+        ]
+      },
+      "steps": [
+        { "title": "Define los roles según las funciones", "text": "Enumera lo que necesita hacer cada puesto, agrupa esos permisos en un rol y añade los usuarios al rol. Cuando alguien cambia de puesto, cambia su rol en lugar de editar decenas de permisos sueltos." },
+        { "title": "Parte de denegar", "text": "Lo predeterminado es no tener acceso (**denegación implícita**). Añade solo lo necesario. Es mucho más seguro que dar acceso amplio y quitarlo después." },
+        { "title": "Separa las funciones", "text": "La **separación de funciones** significa que ninguna persona puede completar sola un proceso de riesgo. Quien solicita un pago no puede también aprobarlo." },
+        { "title": "Revisa y haz que caduque", "text": "La gente acumula accesos al cambiar de puesto (**acumulación de privilegios**). Haz revisiones de acceso periódicas, da de baja de inmediato a quien se va y usa acceso **just-in-time** para los permisos de administrador, de modo que caduquen solos." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "A un becario de marketing le dan permisos de administrador del dominio «para ahorrar tiempo». ¿Qué principio se incumple?",
+            "options": ["Defensa en profundidad", "Mínimo privilegio", "No repudio", "Disponibilidad"],
+            "explain": "El becario tiene mucho más acceso del que exige su trabajo."
+          },
+          {
+            "q": "En RBAC, los permisos se asignan a…",
+            "options": ["Cada usuario directamente", "Roles, que luego se dan a los usuarios", "Solo a dispositivos", "Contraseñas"],
+            "explain": "Los roles están entre los usuarios y los permisos, lo que hace el acceso gestionable y auditable."
+          },
+          {
+            "q": "La misma empleada puede dar de alta a un proveedor y aprobar pagos a ese proveedor. ¿Qué control falta?",
+            "options": ["Separación de funciones", "Cifrado en reposo", "Un firewall", "DNSSEC"],
+            "explain": "Dividir la tarea entre dos personas evita fraudes y errores."
+          },
+          {
+            "q": "Un empleado que pasó de TI a Ventas hace tres años sigue teniendo acceso de administrador a los servidores. ¿Cómo se llama esto?",
+            "options": ["Acumulación de privilegios", "Phishing", "Tailgating", "Hashing"],
+            "explain": "El acceso que nunca se retira se va acumulando con el tiempo."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Una empresa de 20 personas da a todo el mundo acceso total a una unidad compartida que contiene expedientes de RR. HH., archivos de finanzas y material de marketing. Diseña un esquema RBAC sencillo y nombra dos controles extra para los datos más sensibles.",
+        "hint": "Empieza por enumerar los departamentos y lo que cada uno necesita leer o cambiar de verdad.",
+        "solution": "**Roles y carpetas**: *RR. HH.* tiene lectura y escritura solo en la carpeta de RR. HH. *Finanzas* tiene lectura y escritura solo en Finanzas. *Marketing* tiene lectura y escritura en Marketing. *Toda la plantilla* tiene lectura en una carpeta común de la empresa. *Dirección* puede leer los informes de Finanzas. *El administrador de TI* gestiona los permisos con una cuenta de administración aparte, no con la del día a día.\n\n**Controles extra para RR. HH. y Finanzas**: (1) exigir MFA y registrar cada acceso, con alertas ante descargas masivas; (2) hacer revisiones de acceso trimestrales y retirar el acceso de inmediato cuando alguien se va o cambia de puesto. También es sensato cifrar esas carpetas y hacer copias de seguridad aparte."
+      },
+      "takeaways": [
+        "RBAC: los usuarios tienen roles y los roles tienen permisos.",
+        "El mínimo privilegio limita el daño de cualquier cuenta comprometida.",
+        "Separa las funciones, revisa los accesos con regularidad y da de baja de inmediato a quien se va."
+      ]
+    }
+  }
+}

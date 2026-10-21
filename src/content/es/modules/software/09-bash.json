@@ -1,0 +1,102 @@
+{
+  "title": "Bash",
+  "summary": "Controla un ordenador desde la línea de comandos: muévete por carpetas, combina comandos con tuberías y escribe scripts.",
+  "lessons": {
+    "syntax-basics": {
+      "title": "Bash: navegar y gestionar archivos",
+      "concept": {
+        "text": "Bash es una **shell**: un programa que lee los comandos que escribes y los ejecuta. Es la forma habitual de controlar servidores Linux, máquinas en la nube y la mayoría de las herramientas de desarrollo.\n\nUn comando es el nombre de un programa seguido de opciones (que empiezan por `-`) y argumentos. `ls -a logs` significa: ejecuta `ls`, con la opción `a`, sobre la carpeta `logs`.",
+        "analogy": "Un escritorio gráfico es pedir señalando fotos en un menú. La shell es hablar el idioma: cuesta más al principio, pero puedes pedir exactamente lo que quieres, y pedirlo mil veces seguidas."
+      },
+      "visual": {
+        "caption": "Diez comandos que cubren casi todo el trabajo diario.",
+        "items": [
+          { "title": "pwd", "text": "Muestra la carpeta en la que estás" },
+          { "title": "ls", "text": "Lista archivos (-a muestra los ocultos)" },
+          { "title": "cd dir", "text": "Cambia de carpeta (cd .. sube un nivel)" },
+          { "title": "mkdir dir", "text": "Crea una carpeta" },
+          { "title": "touch file", "text": "Crea un archivo vacío" },
+          { "title": "cat file", "text": "Muestra el contenido de un archivo" },
+          { "title": "cp a b", "text": "Copia a en b" },
+          { "title": "mv a b", "text": "Mueve o renombra" },
+          { "title": "rm file", "text": "Borra. ¡No hay papelera de reciclaje!" }
+        ]
+      },
+      "steps": [
+        { "title": "Averigua dónde estás", "text": "Toda shell tiene una carpeta actual. Las rutas que no empiezan por `/` son relativas a ella." },
+        { "title": "Muévete", "text": "`cd logs` entra en logs. `cd ..` sube. `cd` solo te lleva a tu carpeta personal." },
+        { "title": "Crea e inspecciona", "text": "Crea una carpeta, crea un archivo dentro y lee un archivo." },
+        { "title": "Copia, renombra, borra", "text": "Cuidado con `rm`: los archivos borrados desaparecen para siempre." }
+      ],
+      "challenge": {
+        "prompt": "Crea una carpeta llamada `archive`, mueve `notes.txt` dentro con el nombre `notes-2024.txt` y luego lista la carpeta `archive` para comprobar que funcionó.",
+        "hint": "`mv` mueve y renombra a la vez: `mv origen destino/nuevonombre`."
+      },
+      "takeaways": [
+        "Un comando es el nombre de un programa, opciones y argumentos.",
+        "pwd, ls y cd te permiten moverte. mkdir, touch, cp, mv y rm gestionan archivos.",
+        "rm es permanente. Comprueba con ls antes de borrar."
+      ]
+    },
+    "core-concepts": {
+      "title": "Bash: tuberías, redirecciones, variables y bucles",
+      "concept": {
+        "text": "El superpoder de la shell es combinar herramientas pequeñas. Una **tubería** (`|`) envía la salida de un comando a la entrada del siguiente. Una **redirección** (`>`) envía la salida a un archivo en lugar de a la pantalla.\n\nAñade variables y bucles, y unas pocas líneas pueden procesar miles de archivos.",
+        "analogy": "Cada comando es una pieza de Lego que hace una sola cosa. La tubería es el encaje que une las piezas hasta formar una máquina."
+      },
+      "visual": {
+        "caption": "Una tubería: cada comando transforma el flujo de texto.",
+        "nodes": [
+          { "label": "cat logs/app.log", "detail": "Emite todas las líneas" },
+          { "label": "| grep ERROR", "detail": "Conserva las líneas que contienen ERROR" },
+          { "label": "| sort", "detail": "Orden alfabético" },
+          { "label": "> errors.txt", "detail": "Guarda en un archivo" }
+        ]
+      },
+      "steps": [
+        { "title": "Busca con grep", "text": "`grep` imprime las líneas que coinciden con un patrón. `-c` las cuenta e `-i` ignora mayúsculas y minúsculas." },
+        { "title": "Encadena comandos con tuberías", "text": "Cuenta las líneas de un archivo pasando `cat` a `wc -l` con una tubería." },
+        { "title": "Redirige a un archivo", "text": "`>` sobrescribe el archivo y `>>` añade al final." },
+        { "title": "Variables y bucles", "text": "Sin espacios alrededor del `=`. Lee una variable con `$`. `$(...)` captura la salida de un comando." }
+      ],
+      "challenge": {
+        "prompt": "Escribe una sola tubería que imprima la **última** línea de `notes.txt` cuando sus líneas se ordenan alfabéticamente.",
+        "hint": "`sort` y luego `tail -n 1`."
+      },
+      "takeaways": [
+        "Una tubería | pasa la salida de un comando al siguiente.",
+        "> escribe la salida en un archivo y >> la añade al final.",
+        "Las variables, $(...) y los bucles for convierten los comandos en automatización."
+      ]
+    },
+    "mini-project": {
+      "title": "Mini proyecto de Bash: un script de informe de registros",
+      "concept": {
+        "text": "Los administradores de sistemas viven entre archivos de registro (logs). Vas a escribir un script que resume un log: cuántas líneas, cuántos errores y un aviso si los errores superan un umbral. Scripts como este se programan para ejecutarse cada pocos minutos en servidores reales.",
+        "analogy": "El script es un vigilante nocturno con una lista. Hace siempre la misma ronda, cuenta lo que ve y solo te despierta si algo va mal."
+      },
+      "visual": {
+        "nodes": [
+          { "label": "Lee el log", "detail": "logs/app.log" },
+          { "label": "Cuenta", "detail": "wc -l y grep -c" },
+          { "label": "Guarda los errores", "detail": "> report.txt" },
+          { "label": "Decide", "detail": "si errores > límite, avisa" }
+        ]
+      },
+      "steps": [
+        { "title": "Empieza con un shebang", "text": "La primera línea de un script real le dice al sistema qué shell lo ejecuta. Haz el archivo ejecutable con `chmod +x report.sh` y luego ejecuta `./report.sh`." },
+        { "title": "Guarda los conteos en variables", "text": "`$(...)` guarda la salida de un comando." },
+        { "title": "Comprueba una condición", "text": "`[ a -gt b ]` es verdadero cuando a es mayor que b. Los espacios dentro de los corchetes son obligatorios." }
+      ],
+      "challenge": {
+        "prompt": "Amplía el script para que también imprima el porcentaje de líneas que son errores, por ejemplo `Error rate: 40%`.",
+        "hint": "La aritmética de Bash usa `$(( ))`. Multiplica antes de dividir, porque Bash solo trabaja con números enteros: `$((ERRORS * 100 / TOTAL))`."
+      },
+      "takeaways": [
+        "Un script es un archivo de comandos que empieza con #!/bin/bash.",
+        "$(comando) captura la salida y $((cuenta)) hace aritmética entera.",
+        "if [ ... ] comprueba condiciones: -gt, -lt y -eq comparan números."
+      ]
+    }
+  }
+}

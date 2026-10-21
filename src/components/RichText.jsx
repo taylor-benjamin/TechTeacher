@@ -1,5 +1,5 @@
 import { useId, useRef, useState } from 'react'
-import { glossaryLookup, glossaryRegex } from '../lib/content'
+import { useContent } from '../lib/content'
 
 // Glossary term with a tooltip that works on hover, focus and tap, and closes on Escape.
 function Term({ text, entry }) {
@@ -39,7 +39,7 @@ function Term({ text, entry }) {
   )
 }
 
-function inline(text, seen, keyBase) {
+function inline(text, seen, keyBase, { glossaryRegex, glossaryLookup }) {
   const out = []
   text.split(/(`[^`]+`|\*\*[^*]+\*\*)/).forEach((part, i) => {
     const key = `${keyBase}-${i}`
@@ -59,12 +59,13 @@ function inline(text, seen, keyBase) {
 
 // Renders lesson text: blank lines split paragraphs, `code`, **bold**, glossary tooltips.
 export default function RichText({ text, className = '', glossary = true }) {
+  const content = useContent()
   if (!text) return null
   const seen = glossary ? new Set() : { has: () => true }
   return (
     <div className={`prose-tt leading-relaxed ${className}`}>
       {text.split(/\n\n+/).map((p, i) => (
-        <p key={i}>{inline(p, seen, i)}</p>
+        <p key={i}>{inline(p, seen, i, content)}</p>
       ))}
     </div>
   )

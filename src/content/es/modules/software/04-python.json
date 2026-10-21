@@ -1,0 +1,99 @@
+{
+  "title": "Python",
+  "summary": "El lenguaje más amigable para principiantes, usado en automatización, datos e IA. Aquí se ejecuta con Pyodide.",
+  "lessons": {
+    "syntax-basics": {
+      "title": "Python: sintaxis básica",
+      "concept": {
+        "text": "Python se lee casi como inglés, por eso es un primer lenguaje muy popular. Se usa para scripts, sitios web, análisis de datos y prácticamente todo el trabajo de IA.\n\nPython usa la **sangría** (espacios al principio de la línea) para indicar qué líneas van juntas. No hay llaves, así que el espaciado ordenado no es opcional: es la sintaxis.",
+        "analogy": "La sangría en Python funciona como un esquema. Los subpuntos van sangrados bajo su título, y así todo el mundo sabe qué pertenece a qué."
+      },
+      "visual": {
+        "caption": "La misma idea en Python y en JavaScript.",
+        "columns": ["Python", "JavaScript"],
+        "rows": [
+          ["Variable", "score = 10", "let score = 10"],
+          ["Imprimir", "print(score)", "console.log(score)"],
+          ["Bloque", "Sangría y dos puntos", "Llaves { }"],
+          ["Texto con valores", "f\"Hi {name}\"", "`Hi ${name}`"],
+          ["Verdadero / nada", "True, False, None", "true, false, null"]
+        ]
+      },
+      "steps": [
+        { "title": "Variables e impresión", "text": "No hace falta ninguna palabra clave para crear una variable. Las f-strings insertan valores en el texto." },
+        { "title": "Decisiones", "text": "Los dos puntos abren un bloque y las líneas sangradas quedan dentro de él." },
+        { "title": "Bucles", "text": "`for` recorre cualquier secuencia. `range(3)` produce 0, 1, 2." }
+      ],
+      "challenge": {
+        "prompt": "Imprime una cuenta atrás del 5 al 1 y luego imprime `Liftoff!`.",
+        "hint": "`range(5, 0, -1)` cuenta hacia atrás: empieza en 5, se detiene antes del 0 y avanza de -1 en -1."
+      },
+      "takeaways": [
+        "En Python la sangría define los bloques. Usa 4 espacios.",
+        "print() muestra la salida y las f-strings construyen texto a partir de valores.",
+        "Los bucles for recorren listas, cadenas y range()."
+      ]
+    },
+    "core-concepts": {
+      "title": "Python: funciones, listas y diccionarios",
+      "concept": {
+        "text": "Tres herramientas sostienen la mayoría de los programas en Python. Una función empaqueta lógica reutilizable con `def`. Una **lista** guarda elementos en orden. Un **diccionario** asocia claves con valores, igual que un diccionario de verdad asocia palabras con definiciones.\n\nLas comprensiones de listas construyen una lista nueva a partir de otra en una sola línea legible.",
+        "analogy": "Una lista es una fila numerada: encuentras a la gente por su posición. Un diccionario es un guardarropa: entregas un ticket (la clave) y te devuelven exactamente tu abrigo (el valor)."
+      },
+      "visual": {
+        "caption": "Las colecciones principales de Python.",
+        "items": [
+          { "title": "list  [1, 2, 3]", "text": "Ordenada y modificable. Accede por índice con nums[0]." },
+          { "title": "dict  {'a': 1}", "text": "Búsqueda de valor por clave. Accede con d['a']." },
+          { "title": "tuple  (1, 2)", "text": "Ordenada y no se puede modificar. Útil para pares fijos." },
+          { "title": "set  {1, 2}", "text": "Solo elementos únicos, sin orden." }
+        ]
+      },
+      "steps": [
+        { "title": "Define una función", "text": "Los parámetros pueden tener valores por defecto." },
+        { "title": "Trabaja con listas", "text": "Añade, recorta y recorre." },
+        { "title": "Usa un diccionario", "text": "`.items()` devuelve pares de clave y valor." },
+        { "title": "Comprensiones", "text": "Léela así: dame n al cuadrado, para cada n en nums, si n es par." }
+      ],
+      "challenge": {
+        "prompt": "Escribe `word_count(text)`, que devuelva un diccionario con cuántas veces aparece cada palabra, sin distinguir mayúsculas. Pruébala con la frase que se proporciona.",
+        "hint": "`text.lower().split()` da una lista de palabras. `counts.get(word, 0) + 1` resuelve el caso de una palabra que aún no has visto."
+      },
+      "takeaways": [
+        "def crea funciones. return devuelve un valor a quien la llamó.",
+        "Las listas son secuencias ordenadas. Los diccionarios buscan valores por clave.",
+        "Las comprensiones construyen listas en una línea expresiva."
+      ]
+    },
+    "mini-project": {
+      "title": "Mini proyecto de Python: un comprobador de contraseñas",
+      "concept": {
+        "text": "Vas a escribir una pequeña herramienta que puntúa una contraseña y explica qué tiene de débil. Combina funciones, cadenas, bucles y condicionales, y es tu primer contacto con las herramientas de seguridad.",
+        "analogy": "El comprobador es un portero con una lista: ¿es lo bastante larga? ¿Tiene un número? ¿Tiene un símbolo? Cada casilla marcada suma un punto, y necesitas suficientes puntos para entrar."
+      },
+      "visual": {
+        "caption": "El proceso del comprobador.",
+        "nodes": [
+          { "label": "Contraseña", "detail": "Texto de entrada" },
+          { "label": "Aplica cada regla", "detail": "Longitud, mayúsculas y minúsculas, números, símbolos" },
+          { "label": "Cuenta los aciertos", "detail": "Puntuación sobre 5" },
+          { "label": "Veredicto + consejos", "detail": "Débil, aceptable o fuerte" }
+        ]
+      },
+      "steps": [
+        { "title": "Escribe las reglas", "text": "`any()` devuelve True si al menos un carácter pasa una prueba." },
+        { "title": "Reúne los comentarios", "text": "Guarda cada regla como una descripción y un resultado, y luego recórrelas para calcular una puntuación y una lista de consejos." },
+        { "title": "Devuelve un veredicto", "text": "Convierte la puntuación en una etiqueta e imprime los consejos de las reglas que fallaron." }
+      ],
+      "challenge": {
+        "prompt": "Añade una sexta regla: la contraseña no debe estar en una lista de contraseñas comunes (`password`, `123456`, `qwerty`, `letmein`). Una contraseña común debe calificarse siempre como débil, sea cual sea su puntuación.",
+        "hint": "Crea `COMMON = {\"password\", ...}` y comprueba `password.lower() in COMMON` antes de calcular el veredicto."
+      },
+      "takeaways": [
+        "Un diccionario de nombre de regla a resultado facilita añadir comprobaciones y mostrar el informe.",
+        "any() y las expresiones generadoras prueban caracteres sin bucles manuales.",
+        "Las herramientas reales son pequeñas piezas de lógica combinadas."
+      ]
+    }
+  }
+}

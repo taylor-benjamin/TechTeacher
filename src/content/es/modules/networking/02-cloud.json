@@ -1,0 +1,225 @@
+{
+  "title": "Nube",
+  "summary": "Modelos de servicio, los servicios principales de AWS, Azure y GCP, redes en la nube y patrones de arquitectura.",
+  "lessons": {
+    "service-models": {
+      "title": "IaaS, PaaS y SaaS",
+      "concept": {
+        "text": "La computación en la nube consiste en alquilar recursos informáticos por internet y pagar por lo que usas, en lugar de comprar y mantener tu propio hardware. Los tres modelos de servicio se diferencian en cuánto gestiona el proveedor por ti.\n\nIaaS te alquila piezas básicas: máquinas virtuales, almacenamiento y redes. PaaS ejecuta tu código por ti y se encarga de los servidores y del escalado. SaaS es software terminado que simplemente usas. Cuanto más gestiona el proveedor, menos control y menos trabajo tienes tú. Quién protege qué se llama **modelo de responsabilidad compartida**.",
+        "analogy": "La pizza como servicio. Hecha en casa: lo haces todo tú (on-premises). Pizza para hornear: te dan la pizza y usas tu horno (IaaS). A domicilio: llega caliente y tú pones la mesa (PaaS). En el restaurante: solo llegas y comes (SaaS)."
+      },
+      "visual": {
+        "caption": "Quién gestiona qué. «Tú» significa más control y más trabajo.",
+        "columns": ["On-premises", "IaaS", "PaaS", "SaaS"],
+        "rows": [
+          ["Aplicación y datos", "Tú", "Tú", "Tú", "Proveedor (tus datos siguen siendo tuyos)"],
+          ["Entorno de ejecución y middleware", "Tú", "Tú", "Proveedor", "Proveedor"],
+          ["Sistema operativo", "Tú", "Tú", "Proveedor", "Proveedor"],
+          ["Virtualización y servidores", "Tú", "Proveedor", "Proveedor", "Proveedor"],
+          ["Red y centro de datos", "Tú", "Proveedor", "Proveedor", "Proveedor"],
+          ["Ejemplos", "Tu sala de servidores", "EC2, Azure VMs, Compute Engine", "App Service, Cloud Run, Heroku", "Gmail, Microsoft 365, Salesforce"]
+        ]
+      },
+      "steps": [
+        { "title": "Conoce las ventajas", "text": "**Elasticidad** (sube y baja de escala bajo demanda), precios de **pago por uso**, alcance global y ningún hardware que comprar ni mantener." },
+        { "title": "Conoce los modelos de despliegue", "text": "La nube **pública** es infraestructura compartida de un proveedor. La nube **privada** está dedicada a una sola organización. La **híbrida** mezcla ambas. La **multinube** usa varios proveedores." },
+        { "title": "Entiende la responsabilidad compartida", "text": "El proveedor protege la nube en sí: edificios, hardware, hipervisor. Tú proteges lo que pones dentro: datos, identidades, configuración. La mayoría de las brechas en la nube son errores de configuración del cliente." },
+        { "title": "Pasa de CapEx a OpEx", "text": "Comprar servidores es un gran gasto de capital por adelantado. La nube es un gasto operativo continuo, que hay que vigilar o la factura crece sin que te des cuenta." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "Alquilas una máquina virtual e instalas tú las actualizaciones del sistema operativo y el software. ¿Qué modelo es?",
+            "options": ["SaaS", "PaaS", "IaaS", "On-premises"],
+            "explain": "Con IaaS gestionas el sistema operativo y todo lo que hay encima."
+          },
+          {
+            "q": "Subes tu código y la plataforma lo compila, lo ejecuta y lo escala. ¿Qué modelo es?",
+            "options": ["IaaS", "PaaS", "SaaS", "Colocation"],
+            "explain": "PaaS oculta los servidores y el sistema operativo."
+          },
+          {
+            "q": "Un bucket de almacenamiento se deja con lectura pública y se filtran datos. Según la responsabilidad compartida, ¿de quién es la culpa?",
+            "options": ["Del proveedor de la nube", "Del cliente", "Del ISP", "De nadie"],
+            "explain": "La configuración y el acceso a los datos son responsabilidad del cliente en todos los modelos."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Una startup de tres personas quiere lanzar una app web rápido, no tiene personal de operaciones y espera un tráfico impredecible. ¿Qué modelo de servicio recomendarías y a qué renuncian?",
+        "hint": "Su recurso escaso es el tiempo y las personas, no el control.",
+        "solution": "**PaaS** (o serverless). Despliegan el código y la plataforma se encarga de los servidores, los parches, el escalado y el balanceo de carga, así que tres personas pueden centrarse en el producto. Renuncian a algo de control: menos opciones de sistema operativo y versiones del entorno, quizá un coste por unidad más alto a gran escala y cierta dependencia de la forma de trabajar de la plataforma. Pueden pasar partes a IaaS más adelante si se les queda pequeña."
+      },
+      "takeaways": [
+        "IaaS: tú gestionas desde el sistema operativo hacia arriba. PaaS: tú gestionas el código y los datos. SaaS: solo lo usas.",
+        "El proveedor protege la nube. Tú proteges lo que pones en la nube.",
+        "La nube cambia el coste inicial del hardware por un gasto flexible de pago por uso."
+      ]
+    },
+    "core-services": {
+      "title": "Servicios principales de AWS, Azure y GCP",
+      "concept": {
+        "text": "Amazon Web Services (AWS), Microsoft Azure y Google Cloud Platform (GCP) son los tres mayores proveedores de nube. Cada uno ofrece cientos de servicios, pero todos se basan en el mismo puñado de ideas: cómputo, almacenamiento, bases de datos, redes e identidad.\n\nAprende los conceptos una vez y el resto es traducir. Una instancia EC2 de AWS, una Virtual Machine de Azure y una instancia de Compute Engine de GCP son lo mismo con distintos nombres y consolas.",
+        "analogy": "Las tres nubes son tres cadenas de supermercados. La distribución y las marcas propias cambian, pero todas tienen panadería, pasillo de lácteos y cajas. Cuando sabes comprar en una, te orientas en las demás."
+      },
+      "visual": {
+        "caption": "Una tabla de traducción de los servicios principales.",
+        "columns": ["AWS", "Azure", "GCP"],
+        "rows": [
+          ["Máquinas virtuales", "EC2", "Virtual Machines", "Compute Engine"],
+          ["Almacenamiento de objetos", "S3", "Blob Storage", "Cloud Storage"],
+          ["Base de datos SQL gestionada", "RDS", "Azure SQL Database", "Cloud SQL"],
+          ["Base de datos NoSQL", "DynamoDB", "Cosmos DB", "Firestore"],
+          ["Funciones serverless", "Lambda", "Functions", "Cloud Run functions"],
+          ["Contenedores (Kubernetes)", "EKS", "AKS", "GKE"],
+          ["Red virtual", "VPC", "Virtual Network (VNet)", "VPC"],
+          ["Identidad y acceso", "IAM", "Microsoft Entra ID + RBAC", "Cloud IAM"],
+          ["DNS", "Route 53", "Azure DNS", "Cloud DNS"]
+        ]
+      },
+      "steps": [
+        { "title": "Regiones y zonas de disponibilidad", "text": "Una **región** es una zona geográfica, como Irlanda o Virginia. Cada una tiene varias **zonas de disponibilidad**: centros de datos separados. Repártete entre zonas para sobrevivir a que falle una." },
+        { "title": "Opciones de cómputo", "text": "De más a menos control: máquinas virtuales, contenedores y luego funciones serverless que solo se ejecutan cuando se activan y se cobran por petición." },
+        { "title": "Tipos de almacenamiento", "text": "El almacenamiento de **objetos** (S3) guarda archivos de cualquier tamaño y es el más barato. El almacenamiento en **bloque** es un disco virtual conectado a una VM. El almacenamiento de **archivos** es una unidad de red compartida." },
+        { "title": "Empieza con seguridad", "text": "Los tres tienen niveles gratuitos. Crea primero una **alerta de presupuesto**, activa MFA en tu cuenta y nunca uses la cuenta raíz o de propietario para el trabajo diario." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "¿Cuál es el equivalente en Azure de AWS S3?",
+            "options": ["Cosmos DB", "Blob Storage", "AKS", "Entra ID"],
+            "explain": "Ambos son servicios de almacenamiento de objetos."
+          },
+          {
+            "q": "Necesitas que un código se ejecute solo cuando se sube un archivo, y no pagar nada mientras está inactivo. ¿Qué tipo de servicio?",
+            "options": ["Una máquina virtual", "Funciones serverless", "Almacenamiento en bloque", "Una VPN"],
+            "explain": "Las funciones como Lambda se activan por eventos y se cobran por invocación."
+          },
+          {
+            "q": "¿Por qué desplegar en varias zonas de disponibilidad?",
+            "options": ["Es más barato", "Para seguir en línea si falla un centro de datos", "Para usar más direcciones IP", "Lo exige DNS"],
+            "explain": "Las zonas están aisladas de los fallos de las demás."
+          },
+          {
+            "q": "¿Qué es lo primero que hay que configurar en una cuenta de nube nueva?",
+            "options": ["Un clúster de Kubernetes", "MFA y una alerta de presupuesto", "Una instancia con GPU", "Un bucket público"],
+            "explain": "Protege la cuenta y tu bolsillo antes de construir nada."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Elige el servicio de un proveedor para cada necesidad de una app para compartir fotos: (a) guardar las fotos subidas, (b) una base de datos relacional de usuarios, (c) un trabajo de redimensionado que se ejecuta en cada subida, (d) inicio de sesión y permisos para el personal.",
+        "hint": "Usa la tabla de traducción. Cualquier proveedor sirve mientras el tipo de servicio coincida.",
+        "solution": "Con los nombres de AWS (Azure / GCP entre paréntesis):\n\n(a) **S3** (Blob Storage / Cloud Storage): almacenamiento de objetos.\n\n(b) **RDS** (Azure SQL Database / Cloud SQL): base de datos relacional gestionada.\n\n(c) **Lambda** activada por el evento de subida (Functions / Cloud Run functions): serverless.\n\n(d) **IAM** (Entra ID con RBAC / Cloud IAM): gestión de identidades y accesos."
+      },
+      "takeaways": [
+        "Las tres nubes ofrecen las mismas piezas básicas con distintos nombres.",
+        "Las regiones contienen zonas de disponibilidad. Repártete entre zonas para ser resiliente.",
+        "Protege la cuenta con MFA y crea una alerta de presupuesto antes que nada."
+      ]
+    },
+    "vpc-load-balancing": {
+      "title": "VPC y balanceo de carga",
+      "concept": {
+        "text": "Una VPC es tu propia red privada dentro de un proveedor de nube. Eliges su rango de IP, la divides en subredes y controlas qué puede hablar con qué. Es todo lo del módulo de fundamentos, definido por software.\n\nUna **subred pública** tiene una ruta hacia internet. Una **subred privada** no, así que las bases de datos y los servidores de aplicaciones que pongas ahí no son accesibles desde fuera. Un balanceador de carga se sitúa en la subred pública, recibe todo el tráfico entrante y lo reparte entre los servidores sanos de las subredes privadas.",
+        "analogy": "Una VPC es un campus de oficinas cerrado. El edificio de recepción (subred pública) da a la calle. Las oficinas y la cámara acorazada (subredes privadas) están dentro de la valla. La recepcionista (el balanceador de carga) manda a cada visitante con el empleado que esté libre."
+      },
+      "visual": {
+        "caption": "El camino habitual de una petición web hacia una VPC.",
+        "nodes": [
+          { "label": "Usuario", "detail": "En cualquier lugar de internet" },
+          { "label": "Internet gateway", "detail": "La puerta de entrada de la VPC" },
+          { "label": "Balanceador de carga", "detail": "Subred pública, comprueba la salud" },
+          { "label": "Servidores de aplicaciones", "detail": "Subred privada, 2 o más zonas" },
+          { "label": "Base de datos", "detail": "Subred privada, sin ruta a internet" }
+        ]
+      },
+      "steps": [
+        { "title": "Planifica el espacio de direcciones", "text": "Elige un rango privado como `10.0.0.0/16` y luego crea subredes como `10.0.1.0/24` (pública) y `10.0.10.0/24` (privada) en cada zona de disponibilidad." },
+        { "title": "Las tablas de rutas deciden si es pública o privada", "text": "Una subred es pública si su tabla de rutas envía `0.0.0.0/0` a un **internet gateway**. Las subredes privadas salen a buscar actualizaciones mediante un **NAT gateway**, que solo permite tráfico saliente." },
+        { "title": "Filtra el tráfico", "text": "Los **grupos de seguridad** son firewalls con estado asociados a recursos: permite el 443 del balanceador a la app y el 5432 de la app a la base de datos, y nada más." },
+        { "title": "Reparte la carga", "text": "Un balanceador de capa 7 (de aplicación) enruta por URL y termina TLS. Uno de capa 4 (de red) enruta por IP y puerto, muy rápido. Ambos hacen **comprobaciones de salud** y dejan de enviar tráfico a los servidores caídos." }
+      ],
+      "interactive": {
+        "prompt": "Ordena los saltos que da la petición de un visitante hasta llegar a los datos.",
+        "items": [
+          "El navegador del usuario resuelve el nombre DNS del sitio",
+          "La petición entra en la VPC por el internet gateway",
+          "El balanceador de carga de una subred pública acepta la conexión",
+          "El balanceador reenvía a un servidor de aplicaciones sano de una subred privada",
+          "El servidor de aplicaciones consulta la base de datos de una subred privada",
+          "La respuesta vuelve al usuario a través del balanceador de carga"
+        ]
+      },
+      "challenge": {
+        "prompt": "Escribe las reglas de los grupos de seguridad (origen, puerto) para una app de tres capas: balanceador de carga, servidores de aplicaciones en el puerto 8080 y una base de datos PostgreSQL en el puerto 5432. Aplica el mínimo privilegio.",
+        "hint": "Cada capa solo debería aceptar tráfico de la capa que tiene justo delante."
+      },
+      "takeaways": [
+        "Una VPC es una red privada definida por software con subredes, tablas de rutas y gateways.",
+        "Las subredes públicas tienen ruta a un internet gateway. Las privadas no.",
+        "Los balanceadores de carga reparten el tráfico entre servidores sanos de varias zonas."
+      ]
+    },
+    "architecture-patterns": {
+      "title": "Patrones de arquitectura en la nube",
+      "concept": {
+        "text": "Un patrón de arquitectura es una forma probada de combinar servicios de nube para lograr un objetivo, como sobrevivir a fallos, aguantar picos de tráfico o reducir costes. Rara vez inventas un diseño desde cero. Combinas patrones.\n\nLas ideas guía son: da por hecho que todo falla y diseña para ello, escala **horizontalmente** añadiendo más servidores pequeños en lugar de uno gigante, mantén los servidores **sin estado** para que cualquiera pueda atender cualquier petición, y **desacopla** los componentes para que una parte lenta no frene al resto.",
+        "analogy": "Los patrones son las jugadas ensayadas de un deporte de equipo. Nadie improvisa cada movimiento. Aprendes las jugadas que funcionan y eliges la adecuada según lo que pasa en el campo."
+      },
+      "visual": {
+        "caption": "Patrones que encontrarás en casi cualquier diseño.",
+        "items": [
+          { "title": "Tres capas", "text": "Capas de web, aplicación y base de datos, cada una escalada y protegida por separado." },
+          { "title": "Autoescalado", "text": "Añade servidores cuando sube la carga y quítalos cuando baja. Necesita servidores sin estado." },
+          { "title": "Multi-AZ", "text": "Funciona en dos o más zonas de disponibilidad para sobrevivir a la caída de un centro de datos." },
+          { "title": "Desacoplamiento con colas", "text": "Los productores dejan trabajos en una cola y los trabajadores los procesan a su ritmo." },
+          { "title": "Caché y CDN", "text": "Sirve el contenido repetido desde memoria o desde ubicaciones cercanas a los usuarios." },
+          { "title": "Serverless / basado en eventos", "text": "Funciones activadas por eventos. Sin servidores que gestionar, y pagas por uso." },
+          { "title": "Microservicios", "text": "Muchos servicios pequeños desplegados por separado. Flexibles, pero complejos de operar." },
+          { "title": "Infraestructura como código", "text": "Define todo en archivos (Terraform, CloudFormation, Bicep) para despliegues repetibles." }
+        ]
+      },
+      "steps": [
+        { "title": "Empieza por los requisitos", "text": "¿Cuánto tiempo de caída es aceptable (**RTO**)? ¿Cuánta pérdida de datos (**RPO**)? ¿Cuál es la carga máxima? ¿Cuál es el presupuesto? Eso decide el patrón, no la moda." },
+        { "title": "Elimina los puntos únicos de fallo", "text": "Dos de todo, en zonas distintas, detrás de un balanceador de carga. Usa una base de datos gestionada con conmutación automática por error." },
+        { "title": "Desacopla con colas", "text": "Un usuario sube un vídeo: la capa web responde al instante y deja un trabajo en una cola. Los trabajadores lo convierten en segundo plano y escalan según la longitud de la cola." },
+        { "title": "Usa los pilares del buen diseño", "text": "Los tres proveedores publican marcos («well-architected») basados en los mismos pilares: excelencia operativa, seguridad, fiabilidad, eficiencia del rendimiento, optimización de costes y sostenibilidad." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "El tráfico en Black Friday es 10 veces mayor que en un día normal. ¿Qué patrón lo gestiona de forma rentable?",
+            "options": ["Un servidor enorme todo el año", "Autoescalar un grupo de servidores sin estado", "Una contraseña más larga para la base de datos", "Desactivar los registros"],
+            "explain": "Escala hacia fuera para el pico y vuelve después, pagando solo por lo que usas."
+          },
+          {
+            "q": "¿Por qué los servidores deben ser sin estado para escalar horizontalmente?",
+            "options": ["Así son más baratos", "Para que cualquier servidor pueda atender cualquier petición y se puedan añadir o quitar libremente", "Los servidores sin estado no necesitan seguridad", "No es necesario"],
+            "explain": "Los datos de sesión guardados en un servidor fallan cuando la siguiente petición cae en otro. Guarda el estado en una base de datos o una caché."
+          },
+          {
+            "q": "El procesamiento de imágenes es lento y hace que la página web se cuelgue. ¿Qué patrón ayuda?",
+            "options": ["Desacoplamiento con colas", "Un monitor más grande", "Quitar el balanceador de carga", "Una sola AZ"],
+            "explain": "Pasa el trabajo lento a trabajadores en segundo plano mediante una cola y responde de inmediato."
+          },
+          {
+            "q": "¿Qué te da la infraestructura como código?",
+            "options": ["Despliegues más lentos", "Entornos repetibles, revisables y con control de versiones", "Menos funciones", "No necesitar copias de seguridad"],
+            "explain": "Todo el entorno se puede reconstruir a partir de archivos y revisar como cualquier otro código."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Esboza una arquitectura para una tienda de entradas en línea que recibe picos enormes cuando abren las ventas, no debe vender dos veces el mismo asiento y debe sobrevivir a la caída de un centro de datos. Nombra los patrones que usarías.",
+        "hint": "Trata por separado el pico, el requisito de consistencia y el requisito de fallos.",
+        "solution": "**Picos**: una CDN para el contenido estático, un balanceador de carga delante de un grupo con **autoescalado** de servidores web sin estado, y una **cola** o sala de espera virtual para suavizar la avalancha.\n\n**Sin ventas duplicadas**: una base de datos relacional con transacciones, para que reservar un asiento sea atómico. Guarda las reservas temporales de asientos en una caché con caducidad.\n\n**Resiliencia**: **multi-AZ** para los servidores web y para la base de datos, con conmutación automática por error.\n\n**Operaciones**: todo definido con infraestructura como código, con monitorización y alertas sobre la longitud de la cola y la tasa de errores."
+      },
+      "takeaways": [
+        "Diseña para el fallo: sin puntos únicos de fallo y repartido entre zonas.",
+        "Escala horizontalmente con servidores sin estado y desacopla el trabajo lento con colas.",
+        "Deja que los requisitos (RTO, RPO, carga, presupuesto) elijan el patrón."
+      ]
+    }
+  }
+}

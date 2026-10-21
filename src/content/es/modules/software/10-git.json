@@ -1,0 +1,145 @@
+{
+  "title": "Git y GitHub",
+  "summary": "Registra cada cambio, trabaja en ramas sin miedo y colabora mediante pull requests.",
+  "lessons": {
+    "git-basics": {
+      "title": "Fundamentos de Git: commits e historial",
+      "concept": {
+        "text": "Git es un sistema de control de versiones. Guarda instantáneas de tu proyecto llamadas commits, para que puedas ver qué cambió, cuándo y por qué, y volver a cualquier punto anterior.\n\nGit trabaja en tres zonas. Editas archivos en el **directorio de trabajo**, eliges qué cambios incluir en el **área de preparación** (staging) y luego los guardas de forma permanente en el repositorio con un commit.",
+        "analogy": "Git es el sistema de guardado de un videojuego. Cada commit es un punto de guardado con una nota. Preparar (staging) es elegir qué entra en ese guardado. Si la pelea con el jefe sale mal, cargas una partida anterior."
+      },
+      "visual": {
+        "caption": "Un cambio pasa por tres zonas y luego llega a GitHub.",
+        "nodes": [
+          { "label": "Directorio de trabajo", "detail": "Editas archivos" },
+          { "label": "Área de preparación", "detail": "git add" },
+          { "label": "Repositorio local", "detail": "git commit" },
+          { "label": "Remoto (GitHub)", "detail": "git push" }
+        ]
+      },
+      "steps": [
+        { "title": "Crea un repositorio", "text": "Ejecuta esto una vez dentro de la carpeta de tu proyecto." },
+        { "title": "Mira qué cambió", "text": "`git status` es el comando que más usarás. `git diff` muestra las líneas exactas." },
+        { "title": "Prepara y haz commit", "text": "Escribe mensajes que expliquen el porqué." },
+        { "title": "Revisa el historial", "text": "Cada commit tiene un id, un autor, una fecha y un mensaje." }
+      ],
+      "interactive": {
+        "prompt": "Ordena estos pasos tal como los ejecutarías para guardar un cambio y compartirlo.",
+        "items": [
+          "Edita un archivo en tu editor",
+          "git status (mira qué cambió)",
+          "git add <archivo> (prepáralo)",
+          "git commit -m \"mensaje\" (guarda una instantánea)",
+          "git push (envíalo a GitHub)"
+        ]
+      },
+      "challenge": {
+        "prompt": "Editaste `app.js` y `style.css`, pero solo el cambio de `app.js` está listo. ¿Qué comandos crean un commit que contenga solo `app.js`? ¿En qué estado queda `style.css` después?",
+        "hint": "El área de preparación existe justamente para que elijas qué entra en un commit.",
+        "solution": "`git add app.js` y luego `git commit -m \"Fix login validation\"`.\n\n`style.css` sigue **modificado pero sin preparar** en tu directorio de trabajo. No se pierde nada, y seguirá apareciendo en `git status` hasta que lo prepares y hagas commit."
+      },
+      "takeaways": [
+        "Un commit es una instantánea de tu proyecto con un mensaje.",
+        "El flujo es editar, git add (preparar), git commit (guardar), git push (compartir).",
+        "git status te dice dónde estás. Ejecútalo constantemente."
+      ]
+    },
+    "branching-merging": {
+      "title": "Ramas y fusiones",
+      "concept": {
+        "text": "Una rama es una etiqueta móvil que apunta a un commit. Crear una te da una línea de trabajo separada, para que puedas construir una función o probar un experimento sin tocar `main`.\n\nCuando el trabajo está listo, **fusionas** (merge) la rama de vuelta. Si dos ramas cambiaron las mismas líneas, Git se detiene y te pide que resuelvas el **conflicto de fusión** eligiendo cómo debe quedar el texto final.",
+        "analogy": "Una rama es un universo paralelo para tu código. Allí pruebas cosas. Si funcionan, fusionas ese universo con la realidad. Si no, lo borras y la realidad nunca se entera."
+      },
+      "visual": {
+        "caption": "La vida de una rama de funcionalidad.",
+        "nodes": [
+          { "label": "main", "detail": "Código estable" },
+          { "label": "git switch -c feature", "detail": "Sal de main en una rama" },
+          { "label": "Commit, commit", "detail": "Trabaja sin riesgo" },
+          { "label": "git merge feature", "detail": "Tráela de vuelta" },
+          { "label": "git branch -d feature", "detail": "Ordena" }
+        ]
+      },
+      "steps": [
+        { "title": "Crea y cambia de rama", "text": "`-c` crea la rama y te mueve a ella." },
+        { "title": "Trabaja y haz commit", "text": "Los commits van solo a la rama actual. `main` no cambia." },
+        { "title": "Fusiona", "text": "Cámbiate a la rama que quieres actualizar y luego fusiona la otra en ella." },
+        { "title": "Resuelve un conflicto", "text": "Git marca el choque en el archivo. Edítalo hasta dejar la versión que quieres, borra las marcas y luego haz add y commit." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "Estás en `main` y ejecutas `git switch -c fix-typo`. ¿Qué pasó?",
+            "options": ["Se borró main", "Se creó una rama nueva y ahora estás en ella", "Se restablecieron tus archivos", "Se hizo un commit"],
+            "explain": "-c crea la rama y te cambia a ella en un solo paso."
+          },
+          {
+            "q": "¿Cuándo se produce un conflicto de fusión?",
+            "options": ["Siempre que existen dos ramas", "Cuando ambas ramas cambiaron las mismas líneas de forma distinta", "Cuando una rama tiene demasiados commits", "Cuando te olvidas de hacer push"],
+            "explain": "Git fusiona automáticamente las líneas distintas. Solo te necesita cuando las mismas líneas no coinciden."
+          },
+          {
+            "q": "Para fusionar `feature` en `main`, ¿en qué rama tienes que estar?",
+            "options": ["feature", "main", "Cualquiera", "Una tercera rama"],
+            "explain": "Fusionas en la rama en la que estás."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Resuelve este conflicto para que el botón sea verde y diga **Sign up**. Escribe el contenido final del archivo.\n\n`<<<<<<< HEAD`\n\n`<button class=\"green\">Join</button>`\n\n`=======`\n\n`<button class=\"blue\">Sign up</button>`\n\n`>>>>>>> new-copy`",
+        "hint": "No estás obligado a elegir un solo lado. Combínalos y luego elimina las tres líneas de marcas."
+      },
+      "takeaways": [
+        "Las ramas aíslan el trabajo para que main siga estable.",
+        "git switch -c crea una rama y git merge la trae de vuelta.",
+        "Los conflictos son normales: edita el archivo, quita las marcas, haz add y commit."
+      ]
+    },
+    "github-collaboration": {
+      "title": "GitHub: remotos y pull requests",
+      "concept": {
+        "text": "Git funciona en tu máquina. **GitHub** aloja en internet una copia de tu repositorio, llamada remoto, para que otras personas puedan obtenerla y tú tengas una copia de seguridad.\n\nLos equipos casi nunca hacen push directamente a `main`. En su lugar subes una rama y abres un pull request: una página que muestra tus cambios, permite que el equipo revise y comente, ejecuta pruebas automáticas y se fusiona con un clic cuando se aprueba.",
+        "analogy": "Un pull request es entregar un borrador para que lo editen. No imprimes directamente en el libro publicado. Un editor lee el borrador, sugiere cambios y solo entonces pasa a imprenta."
+      },
+      "visual": {
+        "caption": "El flujo de pull requests que usa la mayoría de los equipos.",
+        "actors": ["Tú (local)", "GitHub", "Revisor"],
+        "messages": [
+          { "label": "git push origin my-branch" },
+          { "label": "Abrir pull request" },
+          { "label": "Revisión solicitada" },
+          { "label": "Aprobar (o pedir cambios)" },
+          { "label": "Fusionar en main" },
+          { "label": "git pull (trae el main más reciente)" }
+        ]
+      },
+      "steps": [
+        { "title": "Consigue un repositorio", "text": "`clone` descarga un repositorio remoto con todo su historial." },
+        { "title": "Sube una rama", "text": "`origin` es el nombre por defecto del remoto desde el que clonaste." },
+        { "title": "Abre un pull request", "text": "En GitHub, pulsa **Compare & pull request**. Describe qué cambió y por qué, y enlaza cualquier issue relacionado." },
+        { "title": "Mantente sincronizado", "text": "Después de una fusión, actualiza tu `main` local." }
+      ],
+      "interactive": {
+        "prompt": "Ordena los pasos para aportar una corrección a un proyecto de equipo.",
+        "items": [
+          "git clone del repositorio",
+          "git switch -c fix-bug",
+          "Edita archivos, git add, git commit",
+          "git push -u origin fix-bug",
+          "Abre un pull request en GitHub",
+          "Atiende los comentarios de la revisión y consigue la aprobación",
+          "Fusiona el pull request"
+        ]
+      },
+      "challenge": {
+        "prompt": "Crea un `.gitignore` para un proyecto Node.js. Nombra al menos tres cosas que nunca se deben subir y explica por qué.",
+        "hint": "Piensa en: dependencias descargadas, secretos y resultados de compilación."
+      },
+      "takeaways": [
+        "Un remoto es una copia alojada de tu repositorio. origin es su nombre habitual.",
+        "Sube una rama, abre un pull request, consigue una revisión y luego fusiona.",
+        "Usa .gitignore para mantener fuera de Git las dependencias, los secretos y los resultados de compilación."
+      ]
+    }
+  }
+}

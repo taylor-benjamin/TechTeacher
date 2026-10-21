@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { btn } from '../lib/ui'
 
 // Steps through a diagram. Starts paused when the user prefers reduced motion,
@@ -21,14 +22,15 @@ function useStepper(count) {
 }
 
 function Controls({ s, count }) {
+  const { t } = useTranslation()
   return (
     <div className="mt-3 flex items-center gap-2 text-sm">
-      <button type="button" className={btn} onClick={() => s.step(-1)} aria-label="Previous step">◀</button>
+      <button type="button" className={btn} onClick={() => s.step(-1)} aria-label={t('visual.prev')}>◀</button>
       <button type="button" className={btn} onClick={() => s.setPlaying(!s.playing)}>
-        {s.playing ? 'Pause' : 'Play'}
+        {s.playing ? t('visual.pause') : t('visual.play')}
       </button>
-      <button type="button" className={btn} onClick={() => s.step(1)} aria-label="Next step">▶</button>
-      <span className="text-muted">Step {s.active + 1} of {count}</span>
+      <button type="button" className={btn} onClick={() => s.step(1)} aria-label={t('visual.next')}>▶</button>
+      <span className="text-muted">{t('visual.step', { n: s.active + 1, total: count })}</span>
     </div>
   )
 }
@@ -85,6 +87,7 @@ function Layers({ layers }) {
 }
 
 function Sequence({ actors, messages }) {
+  const { t } = useTranslation()
   const s = useStepper(messages.length)
   const W = Math.max(560, actors.length * 140) // wider canvas when there are many actors
   const col = (i) => 70 + (i * (W - 140)) / Math.max(1, actors.length - 1)
@@ -92,7 +95,7 @@ function Sequence({ actors, messages }) {
   return (
     <>
       <div className="overflow-x-auto">
-        <svg viewBox={`0 0 ${W} ${H}`} className="min-w-[520px]" role="img" aria-label={`Sequence between ${actors.join(', ')}`}>
+        <svg viewBox={`0 0 ${W} ${H}`} className="min-w-[520px]" role="img" aria-label={t('visual.sequence', { actors: actors.join(', ') })}>
           <defs>
             <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
               <path d="M0 0L10 5L0 10z" fill="var(--ink)" />
@@ -168,8 +171,9 @@ function Cards({ items }) {
 const TYPES = { flow: Flow, layers: Layers, sequence: Sequence, compare: Compare, cards: Cards }
 
 export default function Visual({ spec }) {
+  const { t } = useTranslation()
   const Type = TYPES[spec.type]
-  if (!Type) return <p className="text-bad">Unknown visual type: {spec.type}</p>
+  if (!Type) return <p className="text-bad">{t('visual.unknown', { type: spec.type })}</p>
   return (
     <figure>
       <Type {...spec} />

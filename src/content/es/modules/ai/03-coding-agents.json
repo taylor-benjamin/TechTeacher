@@ -1,0 +1,103 @@
+{
+  "title": "Agentes de programación",
+  "summary": "Cómo los agentes de IA leen, escriben y ejecutan código en bucle, y cómo conseguir que trabajen de forma fiable.",
+  "lessons": {
+    "how-agents-work": {
+      "title": "Cómo funcionan los agentes de programación",
+      "concept": {
+        "text": "Un chatbot responde una vez. Un agente trabaja hacia un objetivo en bucle: decide una acción, usa una herramienta, mira el resultado y vuelve a decidir, hasta terminar el trabajo.\n\nUn agente de programación como Claude Code, el modo agente de Cursor o el agente de GitHub Copilot es un LLM conectado a un pequeño conjunto de herramientas: leer un archivo, buscar en el código, editar un archivo, ejecutar un comando de shell. Encuentra el código relevante, hace un cambio, ejecuta las pruebas, lee el fallo y lo corrige, sin que tengas que copiar y pegar entre ventanas.",
+        "analogy": "Un chatbot es un consultor al teléfono: te da consejos y tú haces el trabajo. Un agente es un contratista en la obra con sus propias herramientas: mira alrededor, hace el trabajo, lo comprueba y te llama cuando hace falta tomar una decisión."
+      },
+      "visual": {
+        "caption": "El bucle del agente. Sigue hasta que la tarea está hecha o el agente te necesita.",
+        "nodes": [
+          { "label": "Objetivo", "detail": "«Arregla la prueba de inicio de sesión que falla»" },
+          { "label": "Pensar", "detail": "Decide la siguiente acción" },
+          { "label": "Actuar", "detail": "Leer, buscar, editar o ejecutar" },
+          { "label": "Observar", "detail": "La salida de la herramienta entra en el contexto" },
+          { "label": "Repetir o terminar", "detail": "Sigue hasta verificarlo" }
+        ]
+      },
+      "steps": [
+        { "title": "Reúne contexto", "text": "El agente no puede ver todo tu proyecto a la vez. Busca y lee archivos para hacerse una idea, como un desarrollador nuevo que explora un código." },
+        { "title": "Actúa", "text": "Edita archivos y ejecuta comandos mediante herramientas. Cada resultado de una herramienta se añade a su ventana de contexto." },
+        { "title": "Verifica", "text": "Los buenos agentes ejecutan pruebas, comprobadores de tipos y linters, y luego leen la salida. La verificación es lo que convierte un código verosímil en un código que funciona." },
+        { "title": "Respeta los permisos", "text": "Tú controlas qué puede hacer el agente sin preguntar: solo leer, editar archivos o ejecutar comandos. Las acciones arriesgadas piden aprobación." }
+      ],
+      "interactive": {
+        "prompt": "Se le pide a un agente que arregle un error. Ordena sus acciones.",
+        "items": [
+          "Lee el informe del error y reformula el objetivo",
+          "Busca en el código la función relevante",
+          "Lee el archivo y la prueba que falla",
+          "Edita el código para corregir el error",
+          "Ejecuta el conjunto de pruebas",
+          "Lee la salida de las pruebas y corrige lo que siga fallando",
+          "Resume qué cambió y por qué"
+        ]
+      },
+      "challenge": {
+        "prompt": "Un agente que trabaja en una tarea larga empieza a repetir errores anteriores y a olvidar instrucciones del principio de la sesión. ¿Cuál es la causa más probable y qué puedes hacer?",
+        "hint": "Cada archivo leído y cada salida de comando ocupan espacio en un lugar limitado.",
+        "solution": "Se está llenando la **ventana de contexto**. Cada resultado de herramienta se añade a ella y, cuando está casi llena, el material más antiguo se resume o se descarta. Soluciones: empieza una sesión nueva para una tarea nueva; guarda las instrucciones duraderas en un archivo de memoria del proyecto como `CLAUDE.md` o `AGENTS.md`, que se carga siempre; divide el trabajo en tareas más pequeñas; y haz que el agente escriba su plan y su progreso en un archivo que pueda volver a leer."
+      },
+      "takeaways": [
+        "Un agente es un LLM en bucle con herramientas: pensar, actuar, observar, repetir.",
+        "Los agentes de programación exploran el código, editan archivos y ejecutan comandos para verificar su trabajo.",
+        "La ventana de contexto es la memoria de trabajo del agente, y es limitada."
+      ]
+    },
+    "using-agents-effectively": {
+      "title": "Usar bien los agentes de programación",
+      "concept": {
+        "text": "Un agente amplifica lo bien que sabes describir lo que quieres y lo bien que sabes comprobar el resultado. Quienes más partido sacan a los agentes los tratan como a un compañero capaz: le dan contexto, acuerdan un plan antes de los cambios grandes, le dan una forma de verificar y revisan el resultado.\n\nTú sigues siendo responsable del código. Lee el diff antes de aceptarlo.",
+        "analogy": "Delegar en un agente es como delegar en una persona nueva con mucho talento. «Mejora la app» desperdicia un día. Un ticket con el objetivo, las restricciones, los archivos relevantes y una definición de «terminado» sale adelante."
+      },
+      "visual": {
+        "caption": "Un flujo de trabajo fiable para cualquier tarea que no sea trivial.",
+        "nodes": [
+          { "label": "Explorar", "detail": "Que lea el código primero" },
+          { "label": "Planificar", "detail": "Revisa el enfoque antes de editar" },
+          { "label": "Implementar", "detail": "Cambios pequeños y concretos" },
+          { "label": "Verificar", "detail": "Pruebas, compilación, ejecutar la app" },
+          { "label": "Revisar y hacer commit", "detail": "Lee tú el diff" }
+        ]
+      },
+      "steps": [
+        { "title": "Escribe un encargo de verdad", "text": "Indica el objetivo, las restricciones y cómo se ve el trabajo terminado." },
+        { "title": "Dale una forma de comprobarse", "text": "Pruebas, un comando de compilación o una captura que igualar. Un agente que puede verificar seguirá iterando hasta acertar." },
+        { "title": "Prepara la memoria del proyecto", "text": "Un archivo como `CLAUDE.md` guarda lo que le dirías a cualquier desarrollador nuevo: cómo ejecutar las pruebas, el estilo de código y lo que nunca hay que tocar." },
+        { "title": "Haz commit a menudo y corrige el rumbo pronto", "text": "Guarda con commits los estados que funcionan para poder volver atrás. Si el agente va en la dirección equivocada, páralo y redirígelo en lugar de dejar que se acumulen los errores." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "¿Qué le da a un agente más posibilidades de producir código correcto?",
+            "options": ["Un plazo más largo", "Una forma de verificar su trabajo, como pruebas", "Mayúsculas en el prompt", "Ocultarle el código"],
+            "explain": "Con la información de las pruebas, el agente puede encontrar y corregir sus propios errores."
+          },
+          {
+            "q": "Antes de una refactorización grande, ¿qué deberías pedirle al agente primero?",
+            "options": ["Que empiece a editar de inmediato", "Que explore el código y proponga un plan para revisarlo", "Que borre las pruebas", "Que haga push a main"],
+            "explain": "Detectar un enfoque equivocado en la fase de plan sale mucho más barato que después de editar 30 archivos."
+          },
+          {
+            "q": "¿Quién es responsable del código que escribió un agente y que tú fusionaste?",
+            "options": ["El agente", "El proveedor del modelo", "Tú", "Nadie"],
+            "explain": "Eres dueño de lo que publicas. Revísalo como cualquier otro pull request."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Reescribe esta petición para que un agente de programación acierte a la primera: **«Añade modo oscuro».**",
+        "hint": "¿Dónde están los estilos? ¿Cómo se elige y se recuerda la preferencia? ¿Cómo sabréis los dos que funciona?",
+        "solution": "«Añade un modo oscuro a esta app de React + Tailwind. Primero lee `src/index.css` y `App.jsx` y cuéntame tu plan. Requisitos: un botón de alternancia en la cabecera; por defecto, la preferencia del sistema operativo; guarda la elección en localStorage; todo el texto debe mantener al menos un contraste de 4,5:1 en ambos temas. Usa variables CSS para los colores en lugar de fijarlos en cada componente. Al terminar, ejecuta `npm run build` y confirma que pasa, y luego enumera los archivos que cambiaste»."
+      },
+      "takeaways": [
+        "Explorar, planificar, implementar, verificar y revisar: en ese orden.",
+        "Los encargos concretos y una forma de verificar importan más que una redacción ingeniosa.",
+        "Guarda el conocimiento del proyecto en un archivo de memoria y haz commit a menudo."
+      ]
+    }
+  }
+}

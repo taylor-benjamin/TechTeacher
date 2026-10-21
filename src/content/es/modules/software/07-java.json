@@ -1,0 +1,97 @@
+{
+  "title": "Java",
+  "summary": "Un lenguaje orientado a objetos y con tipado fuerte que mueve sistemas empresariales y apps de Android.",
+  "lessons": {
+    "syntax-basics": {
+      "title": "Java: sintaxis básica",
+      "concept": {
+        "text": "Java es un lenguaje compilado y con **tipado estático**: cada variable tiene un tipo declarado y el compilador revisa tu código antes de que llegue a ejecutarse. Eso atrapa muchos errores pronto, a cambio de escribir más.\n\nTodo el código Java vive dentro de una clase, y un programa empieza en un método llamado `main`.",
+        "analogy": "Python es una charla con un amigo: rápida e informal. Java es un contrato legal: todo queda especificado desde el principio, lo que cuesta más escribir pero deja mucho menos margen a las sorpresas."
+      },
+      "visual": {
+        "caption": "Del código fuente a un programa en ejecución.",
+        "nodes": [
+          { "label": "Main.java", "detail": "Tu código fuente" },
+          { "label": "javac", "detail": "El compilador revisa los tipos" },
+          { "label": "Main.class", "detail": "Bytecode portable" },
+          { "label": "JVM", "detail": "Lo ejecuta en cualquier sistema operativo" }
+        ]
+      },
+      "steps": [
+        { "title": "Declara variables con tipo", "text": "Indica primero el tipo. Las sentencias terminan en punto y coma." },
+        { "title": "Imprime", "text": "`System.out.println` escribe una línea. `+` une texto y valores." },
+        { "title": "Ramifica y repite", "text": "Los bloques usan llaves. El bucle for clásico tiene un inicio, una condición y un paso." },
+        { "title": "Compila y ejecuta", "text": "Instala un JDK y luego compila y ejecuta desde una terminal." }
+      ],
+      "challenge": {
+        "prompt": "Escribe un método `main` que sume los números del 1 al 100 con un bucle e imprima `Sum: 5050`.",
+        "hint": "Declara `int sum = 0;` antes del bucle y súmale `i` en cada vuelta."
+      },
+      "takeaways": [
+        "Java tiene tipado estático: declara el tipo de cada variable.",
+        "El código vive en clases y empieza en public static void main.",
+        "javac compila a bytecode y la JVM lo ejecuta en cualquier parte."
+      ]
+    },
+    "core-concepts": {
+      "title": "Java: clases, objetos y colecciones",
+      "concept": {
+        "text": "Java es orientado a objetos. Una **clase** es un plano que agrupa datos (campos) y comportamiento (métodos). Un **objeto** es una cosa concreta construida a partir de ese plano. El **encapsulamiento** consiste en mantener los campos privados y exponer solo métodos seguros.\n\nPara grupos de objetos, usa colecciones: `ArrayList` para una lista ordenada y `HashMap` para buscar valores por clave.",
+        "analogy": "Una clase es un cortador de galletas y los objetos son las galletas. Un cortador, muchas galletas, cada una con su propio glaseado (valores de los campos)."
+      },
+      "visual": {
+        "caption": "Los cuatro pilares de la programación orientada a objetos.",
+        "items": [
+          { "title": "Encapsulamiento", "text": "Oculta los datos detrás de métodos para que no se usen mal." },
+          { "title": "Herencia", "text": "Una clase extiende a otra y reutiliza su código." },
+          { "title": "Polimorfismo", "text": "Clases distintas responden a la misma llamada de método cada una a su manera." },
+          { "title": "Abstracción", "text": "Expón qué hace algo y oculta cómo lo hace." }
+        ]
+      },
+      "steps": [
+        { "title": "Define una clase", "text": "El constructor se ejecuta cuando creas un objeto con `new`." },
+        { "title": "Crea objetos", "text": "Cada objeto guarda su propio saldo." },
+        { "title": "Usa colecciones", "text": "El tipo entre los signos < > indica qué guarda la colección." },
+        { "title": "Extiende una clase", "text": "Una subclase lo hereda todo y puede sobrescribir métodos." }
+      ],
+      "challenge": {
+        "prompt": "Añade a `Account` un método `withdraw(double amount)` que no permita que el saldo baje de cero. Debe devolver `true` si la retirada se hizo y `false` en caso contrario.",
+        "hint": "Comprueba primero `amount > balance` y devuelve false. Esto es el encapsulamiento haciendo su trabajo: la regla vive en un solo lugar."
+      },
+      "takeaways": [
+        "Una clase es un plano y un objeto es una instancia creada con new.",
+        "Mantén los campos privados y haz cumplir las reglas en los métodos.",
+        "ArrayList y HashMap cubren la mayoría de las necesidades de colecciones."
+      ]
+    },
+    "mini-project": {
+      "title": "Mini proyecto de Java: un registro de notas",
+      "concept": {
+        "text": "Combina clases y colecciones en un pequeño registro de notas: los estudiantes tienen un nombre y una lista de puntuaciones, y el programa muestra cada media y al mejor estudiante. Esta es la forma de incontables programas de empresa: modela las cosas, guárdalas, recórrelas y resume.",
+        "analogy": "Estás construyendo un registro digital: una ficha por estudiante (objeto), guardadas en una caja (lista), con un método que calcula la media de cada ficha."
+      },
+      "visual": {
+        "nodes": [
+          { "label": "Clase Student", "detail": "name + List de puntuaciones" },
+          { "label": "List<Student>", "detail": "Toda la clase" },
+          { "label": "Bucle + average()", "detail": "Una línea por estudiante" },
+          { "label": "Guarda el mejor", "detail": "Compara sobre la marcha" }
+        ]
+      },
+      "steps": [
+        { "title": "Modela un estudiante", "text": "Dale a la clase un método que calcule su propia media, para que la lógica viva junto a los datos." },
+        { "title": "Llena una lista", "text": "`List.of(...)` crea rápidamente una lista fija de puntuaciones." },
+        { "title": "Genera el informe", "text": "Recorre la lista una vez, imprime cada media con `printf` y recuerda la más alta hasta el momento." }
+      ],
+      "challenge": {
+        "prompt": "Añade a `Student` un método `letterGrade()` que devuelva `\"A\"` para una media de 90 o más, `\"B\"` para 80 o más, `\"C\"` para 70 o más y `\"F\"` en otro caso.",
+        "hint": "Llama a `average()` una sola vez, guarda el resultado y usa una cadena if / else if de mayor a menor."
+      },
+      "takeaways": [
+        "Pon el comportamiento junto a los datos que usa.",
+        "Las listas de objetos más un bucle resuelven la mayoría de los informes.",
+        "printf da formato a los números: %.1f significa un decimal."
+      ]
+    }
+  }
+}

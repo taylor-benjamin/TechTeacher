@@ -46,6 +46,14 @@ Other content files: `tabs.json` (the five subjects), `glossary.json` (hover def
 
 After editing content, run `npm run validate`. It checks every lesson and learning path and names the file and lesson for each problem.
 
+## Spanish
+
+The EN/ES switch in the header translates the whole site. Spanish-language browsers start in Spanish, and the choice is saved under `tt.lang`.
+
+- Interface text lives in `src/locales/en.json` and `es.json` (i18next).
+- Lesson text lives in `src/content/es/`, which mirrors `src/content/` but holds only the readable strings. Code, ids and numbers always come from the English files, and anything not yet translated falls back to English.
+- `npm run check:es` lists every string that is missing or misplaced in the Spanish files. To start translating a new module, `node scripts/i18n-content.mjs extract <dir>` writes English skeletons in the right shape.
+
 ## How code runs in the browser
 
 | Language | Runtime |
@@ -61,6 +69,7 @@ After editing content, run `npm run validate`. It checks every lesson and learni
 
 ```bash
 npm run validate      # lesson format and learning-path links
+npm run check:es      # Spanish translations are complete
 npm run test:bash     # runs the Bash lesson snippets through the simulated shell
 
 # With `npm run build` done and `npm run preview` running in another terminal:
@@ -84,8 +93,10 @@ src/
   interactive/          code runner, API tester, neural net, tokenizer, subnet calculator,
                         topology builder, hash and cipher demos, packet viewer, contrast checker
   content/              tabs, glossary, paths and modules/<tab>/*.json
+  content/es/           Spanish strings for the same files
+  locales/              interface text in English and Spanish
   lib/                  content loading and search, localStorage hooks, shared styles
 scripts/                validation and test scripts
 ```
 
-Progress, theme, level filter and the topology canvas are saved in `localStorage` under keys starting with `tt.`.
+Progress, theme, language, level filter and the topology canvas are saved in `localStorage` under keys starting with `tt.`.

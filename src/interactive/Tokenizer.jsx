@@ -1,14 +1,16 @@
 import { useState } from 'react'
-import { field, input } from '../lib/ui'
+import { useTranslation } from 'react-i18next'
+import { field } from '../lib/ui'
 
-const SUFFIXES = ['ization', 'ation', 'tion', 'ness', 'ment', 'able', 'ing', 'est', 'ous', 'ize', 'ed', 'er', 'ly', 's']
-const PREFIXES = ['un', 're', 'pre', 'dis', 'over']
+// English and Spanish affixes, so text in either language splits believably.
+const SUFFIXES = ['ization', 'ación', 'ation', 'mente', 'iendo', 'ción', 'tion', 'ness', 'ment', 'able', 'ando', 'ible', 'ing', 'est', 'ous', 'ize', 'ed', 'er', 'ly', 'es', 's']
+const PREFIXES = ['un', 're', 'pre', 'dis', 'over', 'des', 'in']
 
 // Imitates how subword (BPE-style) tokenizers behave: short common words stay whole,
 // longer or rarer words break into pieces, and a leading space belongs to the token.
 function tokenize(text) {
   const tokens = []
-  for (const chunk of text.match(/\s*[A-Za-z]+|\s*\d+|\s*[^\sA-Za-z\d]|\s+$/g) ?? []) {
+  for (const chunk of text.match(/\s*\p{L}+|\s*\d+|\s*[^\s\p{L}\d]|\s+$/gu) ?? []) {
     const space = chunk.match(/^\s*/)[0]
     const word = chunk.slice(space.length)
     let parts = [word]
@@ -40,15 +42,16 @@ const tokenId = (t) => {
 }
 
 export default function Tokenizer() {
-  const [text, setText] = useState('Tokenization breaks unbelievable words into smaller pieces. It costs 1234567 tokens!')
+  const { t } = useTranslation()
+  const [text, setText] = useState(() => t('tokenizer.sample'))
   const tokens = tokenize(text)
   const words = text.trim().split(/\s+/).filter(Boolean).length
   return (
     <div className="space-y-3">
-      <label htmlFor="tok-text" className="block text-sm font-medium">Type or paste any text</label>
+      <label htmlFor="tok-text" className="block text-sm font-medium">{t('tokenizer.label')}</label>
       <textarea id="tok-text" rows={3} className={`${field} block w-full`} value={text} onChange={(e) => setText(e.target.value)} />
       <dl className="flex flex-wrap gap-x-6 gap-y-1 text-sm" aria-live="polite">
-        {[['Characters', text.length], ['Words', words], ['Tokens', tokens.length], ['Characters per token', tokens.length ? (text.length / tokens.length).toFixed(1) : '0']].map(([k, v]) => (
+        {[[t('tokenizer.chars'), text.length], [t('tokenizer.words'), words], [t('tokenizer.tokens'), tokens.length], [t('tokenizer.perToken'), tokens.length ? (text.length / tokens.length).toFixed(1) : '0']].map(([k, v]) => (
           <div key={k} className="flex gap-1.5"><dt className="text-muted">{k}:</dt><dd className="font-semibold">{v}</dd></div>
         ))}
       </dl>
@@ -61,7 +64,7 @@ export default function Tokenizer() {
         ))}
       </ol>
       <p className="text-sm text-muted">
-        The dot (·) marks a space that belongs to the token. This demo imitates subword tokenization so you can see the idea; real tokenizers (such as BPE) learn their pieces from data, so exact splits and IDs differ per model.
+        {t('tokenizer.note')}
       </p>
     </div>
   )

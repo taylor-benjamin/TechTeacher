@@ -1,0 +1,221 @@
+{
+  "title": "Cómo funciona la IA",
+  "summary": "Redes neuronales, entrenamiento, tokens, embeddings, atención y transformers, desde cero.",
+  "lessons": {
+    "neural-networks": {
+      "title": "Redes neuronales: aprender de ejemplos",
+      "concept": {
+        "text": "El software tradicional sigue reglas que escribió un programador. Una red neuronal aprende sus propias reglas a partir de ejemplos. Está formada por unidades simples llamadas **neuronas**, organizadas en capas. Cada conexión entre neuronas tiene un peso: un número que indica con cuánta fuerza una neurona influye en la siguiente.\n\nUna neurona multiplica cada entrada por su peso, lo suma todo y pasa el total por una **función de activación** que decide con cuánta fuerza se dispara. Si apilas suficientes, la red puede representar patrones increíblemente complejos. Nadie escribe los pesos a mano. Empiezan siendo aleatorios y se ajustan, poco a poco, hasta que las salidas coinciden con los ejemplos.",
+        "analogy": "Imagina una enorme mesa de mezclas con miles de controles de volumen. Al principio están colocados al azar y la música suena fatal. Entrenar es mover cada control un poquito, una y otra vez, hasta que la canción suena bien. Los controles son los pesos."
+      },
+      "visual": {
+        "caption": "Lo que calcula una sola neurona.",
+        "nodes": [
+          { "label": "Entradas", "detail": "x1 = 1, x2 = 0" },
+          { "label": "× pesos", "detail": "1 × 0.8 + 0 × -0.4" },
+          { "label": "+ sesgo", "detail": "0.8 + 0.1 = 0.9" },
+          { "label": "Activación", "detail": "comprime 0.9 dentro de un rango" },
+          { "label": "Salida", "detail": "0.71, que pasa a la siguiente capa" }
+        ]
+      },
+      "steps": [
+        { "title": "Los datos fluyen hacia delante", "text": "Las entradas llegan por la izquierda. Cada capa las transforma y entrega el resultado a la siguiente. La última capa produce la predicción. Esto es la **pasada hacia delante** (forward pass)." },
+        { "title": "Mide el error", "text": "Una **función de pérdida** compara la predicción con la respuesta correcta y produce un número: cuánto se equivocó la red. Cuanto más bajo, mejor." },
+        { "title": "Ajusta los pesos", "text": "La red calcula qué pesos contribuyeron al error y empuja cada uno para reducirlo. Se repite miles de veces." },
+        { "title": "Por qué importan las capas ocultas", "text": "Una sola neurona solo puede trazar una línea recta de separación. XOR (salida 1 cuando exactamente una entrada es 1) no se puede separar con una línea, así que necesita una capa oculta. Pruébalo abajo: AND y OR se aprenden rápido, y XOR tarda más." }
+      ],
+      "challenge": {
+        "prompt": "Con el visualizador: reinicia los pesos, elige **XOR** y entrena hasta que las cuatro filas muestren una marca de acierto. Después pon la tasa de aprendizaje en 2, reinicia y entrena otra vez. ¿Qué cambia y por qué?",
+        "hint": "La tasa de aprendizaje es el tamaño de cada empujón. Fíjate en si la pérdida baja de forma suave o da saltos.",
+        "solution": "Con una tasa moderada (alrededor de 0.5) la pérdida baja de forma constante y XOR suele resolverse en unos cientos de pasos. Con una tasa muy alta cada empujón es tan grande que la red puede **pasarse de largo**, así que la pérdida puede rebotar o quedarse atascada. Una tasa demasiado baja, en cambio, aprende muy despacio. Elegir la tasa de aprendizaje es una de las decisiones más importantes del entrenamiento, y pesos iniciales aleatorios distintos dan ejecuciones distintas: por eso Reiniciar cambia el resultado."
+      },
+      "takeaways": [
+        "Una red neuronal son capas de unidades simples conectadas por pesos ajustables.",
+        "Aprende prediciendo una y otra vez, midiendo el error y empujando los pesos para reducirlo.",
+        "Las capas ocultas permiten aprender patrones, como XOR, que una sola neurona no puede."
+      ]
+    },
+    "training": {
+      "title": "Entrenamiento: descenso de gradiente y retropropagación",
+      "concept": {
+        "text": "Entrenar significa encontrar pesos que hagan pequeña la pérdida. El método es el descenso de gradiente: averigua qué dirección es cuesta abajo para cada peso, da un pequeño paso y repite.\n\nLa dirección la da la retropropagación, que pasa el error hacia atrás por la red usando la regla de la cadena del cálculo y asigna a cada peso su parte de la culpa. Los datos se introducen en pequeños **lotes** (batches), y una pasada completa por todo el conjunto de datos es una **época** (epoch).",
+        "analogy": "Estás en una montaña con niebla y quieres llegar al valle. No ves lejos, así que notas la pendiente bajo los pies y das un paso cuesta abajo. El tamaño del paso es la tasa de aprendizaje: demasiado grande y saltas por encima del valle; demasiado pequeño y a medianoche sigues caminando."
+      },
+      "visual": {
+        "caption": "El bucle de entrenamiento, repetido millones de veces.",
+        "nodes": [
+          { "label": "Pasada hacia delante", "detail": "Predice a partir de un lote" },
+          { "label": "Pérdida", "detail": "¿Cuánto se equivocó?" },
+          { "label": "Retropropagación", "detail": "Reparte la culpa entre los pesos" },
+          { "label": "Actualización", "detail": "peso -= tasa × gradiente" }
+        ]
+      },
+      "steps": [
+        { "title": "Divide tus datos", "text": "Guarda un **conjunto de entrenamiento** para aprender, un **conjunto de validación** para ajustar la configuración y un **conjunto de prueba** que solo tocas una vez, al final." },
+        { "title": "Vigila dos pérdidas", "text": "La pérdida de entrenamiento debería bajar. Si la pérdida de validación empieza a subir mientras la de entrenamiento sigue bajando, el modelo está **sobreajustando** (overfitting): memoriza ejemplos en lugar de aprender el patrón." },
+        { "title": "Combate el sobreajuste", "text": "Usa más datos, un modelo más pequeño, dropout, o detén el entrenamiento antes de tiempo cuando la pérdida de validación deje de mejorar." },
+        { "title": "Escala", "text": "La regla de actualización es la misma para un juguete de 9 pesos que para un modelo con miles de millones. Lo que cambia es el hardware: las GPU hacen las operaciones con matrices en paralelo." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "La pérdida de entrenamiento sigue bajando pero la de validación está subiendo. ¿Qué pasa?",
+            "options": ["Subajuste (underfitting)", "Sobreajuste (overfitting)", "La tasa de aprendizaje es cero", "Entrenamiento perfecto"],
+            "explain": "El modelo está memorizando el conjunto de entrenamiento y empeora con datos que no ha visto."
+          },
+          {
+            "q": "¿Qué calcula la retropropagación?",
+            "options": ["La predicción final", "Cuánto contribuyó cada peso al error", "El tamaño del conjunto de datos", "El número de capas necesarias"],
+            "explain": "Produce el gradiente: la dirección en la que mover cada peso."
+          },
+          {
+            "q": "¿Por qué el conjunto de prueba solo se usa una vez, al final?",
+            "options": ["Es demasiado grande", "Para que siga siendo una medida honesta con datos realmente nuevos", "Contiene errores", "Las GPU no pueden leerlo"],
+            "explain": "Si ajustas contra el conjunto de prueba, estás entrenando con él de forma indirecta."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Un modelo obtiene un 99 % de precisión con sus datos de entrenamiento y un 61 % con datos nuevos. Nombra el problema y da tres formas distintas de reducirlo.",
+        "hint": "La diferencia entre los dos números es la pista.",
+        "solution": "Es **sobreajuste**. Soluciones: (1) reunir más datos de entrenamiento, o más variados, o usar aumento de datos; (2) reducir la capacidad del modelo o añadir regularización como dropout o weight decay; (3) usar parada temprana (early stopping) y terminar el entrenamiento cuando la pérdida de validación deje de mejorar."
+      },
+      "takeaways": [
+        "El descenso de gradiente empuja los pesos cuesta abajo en la pérdida, y la retropropagación da la dirección.",
+        "La tasa de aprendizaje fija el tamaño del paso y es crucial acertar con ella.",
+        "El sobreajuste se ve como una diferencia entre el rendimiento en entrenamiento y en validación."
+      ]
+    },
+    "tokens": {
+      "title": "Tokens: cómo leen texto los modelos",
+      "concept": {
+        "text": "Las redes neuronales trabajan con números, no con letras. Antes de que un modelo de lenguaje vea tu texto, un **tokenizador** lo corta en piezas llamadas tokens y sustituye cada una por un número de identificación de un vocabulario fijo.\n\nUn token suele ser una palabra corta entera, pero las palabras largas o raras se dividen en piezas. En inglés, un token equivale de media a unos cuatro caracteres, o unas tres cuartas partes de una palabra; en español suele haber algo más de tokens por palabra. Los tokens importan porque los modelos tienen una ventana de contexto máxima medida en tokens, y las APIs cobran por token.",
+        "analogy": "Tokenizar es como escribir con fichas de Scrabble en las que algunas fichas llevan palabras comunes enteras. «El» es una ficha. «Increíblemente» necesita varias: in + creíble + mente. El modelo solo ve los números de las fichas."
+      },
+      "visual": {
+        "caption": "De tu texto a los números que recibe un modelo.",
+        "nodes": [
+          { "label": "Texto", "detail": "\"unbelievable!\"" },
+          { "label": "Divide en tokens", "detail": "un | believ | able | !" },
+          { "label": "Busca los ID", "detail": "403, 31019, 481, 0" },
+          { "label": "Modelo", "detail": "Predice el siguiente ID" },
+          { "label": "Decodifica", "detail": "De los ID otra vez a texto" }
+        ]
+      },
+      "steps": [
+        { "title": "Construye un vocabulario", "text": "Algoritmos como Byte Pair Encoding (BPE) empiezan con caracteres sueltos y fusionan una y otra vez la pareja vecina más frecuente. Las palabras comunes acaban siendo un solo token, y cualquier otra cosa se puede seguir deletreando con piezas más pequeñas." },
+        { "title": "Los espacios cuentan", "text": "El espacio antes de una palabra suele formar parte del token, así que ' cat' y 'cat' son tokens distintos." },
+        { "title": "Calcula costes y límites", "text": "Regla práctica para el inglés: tokens ≈ palabras × 1,3. Un ensayo de 1000 palabras son unos 1300 tokens. El código, los números y el texto en otros idiomas (también el español) usan más tokens por carácter." },
+        { "title": "Observa las rarezas", "text": "Como el modelo ve piezas de tokens y no letras, tareas como contar las letras de una palabra o hacer cuentas largas le resultan sorprendentemente difíciles." }
+      ],
+      "challenge": {
+        "prompt": "En la demo del tokenizador, compara la cifra de caracteres por token de: (a) una frase sencilla de palabras cortas y cotidianas, (b) una frase llena de palabras técnicas largas, (c) un número largo como 31415926535. ¿Cuál es la más eficiente en tokens y qué implica eso para los prompts?",
+        "hint": "Escribe cada una por separado y lee el valor de «Caracteres por token».",
+        "solution": "Las palabras cortas y comunes son las más eficientes, porque cada una es un solo token. Las palabras largas o raras se dividen en varias piezas, y los números largos se parten en trozos de unas pocas cifras, así que cuestan más tokens por carácter. La consecuencia: los prompts en lenguaje sencillo son más baratos, y el contenido con muchos datos, como identificadores, números, código y tablas, llena la ventana de contexto más rápido de lo que sugiere su longitud."
+      },
+      "takeaways": [
+        "Los modelos leen y escriben tokens: piezas de palabras asociadas a números de ID.",
+        "En inglés, unos 4 caracteres o 0,75 palabras por token.",
+        "Tanto los límites de contexto como los precios se miden en tokens."
+      ]
+    },
+    "embeddings": {
+      "title": "Embeddings: el significado convertido en números",
+      "concept": {
+        "text": "Un ID de token no es más que una etiqueta: el ID 5000 no está «cerca» del ID 5001 en significado. Por eso lo primero que hace un modelo es cambiar cada ID por un embedding: una lista larga de números (un vector) que coloca el token como un punto en el espacio.\n\nEl entrenamiento organiza ese espacio de modo que las cosas que se usan de forma parecida acaban cerca unas de otras. «Gato» queda cerca de «gatito» y lejos de «carburador». También se pueden convertir en embeddings frases y documentos enteros, y eso hace posible la búsqueda semántica: encontrar texto por su significado en lugar de por palabras exactas.",
+        "analogy": "Los embeddings son coordenadas de mapa para el significado. París y Lyon tienen coordenadas cercanas porque están cerca físicamente. «Feliz» y «alegre» tienen coordenadas cercanas porque están cerca en significado."
+      },
+      "visual": {
+        "caption": "Un embedding de juguete de 2 números: (lo animal que es, tamaño). Los reales tienen cientos o miles de dimensiones.",
+        "items": [
+          { "title": "gatito  (0.9, 0.1)", "text": "Muy animal, muy pequeño" },
+          { "title": "gato  (0.9, 0.2)", "text": "Justo al lado de gatito" },
+          { "title": "elefante  (0.9, 0.95)", "text": "Animal, pero muy lejos en tamaño" },
+          { "title": "piedrita  (0.0, 0.1)", "text": "Pequeña como un gatito, pero no es un animal" },
+          { "title": "montaña  (0.0, 1.0)", "text": "Lejos de gatito en ambas direcciones" }
+        ]
+      },
+      "steps": [
+        { "title": "Convierte el texto en un vector", "text": "Un modelo de embeddings convierte cualquier texto en una lista de números de longitud fija." },
+        { "title": "Mide la cercanía", "text": "La **similitud del coseno** compara la dirección de dos vectores: cerca de 1 significa el mismo significado, cerca de 0 significa que no tienen relación." },
+        { "title": "Busca por significado", "text": "Calcula una vez el embedding de cada documento y guarda los vectores. Para buscar, calcula el embedding de la pregunta y devuelve los vectores más cercanos. «Olvidé mi acceso» encuentra el artículo de restablecer contraseña sin compartir ninguna palabra clave." },
+        { "title": "Guarda a gran escala", "text": "Una **base de datos vectorial** (pgvector, Pinecone, Chroma, Qdrant) encuentra rápido los vecinos más cercanos entre millones de vectores." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "¿Qué pareja debería tener los embeddings más parecidos?",
+            "options": ["«banco» y «banana»", "«doctor» y «médico»", "«correr» y «corral»", "«gato» y «categoría»"],
+            "explain": "Los embeddings capturan significado, no ortografía. Doctor y médico son casi sinónimos."
+          },
+          {
+            "q": "Con los vectores de juguete de arriba, ¿cuál está más cerca de «gato» (0.9, 0.2)?",
+            "options": ["elefante (0.9, 0.95)", "piedrita (0.0, 0.1)", "gatito (0.9, 0.1)", "montaña (0.0, 1.0)"],
+            "explain": "Gatito solo se diferencia en 0.1 en una dimensión."
+          },
+          {
+            "q": "¿Por qué la búsqueda semántica puede encontrar un documento que no comparte ninguna palabra con la consulta?",
+            "options": ["Adivina al azar", "Compara vectores de significado en lugar de buscar texto coincidente", "Lo traduce todo al latín", "Solo funciona con palabras idénticas"],
+            "explain": "Significados parecidos producen vectores cercanos aunque las palabras sean distintas."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Un sitio de soporte tiene 5000 artículos de ayuda. Los usuarios escriben preguntas con sus propias palabras y la búsqueda por palabras clave no deja de fallar. Explica en cuatro pasos cómo construirías una búsqueda por significado con embeddings.",
+        "hint": "Parte del trabajo se hace una vez por adelantado y parte se hace en cada consulta.",
+        "solution": "1. **Divide** cada artículo en fragmentos de unos pocos párrafos.\n\n2. **Calcula el embedding** de cada fragmento con un modelo de embeddings y guarda los vectores en una base de datos vectorial, con un enlace al artículo de origen. Esto se hace una vez, y de nuevo cada vez que cambia un artículo.\n\n3. En el momento de la consulta, **calcula el embedding de la pregunta del usuario** con el mismo modelo.\n\n4. **Recupera** los vectores más cercanos por similitud del coseno y muestra esos artículos. Esto es también la mitad de recuperación de RAG."
+      },
+      "takeaways": [
+        "Un embedding es un vector que representa significado.",
+        "Significado parecido equivale a vectores cercanos, medidos con la similitud del coseno.",
+        "Los embeddings hacen posibles la búsqueda semántica, las recomendaciones y RAG."
+      ]
+    },
+    "transformers-attention": {
+      "title": "Transformers y atención",
+      "concept": {
+        "text": "El transformer es la arquitectura que hay detrás de todos los modelos de lenguaje modernos. Su idea clave es la atención: al procesar un token, el modelo mira todos los demás tokens del contexto y decide cuánto importa cada uno en ese momento.\n\nEn «El trofeo no cabía en la maleta porque **era** demasiado grande», la atención permite que «era» tome información de «trofeo». Los diseños anteriores leían el texto palabra a palabra y olvidaban las palabras lejanas. La atención conecta directamente dos posiciones cualesquiera, y todas las posiciones se pueden calcular en paralelo, que es lo que hizo viable entrenar con texto a escala de internet.",
+        "analogy": "La atención es una reunión en la que, antes de hablar, cada persona mira alrededor de la mesa y escucha con más atención a quien es más relevante para lo que quiere decir. Cada palabra hace esto con todas las demás, en cada capa."
+      },
+      "visual": {
+        "caption": "Un recorrido por un transformer (solo decodificador, como los modelos tipo GPT). El bloque central se repite decenas de veces.",
+        "layers": [
+          { "name": "Tokens", "detail": "Texto dividido en ID de tokens" },
+          { "name": "Embedding + posición", "detail": "Cada ID se convierte en un vector, más información sobre su lugar en la secuencia" },
+          { "name": "Autoatención", "detail": "Cada token reúne información de los tokens anteriores" },
+          { "name": "Red feed-forward", "detail": "Se procesa y refina el vector de cada token" },
+          { "name": "Puntuaciones de salida", "detail": "Una puntuación para cada token del vocabulario" },
+          { "name": "Elige el siguiente token", "detail": "Elige uno, añádelo y vuelve a ejecutar" }
+        ]
+      },
+      "steps": [
+        { "title": "Consulta, clave y valor", "text": "Cada token produce una **consulta** (query: ¿qué estoy buscando?), una **clave** (key: ¿qué contengo?) y un **valor** (value: lo que voy a transmitir). La consulta de un token se compara con todas las claves para obtener las puntuaciones de atención." },
+        { "title": "Mezcla ponderada", "text": "Las puntuaciones se convierten en porcentajes con softmax. El nuevo vector del token es la mezcla ponderada de los valores." },
+        { "title": "Muchas cabezas", "text": "La **atención multicabeza** ejecuta varios patrones de atención en paralelo. Una cabeza puede seguir la gramática y otra a qué sustantivo se refiere un pronombre." },
+        { "title": "Apila y repite", "text": "Decenas de capas de atención y redes feed-forward van construyendo desde la sintaxis hasta el significado y el razonamiento. Generar es un bucle: predice un token, añádelo y vuelve a ejecutar." }
+      ],
+      "interactive": {
+        "prompt": "Ordena las etapas por las que pasa un prompt dentro de un transformer.",
+        "items": [
+          "El texto se divide en tokens",
+          "Cada ID de token se sustituye por un vector de embedding",
+          "Se añade la información de posición",
+          "La autoatención mezcla el contexto de otros tokens",
+          "Una red feed-forward refina el vector de cada token",
+          "El vector final se convierte en puntuaciones para cada posible token siguiente",
+          "Se elige un token y se añade al texto"
+        ]
+      },
+      "challenge": {
+        "prompt": "En la frase «The animal didn't cross the street because it was too tired» (El animal no cruzó la calle porque estaba demasiado cansado), ¿a qué palabra debería prestar más atención «it»? ¿Y si «tired» (cansado) se cambiara por «wide» (ancha)? ¿Qué demuestra esto sobre la atención?",
+        "hint": "Pregúntate qué puede estar cansado con sentido, y qué puede ser ancho con sentido.",
+        "solution": "Con «tired», «it» debería atender a **animal**. Con «wide», «it» debería atender a **street** (calle). Las palabras que rodean a un token cambian qué token anterior es relevante, así que los pesos de atención no pueden ser reglas fijas. Se calculan de nuevo a partir del contenido de cada frase, que es exactamente lo que hace la comparación entre consultas y claves."
+      },
+      "takeaways": [
+        "La atención permite que cada token tome información de cualquier otro token del contexto.",
+        "Los transformers apilan capas de atención y feed-forward y procesan todas las posiciones en paralelo.",
+        "Generar texto es un bucle: predice el siguiente token, añádelo y repite."
+      ]
+    }
+  }
+}

@@ -1,0 +1,170 @@
+{
+  "title": "Protocolos seguros",
+  "summary": "Cómo TLS, HTTPS, SSH y DNSSEC protegen los datos cuando cruzan redes en las que no se puede confiar.",
+  "lessons": {
+    "tls-https": {
+      "title": "TLS y HTTPS",
+      "concept": {
+        "text": "TLS (Transport Layer Security) es el protocolo que protege la mayor parte del tráfico de internet. HTTPS es simplemente HTTP transportado dentro de una conexión TLS, en el puerto 443. TLS sustituyó al antiguo protocolo SSL, aunque la gente sigue diciendo «certificado SSL».\n\nTLS aporta tres cosas: **confidencialidad** (nadie en el camino puede leer los datos), **integridad** (nadie puede alterarlos sin que se note) y **autenticación** (hablas con el servidor real, demostrado por su certificado). Lo consigue con un **saludo** (handshake) que usa criptografía asimétrica para acordar una clave de sesión simétrica.",
+        "analogy": "Un saludo TLS es como dos desconocidos que se encuentran en una cafetería llena de gente. Uno enseña una identificación oficial (el certificado). Luego acuerdan un código secreto con un método que los curiosos no pueden seguir, y mantienen el resto de la conversación en ese código."
+      },
+      "visual": {
+        "caption": "El saludo de TLS 1.3, simplificado. Necesita un solo viaje de ida y vuelta.",
+        "actors": ["Navegador", "Servidor"],
+        "messages": [
+          { "label": "ClientHello: versiones, cifrados, parte de la clave" },
+          { "label": "ServerHello: cifrado elegido, parte de la clave" },
+          { "label": "Certificado + firma (cifrados)" },
+          { "label": "Finished: claves confirmadas" },
+          { "label": "Petición HTTP cifrada" },
+          { "label": "Respuesta HTTP cifrada" }
+        ]
+      },
+      "steps": [
+        { "title": "Saludo inicial", "text": "El navegador enumera las versiones de TLS y los **conjuntos de cifrado** que admite y envía su mitad de un intercambio de claves. El servidor elige un conjunto de cifrado y envía su mitad." },
+        { "title": "Intercambio de claves", "text": "Ambos lados combinan las dos mitades con **Diffie-Hellman efímero** y llegan al mismo secreto, que nunca viaja por la red. Las claves nuevas en cada sesión dan **secreto perfecto hacia delante** (forward secrecy): robar más adelante la clave privada del servidor no permite descifrar el tráfico grabado." },
+        { "title": "Autenticación", "text": "El servidor envía su certificado y firma el saludo con su clave privada. El navegador valida la cadena de certificados y comprueba el nombre." },
+        { "title": "Sesión cifrada", "text": "Todo lo que viene después usa cifrado simétrico rápido, como AES-GCM o ChaCha20-Poly1305. Usa solo TLS 1.2 o 1.3. SSL y TLS 1.0 y 1.1 están obsoletos." }
+      ],
+      "interactive": {
+        "prompt": "Ordena lo que ocurre cuando abres un sitio web con HTTPS.",
+        "items": [
+          "DNS resuelve el nombre del sitio a una dirección IP",
+          "Saludo TCP de tres vías al puerto 443",
+          "El navegador envía el ClientHello con su parte de la clave",
+          "El servidor responde con el ServerHello y su certificado",
+          "El navegador valida la cadena de certificados y el nombre",
+          "Ambos lados derivan las mismas claves de sesión",
+          "Se intercambian la petición y la respuesta HTTP cifradas"
+        ]
+      },
+      "challenge": {
+        "prompt": "En una red Wi-Fi pública, visitas un sitio con HTTPS. Enumera lo que puede y lo que no puede ver un espía conectado a la misma red.",
+        "hint": "Piensa en qué tiene que ser visible para poder enrutar la conexión y qué va dentro del túnel cifrado.",
+        "solution": "**Puede ver**: la dirección IP y el puerto del servidor, el **nombre de dominio** (por la consulta DNS y el campo Server Name Indication del ClientHello, salvo que se usen DNS cifrado y Encrypted Client Hello) y los tiempos y el tamaño del tráfico.\n\n**No puede ver**: la URL completa y la ruta, el contenido de la página, las cookies, las contraseñas, los datos de formularios ni nada más dentro de los mensajes HTTP.\n\nAsí que puede saber que visitaste tu banco, pero no qué hiciste allí."
+      },
+      "takeaways": [
+        "TLS da confidencialidad, integridad y autenticación del servidor. HTTPS es HTTP sobre TLS.",
+        "El saludo usa criptografía asimétrica para acordar una clave de sesión simétrica.",
+        "Usa TLS 1.2 o 1.3. El secreto perfecto hacia delante protege las sesiones pasadas."
+      ]
+    },
+    "ssh": {
+      "title": "SSH",
+      "concept": {
+        "text": "SSH (Secure Shell) te da una línea de comandos cifrada en un ordenador remoto. Es como los administradores gestionan servidores Linux, dispositivos de red y máquinas en la nube, y como los desarrolladores suben código a GitHub. Escucha en el puerto TCP 22 y sustituyó a Telnet, que lo enviaba todo, contraseñas incluidas, en texto claro.\n\nSSH puede iniciar sesión con contraseña, pero lo mejor es la **autenticación con claves**. Guardas una clave privada en tu máquina y pones la clave pública correspondiente en el servidor. Ningún secreto viaja por la red.",
+        "analogy": "Iniciar sesión con contraseña es decirle al guardia una palabra secreta que cualquiera cerca podría oír o adivinar. Iniciar sesión con clave es que el guardia te dé un acertijo que solo tu llave única puede resolver. Demuestras que tienes la llave sin enseñarla nunca."
+      },
+      "visual": {
+        "caption": "Inicio de sesión con clave. La clave privada nunca sale de tu ordenador.",
+        "actors": ["Tu ordenador", "Servidor"],
+        "messages": [
+          { "label": "Conectar al puerto 22" },
+          { "label": "Clave del servidor (comprueba la huella)" },
+          { "label": "Se establece el canal cifrado" },
+          { "label": "«Tengo esta clave pública»" },
+          { "label": "Desafío" },
+          { "label": "Firmado con la clave privada" },
+          { "label": "Acceso concedido: shell" }
+        ]
+      },
+      "steps": [
+        { "title": "Genera un par de claves", "text": "Ed25519 es la opción moderna por defecto. Protege la clave privada con una frase de contraseña." },
+        { "title": "Instala tu clave pública", "text": "Esto añade la clave pública a `~/.ssh/authorized_keys` en el servidor." },
+        { "title": "Conéctate", "text": "La primera vez, SSH muestra la **huella de la clave del servidor**. Compruébala para saber que no estás hablando con un impostor. Después se guarda en `known_hosts`." },
+        { "title": "Refuerza el servidor", "text": "En `/etc/ssh/sshd_config`: desactiva el inicio de sesión con contraseña y el de root cuando las claves ya funcionen." },
+        { "title": "Copia archivos y crea túneles", "text": "`scp` y `sftp` transfieren archivos por SSH. El reenvío de puertos (`ssh -L`) lleva otro tráfico por la conexión cifrada." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "¿Qué archivo del servidor enumera las claves públicas que pueden iniciar sesión?",
+            "options": ["known_hosts", "authorized_keys", "id_ed25519", "passwd"],
+            "explain": "known_hosts está en el cliente y guarda las huellas de los servidores."
+          },
+          {
+            "q": "¿Qué clave copias al servidor?",
+            "options": ["La clave privada", "La clave pública", "Ambas", "Ninguna"],
+            "explain": "La clave privada nunca sale de tu máquina."
+          },
+          {
+            "q": "SSH avisa: «REMOTE HOST IDENTIFICATION HAS CHANGED». ¿Qué deberías hacer?",
+            "options": ["Borrar el aviso y seguir", "Parar y averiguar por qué: puede ser un servidor reinstalado o una interceptación", "Reiniciar tu PC", "Desactivar SSH"],
+            "explain": "Una clave de servidor cambiada puede ser inocente, pero es exactamente el aspecto de un ataque de intermediario (man-in-the-middle)."
+          },
+          {
+            "q": "¿Por qué SSH sustituyó a Telnet?",
+            "options": ["Telnet era más lento", "Telnet lo envía todo, contraseñas incluidas, sin cifrar", "Telnet necesita interfaz gráfica", "SSH es más antiguo"],
+            "explain": "Cualquiera en el camino podía leer una sesión de Telnet."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Los registros de un servidor en la nube muestran miles de intentos fallidos de contraseña SSH al día desde todo el mundo. Enumera cuatro cambios que protegerían SSH en este servidor.",
+        "hint": "Quita lo que intentan adivinar los atacantes, limita quién puede llegar al puerto y frena lo que quede.",
+        "solution": "1. **Usa autenticación con claves y pon `PasswordAuthentication no`**, para que no haya contraseña que adivinar.\n\n2. **Pon `PermitRootLogin no`** e inicia sesión como un usuario normal que use `sudo`.\n\n3. **Restringe el origen** con un firewall o un grupo de seguridad: permite el puerto 22 solo desde tu propia IP o una VPN.\n\n4. **Instala fail2ban** o algo parecido para bloquear direcciones tras fallos repetidos, y mantén el sistema actualizado.\n\nMover SSH a otro puerto reduce el ruido en los registros, pero no es seguridad de verdad."
+      },
+      "takeaways": [
+        "SSH es administración remota cifrada en el puerto TCP 22.",
+        "Usa pares de claves: la pública en el servidor y la privada en tu máquina.",
+        "Desactiva el inicio de sesión con contraseña y el de root, y limita quién puede llegar al puerto."
+      ]
+    },
+    "dnssec": {
+      "title": "DNSSEC",
+      "concept": {
+        "text": "El DNS normal no tiene forma de demostrar que una respuesta es auténtica. Un atacante que cuele una respuesta falsa en la caché de un resolutor puede mandar a un sitio falso a todos los que lo usan. Esto es el **envenenamiento de caché DNS**.\n\n**DNSSEC** (DNS Security Extensions) añade firmas digitales a los registros DNS. Cada zona firma sus registros con una clave privada y los resolutores verifican las firmas, siguiendo una **cadena de confianza** desde la zona raíz hacia abajo. DNSSEC demuestra que las respuestas son auténticas y no se han alterado. **No** las cifra: eso es trabajo de DNS sobre HTTPS o DNS sobre TLS.",
+        "analogy": "El DNS normal es pedirle indicaciones a un desconocido y creer lo que diga. DNSSEC es recibir las indicaciones con un sello oficial a prueba de manipulaciones: puedes comprobar que vienen de la autoridad real y que nadie las cambió, aunque cualquiera pueda seguir leyéndolas por encima de tu hombro."
+      },
+      "visual": {
+        "caption": "La cadena de confianza de DNSSEC. Cada nivel responde por la clave del nivel de abajo.",
+        "layers": [
+          { "name": "Zona raíz (.)", "detail": "Su clave es el ancla de confianza integrada en los resolutores que validan" },
+          { "name": "Zona .com", "detail": "La raíz guarda un registro DS: un hash de la clave de .com" },
+          { "name": "Zona example.com", "detail": ".com guarda un registro DS de la clave de example.com" },
+          { "name": "Registro A de www.example.com", "detail": "Firmado con la clave de zona de example.com (RRSIG)" }
+        ]
+      },
+      "steps": [
+        { "title": "Aprende los tipos de registro", "text": "**RRSIG** es la firma sobre un conjunto de registros. **DNSKEY** contiene las claves públicas de una zona. **DS** es un hash de la clave de una zona hija, guardado en la zona madre. **NSEC / NSEC3** demuestran que un nombre no existe." },
+        { "title": "Dos claves por zona", "text": "La **Zone Signing Key** (ZSK) firma los registros. La **Key Signing Key** (KSK) firma la ZSK, y su hash es el registro DS de la zona madre." },
+        { "title": "Validación", "text": "Un resolutor que valida obtiene el registro y su RRSIG, lo comprueba con la DNSKEY de la zona y comprueba esa DNSKEY con el DS de la zona madre, hasta llegar a la raíz. Si falla cualquier eslabón, devuelve SERVFAIL en lugar de una respuesta que podría ser falsa." },
+        { "title": "Compruébalo tú mismo", "text": "El indicador `ad` (authenticated data) de la respuesta significa que el resolutor validó la respuesta." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "¿Contra qué protege DNSSEC?",
+            "options": ["Contra el espionaje de las consultas DNS", "Contra respuestas DNS falsificadas o alteradas", "Contra servidores DNS lentos", "Contra dominios caducados"],
+            "explain": "Aporta autenticidad e integridad mediante firmas."
+          },
+          {
+            "q": "¿DNSSEC cifra el tráfico DNS?",
+            "options": ["Sí, por completo", "No, solo lo firma", "Solo los martes", "Solo para IPv6"],
+            "explain": "Para la privacidad, usa DNS sobre HTTPS (DoH) o DNS sobre TLS (DoT)."
+          },
+          {
+            "q": "¿Qué registro enlaza la clave de una zona hija con su zona madre?",
+            "options": ["A", "MX", "DS", "CNAME"],
+            "explain": "El registro Delegation Signer contiene un hash de la clave de firma de claves de la hija."
+          },
+          {
+            "q": "¿Qué devuelve un resolutor que valida si falla la comprobación de una firma?",
+            "options": ["La respuesta falsa de todos modos", "SERVFAIL", "Una IP al azar", "HTTP 404"],
+            "explain": "Se niega a responder, lo que es más seguro que devolver datos en los que no puede confiar."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "El dueño de un dominio activa DNSSEC, más tarde se cambia a un proveedor DNS nuevo y todo el dominio deja de resolverse para muchos usuarios. ¿Qué es lo más probable que saliera mal y cómo debería haberse hecho el cambio?",
+        "hint": "Piensa en qué registro vive fuera de la zona y sigue apuntando a las claves antiguas.",
+        "solution": "El **registro DS de la zona madre** (configurado a través del registrador) seguía haciendo referencia a la **clave del proveedor antiguo**. El proveedor nuevo firma con claves distintas, o no firma en absoluto, así que los resolutores que validan encontraron una cadena de confianza rota y devolvieron SERVFAIL.\n\nUna migración correcta: o bien (a) quitar el registro DS en el registrador, esperar a que caduque su TTL, cambiar de proveedor y luego volver a activar DNSSEC y publicar el DS nuevo; o bien (b) hacer una rotación de claves coordinada en la que se publican las claves de ambos proveedores durante la transición."
+      },
+      "takeaways": [
+        "DNSSEC firma los registros DNS para que los resolutores puedan detectar falsificaciones.",
+        "La confianza encadena desde la raíz mediante registros DS en cada zona madre.",
+        "Da autenticidad e integridad, no privacidad. Para eso usa DoH o DoT."
+      ]
+    }
+  }
+}

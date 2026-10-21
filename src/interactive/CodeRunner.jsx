@@ -8,6 +8,8 @@ import { java } from '@codemirror/lang-java'
 import { StreamLanguage } from '@codemirror/language'
 import { csharp } from '@codemirror/legacy-modes/mode/clike'
 import { shell } from '@codemirror/legacy-modes/mode/shell'
+import i18n from '../i18n'
+import { useTranslation } from 'react-i18next'
 import { btn, btnPrimary } from '../lib/ui'
 import { runBash } from './bashSim'
 
@@ -17,12 +19,12 @@ const SQLJS = 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/'
 const PISTON = import.meta.env.VITE_PISTON_URL
 
 const LANGS = {
-  javascript: { label: 'JavaScript', ext: () => javascript(), where: 'Runs in your browser in a sandboxed worker.' },
-  node: { label: 'Node.js', ext: () => javascript(), where: 'Runs in your browser’s JavaScript engine, so Node-only modules such as fs and http are not available here.' },
-  python: { label: 'Python', ext: () => python(), where: 'Runs in your browser with Pyodide (the first run downloads about 10 MB).' },
-  sql: { label: 'SQL', ext: () => sql(), where: 'Runs in your browser on an in-memory SQLite database that resets on every run.' },
-  html: { label: 'HTML + CSS', ext: () => html(), where: 'The preview updates as you type.' },
-  bash: { label: 'Bash', ext: () => StreamLanguage.define(shell), where: 'Runs in a simulated shell with a small practice file system. It supports common commands, pipes, redirects, variables, for and if.' },
+  javascript: { label: 'JavaScript', ext: () => javascript() },
+  node: { label: 'Node.js', ext: () => javascript() },
+  python: { label: 'Python', ext: () => python() },
+  sql: { label: 'SQL', ext: () => sql() },
+  html: { label: 'HTML + CSS', ext: () => html() },
+  bash: { label: 'Bash', ext: () => StreamLanguage.define(shell) },
   java: { label: 'Java', ext: () => java(), remote: 'java' },
   csharp: { label: 'C#', ext: () => StreamLanguage.define(csharp), remote: 'csharp' },
 }
@@ -35,7 +37,7 @@ const loadScript = (src) =>
     s.onload = resolve
     s.onerror = () => {
       delete scripts[src]
-      reject(new Error('Could not download the runtime. Check your internet connection and try again.'))
+      reject(new Error(i18n.t('code.download')))
     }
     document.head.appendChild(s)
   }))
@@ -60,7 +62,7 @@ function runJs(code, push) {
     // Kill runaway loops. Timers scheduled by the code may keep logging until then.
     const timer = setTimeout(() => {
       w.terminate()
-      push({ kind: 'err', text: 'Stopped after 8 seconds (infinite loop?).' })
+      push({ kind: 'err', text: i18n.t('code.timeout') })
       resolve()
     }, 8000)
     w.onmessage = ({ data }) => {
@@ -76,7 +78,7 @@ function runJs(code, push) {
 let pyodide
 async function runPython(code, push) {
   if (!pyodide) {
-    push({ kind: 'note', text: 'Loading Python…' })
+    push({ kind: 'note', text: i18n.t('code.loadingPython') })
     await loadScript(PYODIDE + 'pyodide.js')
     pyodide = await window.loadPyodide({ indexURL: PYODIDE })
   }
@@ -93,7 +95,7 @@ async function runPython(code, push) {
 let SQL
 async function runSql(code, push, seed) {
   if (!SQL) {
-    push({ kind: 'note', text: 'Loading SQLite…' })
+    push({ kind: 'note', text: i18n.t('code.loadingSql') })
     await loadScript(SQLJS + 'sql-wasm.js')
     SQL = await window.initSqlJs({ locateFile: (f) => SQLJS + f })
   }
@@ -101,7 +103,7 @@ async function runSql(code, push, seed) {
   try {
     if (seed) db.run(seed)
     const results = db.exec(code)
-    if (!results.length) push({ kind: 'note', text: 'Statement ran. No rows to show.' })
+    if (!results.length) push({ kind: 'note', text: i18n.t('code.noRows') })
     results.forEach((r) => push({ kind: 'table', ...r }))
   } catch (e) {
     push({ kind: 'err', text: String(e.message) })
@@ -112,8 +114,8 @@ async function runSql(code, push, seed) {
 
 async function runRemote(lang, code, push, expected) {
   if (!PISTON) {
-    push({ kind: 'note', text: 'Expected output of the original program (your edits are not compiled):' })
-    return push({ kind: 'out', text: expected ?? '(no expected output was provided for this snippet)' })
+    push({ kind: 'note', text: i18n.t('code.expectedNote') })
+    return push({ kind: 'out', text: expected ?? i18n.t('code.noExpected') })
   }
   const res = await fetch(PISTON.replace(/\/$/, '') + '/api/v2/execute', {
     method: 'POST',
@@ -128,6 +130,7 @@ async function runRemote(lang, code, push, expected) {
 }
 
 export default function CodeRunner({ language = 'javascript', starter = '', expected, seed, theme }) {
+  const { t } = useTranslation()
   const lang = LANGS[language] ?? LANGS.javascript
   const [code, setCode] = useState(starter)
   const [output, setOutput] = useState([])
@@ -158,11 +161,11 @@ export default function CodeRunner({ language = 'javascript', starter = '', expe
     <div className="overflow-hidden rounded-lg border border-edge">
       <div className="flex flex-wrap items-center gap-2 border-b border-line bg-surface px-3 py-2">
         <span className="rounded bg-accent px-2 py-0.5 text-xs font-semibold text-on-accent">{lang.label}</span>
-        <span className="flex-1 text-xs text-muted">Press Esc then Tab to leave the editor.</span>
-        <button type="button" className={btn} onClick={() => { setCode(starter); setOutput([]) }}>Reset</button>
+        <span className="flex-1 text-xs text-muted">{t('code.escape')}</span>
+        <button type="button" className={btn} onClick={() => { setCode(starter); setOutput([]) }}>{t('code.reset')}</button>
         {!isHtml && (
           <button type="button" className={btnPrimary} onClick={run} disabled={running}>
-            {running ? 'Running…' : offline ? 'Show expected output' : '▶ Run'}
+            {running ? t('code.running') : offline ? t('code.showExpected') : t('code.run')}
           </button>
         )}
       </div>
@@ -173,19 +176,19 @@ export default function CodeRunner({ language = 'javascript', starter = '', expe
         theme={theme === 'dark' ? 'dark' : 'light'}
         minHeight="120px"
         maxHeight="420px"
-        aria-label={`${lang.label} code editor`}
+        aria-label={t('code.editor', { lang: lang.label })}
         basicSetup={{ foldGutter: false }}
       />
       <p className="border-t border-line bg-surface px-3 py-1.5 text-xs text-muted">
         {offline
-          ? `Browsers cannot compile ${lang.label}, so this editor is for reading and practice. To run your own edits, install the ${language === 'java' ? 'JDK' : '.NET SDK'} locally or paste the code into an online compiler.`
-          : lang.where}
+          ? t('code.offline', { lang: lang.label, sdk: language === 'java' ? 'JDK' : '.NET SDK' })
+          : t(`code.where.${language in LANGS ? language : 'javascript'}`)}
       </p>
       {isHtml ? (
-        <iframe title="Live preview" sandbox="allow-scripts" srcDoc={code} className="h-72 w-full border-t border-line bg-white" />
+        <iframe title={t('code.preview')} sandbox="allow-scripts" srcDoc={code} className="h-72 w-full border-t border-line bg-white" />
       ) : (
-        <div className="max-h-80 min-h-16 overflow-auto border-t border-line bg-panel p-3 font-mono text-sm" role="log" aria-label="Program output" aria-live="polite">
-          {!output.length && <span className="text-muted">{running ? '' : 'Output appears here.'}</span>}
+        <div className="max-h-80 min-h-16 overflow-auto border-t border-line bg-panel p-3 font-mono text-sm" role="log" aria-label={t('code.output')} aria-live="polite">
+          {!output.length && <span className="text-muted">{running ? '' : t('code.placeholder')}</span>}
           {output.map((o, i) =>
             o.kind === 'table' ? (
               <table key={i} className="mb-3 border-collapse text-left">

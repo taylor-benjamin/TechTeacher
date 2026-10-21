@@ -1,0 +1,106 @@
+{
+  "title": "Carreras y certificaciones",
+  "summary": "Los principales puestos de ciberseguridad, cómo se llega a ellos y qué certificaciones merecen la pena.",
+  "lessons": {
+    "career-paths": {
+      "title": "Salidas profesionales en ciberseguridad",
+      "concept": {
+        "text": "La ciberseguridad no es un solo trabajo. Es una familia de puestos que se divide a grandes rasgos en **equipo azul** (defender: vigilar, responder, reforzar), **equipo rojo** (atacar con permiso para encontrar debilidades) y **gobierno, riesgo y cumplimiento** (GRC: políticas, auditorías y riesgos).\n\nLa mayoría de la gente no empieza en seguridad. Empieza en soporte de TI, redes, administración de sistemas o desarrollo de software, y se pasa a seguridad cuando ya entiende cómo funcionan los sistemas. No puedes proteger lo que no entiendes.",
+        "analogy": "Los puestos de seguridad son como los trabajos de un hospital. Hay personal de urgencias (respuesta a incidentes), especialistas que diagnostican (analistas), gente que pone a prueba el sistema (pentesters) y administradores que se aseguran de que se cumplan las normas (GRC). Cada temperamento encaja en un puesto distinto."
+      },
+      "visual": {
+        "caption": "Puestos habituales y cómo llegar a ellos.",
+        "columns": ["Qué haces", "Vía de entrada típica", "Certificaciones útiles"],
+        "rows": [
+          ["Analista de SOC", "Vigilar alertas, clasificar e investigar incidentes", "Help desk o soporte de TI, y luego SOC de nivel 1", "Security+, CySA+"],
+          ["Ingeniero/a de seguridad", "Montar y operar herramientas y defensas de seguridad", "Administración de sistemas o de redes", "Security+, certificaciones de seguridad en la nube"],
+          ["Pentester", "Atacar sistemas de forma legal e informar de las debilidades", "Redes o desarrollo, más laboratorios y CTF", "PenTest+, OSCP"],
+          ["Responsable de respuesta a incidentes", "Contener e investigar ataques en curso", "Analista de SOC", "CySA+, GCIH"],
+          ["Ingeniero/a de seguridad en la nube", "Proteger entornos de AWS, Azure o GCP", "Ingeniería de nube o DevOps", "AWS Security Specialty, AZ-500"],
+          ["Analista de GRC", "Políticas, evaluaciones de riesgo, auditorías y cumplimiento", "Auditoría de TI, o perfiles de empresa y derecho", "Security+, CISA, ISO 27001"]
+        ]
+      },
+      "steps": [
+        { "title": "Construye los cimientos", "text": "Aprende redes (la pestaña Redes), sistemas operativos (Linux y Windows) y algo de scripting en Python o Bash. Son la base de todos los puestos." },
+        { "title": "Ponte manos a la obra", "text": "Monta un laboratorio casero. Practica en plataformas legales como TryHackMe, Hack The Box y OverTheWire. Participa en competiciones capture the flag (CTF). Las empresas contratan pruebas de habilidad práctica." },
+        { "title": "Enseña tu trabajo", "text": "Escribe en un blog o en GitHub lo que construiste y aprendiste: el montaje de un laboratorio, la solución de un CTF, una regla de detección. Un portafolio te distingue de otros candidatos con el mismo certificado." },
+        { "title": "Acepta un primer trabajo realista", "text": "Help desk, administrador de sistemas junior y SOC de nivel 1 son las puertas de entrada habituales. Cuenta con pasar ahí un año o dos, aprendiendo cómo funcionan los entornos reales." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "¿Qué puesto se pasa el día clasificando e investigando las alertas de un SIEM?",
+            "options": ["Pentester", "Analista de SOC", "Analista de GRC", "Ingeniero de preventa"],
+            "explain": "Los analistas de SOC son la primera línea de detección y respuesta."
+          },
+          {
+            "q": "¿Qué hace un equipo rojo?",
+            "options": ["Escribe las políticas de seguridad", "Simula atacantes reales, con autorización, para poner a prueba las defensas", "Gestiona las copias de seguridad", "Vende firewalls"],
+            "explain": "Los equipos rojos atacan con permiso. Los equipos azules defienden."
+          },
+          {
+            "q": "¿Cuál es la vía más habitual hacia un primer trabajo en seguridad?",
+            "options": ["Entrar directamente como CISO", "A través del soporte de TI, las redes o la administración", "Solo con un doctorado", "Hackeando a una empresa sin permiso"],
+            "explain": "La experiencia operativa en TI enseña cómo funcionan de verdad los sistemas. Hackear sin autorización es un delito."
+          },
+          {
+            "q": "¿Qué actividad demuestra mejor la habilidad práctica ante una empresa?",
+            "options": ["Llenar el CV de palabras de moda", "Un laboratorio casero documentado y soluciones de CTF escritas", "Tener hardware caro", "Ver vídeos"],
+            "explain": "El trabajo práctico y documentado es la prueba de que sabes hacer el trabajo."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Escribe un plan de seis meses para alguien que trabaja en un help desk de TI y quiere ser analista de SOC. Incluye qué aprender, qué construir y qué enseñar.",
+        "hint": "Combina una certificación, un proyecto de laboratorio, práctica regular y algo público.",
+        "solution": "**Meses 1-2**: estudia los fundamentos de redes y empieza Security+. Monta un laboratorio casero con un firewall y dos o tres VM.\n\n**Meses 3-4**: preséntate a Security+. Instala un SIEM gratuito como Wazuh o el stack de Elastic en el laboratorio, envíale registros y escribe algunas reglas de detección. Completa las rutas de aprendizaje de equipo azul de TryHackMe.\n\n**Mes 5**: simula ataques en el laboratorio (un escaneo de puertos, un inicio de sesión por fuerza bruta) y documenta cómo detectaste cada uno, asociado a MITRE ATT&CK.\n\n**Mes 6**: publica lo que escribiste en GitHub o en un blog, pide acompañar al equipo de seguridad de tu empresa y preséntate a puestos de SOC de nivel 1. Después empieza CySA+."
+      },
+      "takeaways": [
+        "La seguridad tiene caminos de equipo azul, equipo rojo y GRC. Elige según tus intereses y tu temperamento.",
+        "La mayoría entra por el soporte de TI, las redes o la administración.",
+        "Los laboratorios prácticos y un portafolio público importan tanto como los certificados."
+      ]
+    },
+    "certifications": {
+      "title": "Certificaciones: Security+, CySA+ y más allá",
+      "concept": {
+        "text": "Las certificaciones son exámenes que demuestran a las empresas que tienes un nivel de conocimiento definido. En ciberseguridad importan más que en casi cualquier otro campo: muchas ofertas de empleo y contratos públicos las piden como requisito.\n\nSon una señal, no un sustituto de la habilidad. Lo mejor es elegir la certificación que encaja con el siguiente trabajo que quieres, estudiarla junto con práctica real y no coleccionar certificados por coleccionarlos.",
+        "analogy": "Una certificación es un carné de conducir. Demuestra que aprobaste un examen estándar y te permite optar al trabajo. No te convierte en buen conductor. Eso lo hacen las horas al volante."
+      },
+      "visual": {
+        "caption": "Una progresión sensata. La mayoría de las certificaciones hay que renovarlas cada tres años más o menos.",
+        "columns": ["Nivel", "Enfoque", "Ideal para"],
+        "rows": [
+          ["CompTIA A+", "Inicial", "Hardware, sistemas operativos, soporte", "Un primer trabajo de TI en un help desk"],
+          ["CompTIA Network+", "Inicial", "Fundamentos de redes", "Puestos de redes y soporte, y la base para seguridad"],
+          ["CompTIA Security+", "Inicial", "Fundamentos amplios de seguridad", "La certificación de seguridad básica, muy solicitada"],
+          ["CompTIA CySA+", "Intermedio", "Detección, análisis, respuesta a incidentes", "Analistas de SOC (equipo azul)"],
+          ["CompTIA PenTest+", "Intermedio", "Métodos de pruebas de penetración", "Puestos ofensivos junior (equipo rojo)"],
+          ["OSCP", "Intermedio a avanzado", "Un examen práctico de hacking de 24 horas", "Pentesters"],
+          ["CISSP", "Avanzado", "Gestión de la seguridad en ocho dominios", "Puestos sénior y de liderazgo. Exige cinco años de experiencia."],
+          ["Seguridad en la nube (AWS, AZ-500)", "Intermedio", "Proteger una plataforma de nube concreta", "Ingenieros de seguridad en la nube"]
+        ]
+      },
+      "steps": [
+        { "title": "Empieza por Security+", "text": "Cubre amenazas, arquitectura, operaciones, identidad, criptografía y riesgos a nivel básico. No depende de ningún fabricante y es la certificación de seguridad de nivel inicial más solicitada. Gran parte de esta pestaña se corresponde con sus objetivos." },
+        { "title": "Elige una dirección", "text": "Para defensa, haz después **CySA+**. Para ataque, haz **PenTest+** y luego el práctico **OSCP**. Para la nube, añade la certificación de seguridad de un proveedor." },
+        { "title": "Estudia con eficacia", "text": "Descarga los objetivos oficiales del examen y úsalos como lista de comprobación. Combina un curso o un libro con laboratorios y exámenes de práctica cronometrados. Reserva pronto la fecha del examen: una fecha límite concentra el estudio." },
+        { "title": "Planifica a largo plazo", "text": "**CISSP** es el estándar para puestos sénior, pero exige cinco años de experiencia remunerada. Mantén las certificaciones al día con créditos de formación continua." }
+      ],
+      "interactive": {
+        "prompt": "Ordena esta ruta habitual de certificaciones de equipo azul, de la primera a la última.",
+        "items": ["CompTIA A+", "CompTIA Network+", "CompTIA Security+", "CompTIA CySA+", "CISSP"]
+      },
+      "challenge": {
+        "prompt": "Dos personas te piden consejo. Sam es técnico de redes con tres años de experiencia y quiere pasarse a un SOC. Alex es desarrolladora de software y quiere ser pentester. Recomienda las dos siguientes certificaciones para cada uno, con tus razones.",
+        "hint": "No mandes a la gente con experiencia al principio de todo. Haz que el certificado encaje con el puesto objetivo.",
+        "solution": "**Sam (de técnico de redes a SOC)**: sáltate A+ y probablemente Network+, porque tres años de redes ya los cubren. Haz **Security+** como base de seguridad y luego **CySA+**, que se centra en la detección, el análisis de registros y la respuesta a incidentes: justo lo que supone trabajar en un SOC.\n\n**Alex (de desarrolladora a pentester)**: haz **Security+** para tener fundamentos amplios si la seguridad es nueva para ella, y luego **PenTest+**, o pasa directamente a preparar **OSCP** si se siente cómoda en los laboratorios. Que una desarrolladora entienda el código es una ventaja real para probar aplicaciones web, así que mucha práctica en Hack The Box y con el OWASP Top 10 es tan importante como los certificados."
+      },
+      "takeaways": [
+        "Security+ es la base. CySA+ lleva al trabajo de equipo azul, y PenTest+ y OSCP al de equipo rojo.",
+        "CISSP es para profesionales con experiencia y exige cinco años en el sector.",
+        "Haz que la certificación encaje con tu siguiente puesto y combina siempre el estudio con la práctica."
+      ]
+    }
+  }
+}

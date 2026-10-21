@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { btn, input } from '../lib/ui'
 
 // Supports a useful subset of Wireshark display filters:
@@ -20,6 +21,7 @@ function matches(p, filter) {
 }
 
 export default function PacketViewer({ packets, filters = [] }) {
+  const { t } = useTranslation()
   const [filter, setFilter] = useState('')
   const [selected, setSelected] = useState(packets[0].no)
   const shown = packets.filter((p) => matches(p, filter))
@@ -27,26 +29,26 @@ export default function PacketViewer({ packets, filters = [] }) {
   return (
     <div className="space-y-3">
       <div>
-        <label htmlFor="pkt-filter" className="block text-sm font-medium">Display filter</label>
+        <label htmlFor="pkt-filter" className="block text-sm font-medium">{t('packets.filter')}</label>
         <div className="mt-1 flex flex-wrap gap-1.5">
-          <input id="pkt-filter" className={`${input} w-64 font-mono`} placeholder="e.g. dns or tcp.port==443" value={filter} onChange={(e) => setFilter(e.target.value)} spellCheck={false} />
+          <input id="pkt-filter" className={`${input} w-64 font-mono`} placeholder={t('packets.placeholder')} value={filter} onChange={(e) => setFilter(e.target.value)} spellCheck={false} />
           {['', ...filters].map((f) => (
-            <button key={f} type="button" className={btn} onClick={() => setFilter(f)}>{f || 'Clear'}</button>
+            <button key={f} type="button" className={btn} onClick={() => setFilter(f)}>{f || t('packets.clear')}</button>
           ))}
         </div>
-        <p className="mt-1 text-sm text-muted" aria-live="polite">Showing {shown.length} of {packets.length} packets</p>
+        <p className="mt-1 text-sm text-muted" aria-live="polite">{t('packets.showing', { shown: shown.length, total: packets.length })}</p>
       </div>
 
       <div className="max-h-72 overflow-auto rounded-lg border border-line">
         <table className="w-full min-w-[640px] border-collapse text-left font-mono text-xs">
           <thead className="sticky top-0 bg-accent text-on-accent">
-            <tr>{['No.', 'Time', 'Source', 'Destination', 'Protocol', 'Info'].map((c) => <th key={c} scope="col" className="px-2 py-1.5">{c}</th>)}</tr>
+            <tr>{t('packets.columns').map((c) => <th key={c} scope="col" className="px-2 py-1.5">{c}</th>)}</tr>
           </thead>
           <tbody>
             {shown.map((p) => (
               <tr key={p.no} className={`border-t border-line ${p.no === selected ? 'bg-accent-soft font-semibold' : ''}`}>
                 <td className="px-2 py-1">
-                  <button type="button" className="underline" aria-pressed={p.no === selected} aria-label={`Inspect packet ${p.no}`} onClick={() => setSelected(p.no)}>{p.no}</button>
+                  <button type="button" className="underline" aria-pressed={p.no === selected} aria-label={t('packets.inspect', { n: p.no })} onClick={() => setSelected(p.no)}>{p.no}</button>
                 </td>
                 <td className="px-2 py-1">{p.time}</td>
                 <td className="px-2 py-1">{p.src}</td>
@@ -61,7 +63,7 @@ export default function PacketViewer({ packets, filters = [] }) {
 
       {current && (
         <div className="rounded-lg border border-line bg-surface p-3 text-sm" aria-live="polite">
-          <h3 className="font-semibold">Packet {current.no} details</h3>
+          <h3 className="font-semibold">{t('packets.details', { n: current.no })}</h3>
           {current.detail.map((d) => (
             <details key={d.layer} open className="mt-1.5">
               <summary className="cursor-pointer font-medium">{d.layer}</summary>

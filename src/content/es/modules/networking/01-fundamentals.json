@@ -1,0 +1,374 @@
+{
+  "title": "Fundamentos de redes",
+  "summary": "Lo esencial a nivel Network+: los modelos, el direccionamiento, las subredes, DNS, DHCP, el enrutamiento, la conmutación y los puertos.",
+  "lessons": {
+    "osi-tcp-ip-models": {
+      "title": "Los modelos OSI y TCP/IP",
+      "concept": {
+        "text": "Enviar datos por una red implica muchas tareas: convertir bits en señales eléctricas, encontrar una ruta, asegurarse de que no se pierde nada y presentar los datos a una aplicación. El modelo OSI divide estas tareas en siete capas. Cada capa hace un trabajo y se apoya en la capa de abajo.\n\nLa internet real usa el **modelo TCP/IP**, más sencillo y de cuatro capas, pero los ingenieros describen los problemas con los números de OSI a diario. «Es un problema de capa 2» significa que el fallo está en la conmutación, no en el enrutamiento. A medida que los datos bajan por las capas, cada una los envuelve con su propia cabecera, un proceso llamado **encapsulamiento**.",
+        "analogy": "Enviar un paquete por correo: escribes una carta (aplicación), la metes en un sobre con una dirección (red), el mensajero la mete en una furgoneta con otros paquetes (enlace de datos) y la furgoneta circula por una carretera (física). En el destino se quitan los envoltorios en orden inverso."
+      },
+      "visual": {
+        "caption": "Las siete capas OSI, de arriba abajo. Regla mnemotécnica en inglés: All People Seem To Need Data Processing.",
+        "layers": [
+          { "name": "7 Aplicación", "detail": "Lo que habla la app del usuario: HTTP, DNS, SMTP" },
+          { "name": "6 Presentación", "detail": "Formato, cifrado, compresión: TLS, JPEG" },
+          { "name": "5 Sesión", "detail": "Inicia, mantiene y termina las conversaciones" },
+          { "name": "4 Transporte", "detail": "Puertos y fiabilidad: TCP, UDP" },
+          { "name": "3 Red", "detail": "Direcciones IP y enrutamiento: IP, ICMP, routers" },
+          { "name": "2 Enlace de datos", "detail": "Direcciones MAC en la red local: Ethernet, switches" },
+          { "name": "1 Física", "detail": "Cables, radio y señales: cobre, fibra, Wi-Fi" }
+        ]
+      },
+      "steps": [
+        { "title": "Relaciona OSI con TCP/IP", "text": "TCP/IP agrupa capas: **Aplicación** (OSI 5-7), **Transporte** (4), **Internet** (3) y **Acceso a la red** o Enlace (1-2)." },
+        { "title": "Sigue el encapsulamiento", "text": "Tu navegador genera datos HTTP. Transporte añade una cabecera TCP con puertos y forma un **segmento**. Red añade una cabecera IP con direcciones y forma un paquete. Enlace de datos añade una cabecera MAC y una cola y forma una **trama**. Física lo envía como bits." },
+        { "title": "Coloca los dispositivos", "text": "Los hubs y los cables trabajan en la capa 1. Un switch trabaja en la capa 2. Un router trabaja en la capa 3. Un firewall suele trabajar en las capas 3-4, y los firewalls de nueva generación llegan hasta la capa 7." },
+        { "title": "Diagnostica de abajo arriba", "text": "¿Está enchufado el cable (1)? ¿Hay luz de enlace y dirección MAC (2)? ¿Tienes IP y puedes hacer ping a la puerta de enlace (3)? ¿Está abierto el puerto (4)? ¿Responde la aplicación (7)?" }
+      ],
+      "interactive": {
+        "prompt": "Ordena las capas OSI desde la capa 7 (arriba) hasta la capa 1 (abajo).",
+        "items": ["Aplicación", "Presentación", "Sesión", "Transporte", "Red", "Enlace de datos", "Física"]
+      },
+      "challenge": {
+        "prompt": "Un usuario puede hacer ping a 8.8.8.8 sin problemas, pero no puede abrir ningún sitio web por su nombre. ¿Qué capas queda demostrado que funcionan y dónde está lo más probable que esté el fallo?",
+        "hint": "El ping usa direcciones IP. A los sitios web se llega primero por su nombre.",
+        "solution": "Un ping correcto a 8.8.8.8 demuestra que funcionan las capas **1 a 3**: el cableado o el Wi-Fi, la conmutación local, el direccionamiento IP y el enrutamiento hacia internet. Lo que falla es la resolución de nombres, un **servicio de la capa de aplicación: DNS**. Revisa el servidor DNS configurado y prueba con `nslookup example.com`."
+      },
+      "takeaways": [
+        "OSI tiene 7 capas. TCP/IP tiene 4. Ambos describen el mismo recorrido.",
+        "Cada capa envuelve los datos: segmento (4), paquete (3), trama (2), bits (1).",
+        "Los switches son de capa 2 y los routers de capa 3. Diagnostica de abajo arriba."
+      ]
+    },
+    "ip-addressing": {
+      "title": "Direccionamiento IP",
+      "concept": {
+        "text": "Cada dispositivo de una red necesita una dirección IP para que los datos puedan encontrarlo. Una dirección **IPv4** tiene 32 bits y se escribe como cuatro números del 0 al 255, por ejemplo `192.168.1.20`. Una parte de la dirección identifica la red y el resto identifica al host dentro de ella. La **máscara de subred** (o un prefijo CIDR como `/24`) marca dónde está la división.\n\nSolo hay unos 4300 millones de direcciones IPv4, así que hogares y oficinas usan internamente rangos **privados** y comparten una única dirección pública mediante NAT. **IPv6** resuelve la escasez con direcciones de 128 bits.",
+        "analogy": "Una dirección IP es una dirección postal. La parte de red es la calle y la parte de host es el número de la casa. Una dirección privada es el número de un piso dentro de un edificio: solo tiene sentido una vez que has llegado a la dirección pública del edificio."
+      },
+      "visual": {
+        "caption": "Los rangos IPv4 privados (RFC 1918) y otras direcciones que conviene memorizar.",
+        "columns": ["Rango", "Uso típico"],
+        "rows": [
+          ["Privada clase A", "10.0.0.0/8", "Grandes empresas y redes en la nube"],
+          ["Privada clase B", "172.16.0.0/12", "Redes medianas, valores por defecto de Docker"],
+          ["Privada clase C", "192.168.0.0/16", "Hogar y pequeña oficina"],
+          ["Loopback", "127.0.0.0/8", "«Este ordenador» (localhost)"],
+          ["Enlace local (APIPA)", "169.254.0.0/16", "Autoasignada cuando falla DHCP"]
+        ]
+      },
+      "steps": [
+        { "title": "Lee una dirección", "text": "En `192.168.1.20/24`, los primeros 24 bits (`192.168.1`) son la red y los últimos 8 bits (`.20`) son el host. La máscara es `255.255.255.0`." },
+        { "title": "Encuentra la tuya", "text": "Busca la dirección IPv4, la máscara de subred y la puerta de enlace predeterminada." },
+        { "title": "Entiende NAT", "text": "Tu router reescribe la dirección privada de origen de los paquetes salientes con su única dirección pública, y recuerda a qué dispositivo interno pertenece cada respuesta." },
+        { "title": "Conoce IPv6", "text": "Ocho grupos en hexadecimal, como `2001:db8::1`. Un doble dos puntos sustituye a una serie de grupos de ceros. `::1` es loopback y `fe80::/10` es enlace local." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "¿Cuál de estas es una dirección IP privada?",
+            "options": ["8.8.8.8", "172.20.5.9", "172.32.0.1", "193.168.1.1"],
+            "explain": "172.16.0.0/12 abarca de 172.16.x.x a 172.31.x.x. 172.32 queda fuera."
+          },
+          {
+            "q": "Un PC muestra la dirección 169.254.33.7. ¿Qué te dice esto?",
+            "options": ["Funciona con normalidad", "No pudo contactar con un servidor DHCP", "Está usando IPv6", "Es el router"],
+            "explain": "169.254.x.x es una dirección automática que se asigna cuando falla DHCP."
+          },
+          {
+            "q": "¿Qué permite NAT?",
+            "options": ["Un Wi-Fi más rápido", "Que muchos dispositivos privados compartan una única IP pública", "Cifrar el tráfico", "Cables más largos"],
+            "explain": "NAT traduce las direcciones privadas a una pública en el router."
+          },
+          {
+            "q": "¿Cuántos bits tiene una dirección IPv6?",
+            "options": ["32", "64", "128", "256"],
+            "explain": "IPv6 tiene 128 bits, lo que da un espacio de direcciones prácticamente ilimitado."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Tu portátil tiene la dirección 192.168.1.50/24 y la puerta de enlace 192.168.1.1. Para cada destino, di si el tráfico se entrega directamente o se envía a la puerta de enlace: (a) 192.168.1.200 (b) 192.168.2.10 (c) 1.1.1.1",
+        "hint": "Con /24, los tres primeros números tienen que coincidir para que un dispositivo esté en tu red.",
+        "solution": "(a) **Directo**: 192.168.1.200 está en la misma red 192.168.1.0/24, así que tu portátil averigua su dirección MAC con ARP y le envía la trama directamente.\n\n(b) **Puerta de enlace**: 192.168.2.x es otra red.\n\n(c) **Puerta de enlace**: es una dirección pública, que el router reenvía a internet usando NAT."
+      },
+      "takeaways": [
+        "Una dirección IPv4 tiene 32 bits, divididos en parte de red y parte de host por la máscara.",
+        "Rangos privados: 10/8, 172.16/12, 192.168/16. NAT les permite compartir una dirección pública.",
+        "169.254.x.x significa que falló DHCP. IPv6 usa direcciones de 128 bits."
+      ]
+    },
+    "subnetting": {
+      "title": "Subredes con una calculadora",
+      "concept": {
+        "text": "Crear subredes divide una red en otras más pequeñas. Se hace para separar departamentos, limitar el tráfico de difusión, mejorar la seguridad y no desperdiciar direcciones.\n\nEl prefijo CIDR indica cuántos de los 32 bits pertenecen a la red. Los **bits de host** restantes fijan el tamaño: una subred tiene 2 elevado al número de bits de host direcciones. Dos están reservadas, la primera como **dirección de red** y la última como **dirección de difusión (broadcast)**, así que hosts utilizables = 2ʰ − 2. Toma un bit más para la red y cada subred se reduce a la mitad.",
+        "analogy": "Crear subredes es cortar un pastel. El pastel (tu bloque de direcciones) tiene un tamaño fijo. Cada corte duplica el número de porciones y las hace la mitad de grandes. Un /24 es el pastel entero de 256, un /25 son dos porciones de 128 y un /26 son cuatro porciones de 64."
+      },
+      "visual": {
+        "caption": "La tabla que hay que memorizar. El tamaño de bloque es la distancia entre el inicio de una subred y el de la siguiente.",
+        "columns": ["Máscara", "Tamaño de bloque", "Hosts utilizables"],
+        "rows": [
+          ["/24", "255.255.255.0", "256", "254"],
+          ["/25", "255.255.255.128", "128", "126"],
+          ["/26", "255.255.255.192", "64", "62"],
+          ["/27", "255.255.255.224", "32", "30"],
+          ["/28", "255.255.255.240", "16", "14"],
+          ["/29", "255.255.255.248", "8", "6"],
+          ["/30", "255.255.255.252", "4", "2"]
+        ]
+      },
+      "steps": [
+        { "title": "Halla el tamaño de bloque", "text": "Resta a 256 el octeto interesante de la máscara. Para /26 la máscara termina en 192, así que el tamaño de bloque es 256 − 192 = **64**." },
+        { "title": "Enumera dónde empiezan las subredes", "text": "Cuenta de bloque en bloque: .0, .64, .128, .192. Esas son las direcciones de red." },
+        { "title": "Sitúa la dirección", "text": "Para `192.168.10.77/26`: 77 está entre 64 y 127, así que la red es **192.168.10.64**, la difusión es **192.168.10.127** (una menos que la siguiente red) y los hosts utilizables van de **.65 a .126**." },
+        { "title": "Compruébalo con la calculadora", "text": "Escribe la dirección abajo y estudia la vista en binario. Los bits de red se quedan fijos, y los bits de host son todos 0 en la dirección de red y todos 1 en la de difusión." }
+      ],
+      "challenge": {
+        "prompt": "Te dan 10.20.30.0/24 y necesitas cuatro subredes iguales para Ventas, RR. HH., TI e Invitados. ¿Qué prefijo usas, cuáles son las cuatro direcciones de red y cuántos hosts utilizables tiene cada una? Calcúlalo y luego comprueba cada una en la calculadora.",
+        "hint": "Cuatro subredes necesitan 2 bits de red extra, porque 2² = 4.",
+        "solution": "Toma 2 bits: **/26**, máscara 255.255.255.192, tamaño de bloque 64.\n\nRedes: **10.20.30.0/26**, **10.20.30.64/26**, **10.20.30.128/26** y **10.20.30.192/26**.\n\nCada una tiene 6 bits de host: 2⁶ − 2 = **62 hosts utilizables**. Por ejemplo, Ventas va de .1 a .62 con difusión en .63."
+      },
+      "takeaways": [
+        "Hosts utilizables = 2^(bits de host) − 2. La primera dirección es la de red y la última, la de difusión.",
+        "Tamaño de bloque = 256 − octeto de la máscara. Las subredes empiezan en múltiplos del tamaño de bloque.",
+        "Cada bit que tomas duplica el número de subredes y reduce su tamaño a la mitad."
+      ]
+    },
+    "dns-dhcp": {
+      "title": "DNS y DHCP",
+      "concept": {
+        "text": "Dos servicios hacen que las redes sean usables para las personas. DHCP da automáticamente a cada dispositivo su dirección IP, máscara de subred, puerta de enlace predeterminada y servidor DNS cuando se conecta a la red. Sin él tendrías que configurar a mano cada móvil y cada portátil.\n\nDNS traduce nombres a direcciones IP. Escribes `example.com` y DNS responde con una dirección como `93.184.215.14`. Es un sistema mundial y jerárquico, y cuando falla «se cae internet» aunque todos los cables estén bien.",
+        "analogy": "DHCP es la recepción de un hotel que te da un número de habitación al registrarte. DNS es la app de contactos del móvil: tocas un nombre y busca el número por ti."
+      },
+      "visual": {
+        "caption": "Resolver un nombre que nadie tiene todavía en caché.",
+        "actors": ["Tu PC", "Resolutor", "Raíz", "TLD .com", "Autoritativo"],
+        "messages": [
+          { "label": "¿example.com?" },
+          { "label": "¿Dónde está .com?" },
+          { "label": "¿Dónde está example.com?" },
+          { "label": "¿Registro A?" },
+          { "label": "93.184.215.14" },
+          { "label": "Respuesta (y queda en caché)" }
+        ]
+      },
+      "steps": [
+        { "title": "DHCP en cuatro mensajes: DORA", "text": "**D**iscover (el cliente difunde «¿hay algún servidor DHCP?»), **O**ffer (el servidor propone una dirección), **R**equest (el cliente la acepta), **A**cknowledge (el servidor confirma la **concesión**). DHCP usa los puertos UDP 67 y 68." },
+        { "title": "Las concesiones caducan", "text": "Una dirección se presta durante un tiempo fijo. El cliente la renueva a mitad de plazo. Una **reserva** da siempre la misma dirección a una dirección MAC conocida, algo útil para impresoras y servidores." },
+        { "title": "Conoce los tipos de registro DNS", "text": "**A** asocia un nombre a una IPv4. **AAAA** lo asocia a una IPv6. **CNAME** es un alias de otro nombre. **MX** indica el servidor de correo. **TXT** guarda texto como SPF. **NS** indica los servidores autoritativos. **PTR** es la búsqueda inversa." },
+        { "title": "Consulta DNS tú mismo", "text": "DNS usa el puerto 53. El **TTL** es el tiempo que se puede guardar en caché una respuesta." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "¿Cuál es el orden correcto del proceso DHCP?",
+            "options": ["Offer, Discover, Acknowledge, Request", "Discover, Offer, Request, Acknowledge", "Request, Offer, Discover, Acknowledge", "Discover, Request, Offer, Acknowledge"],
+            "explain": "DORA: Discover, Offer, Request, Acknowledge."
+          },
+          {
+            "q": "¿Qué registro DNS apunta un nombre a una dirección IPv4?",
+            "options": ["MX", "CNAME", "A", "PTR"],
+            "explain": "A es IPv4 y AAAA es IPv6."
+          },
+          {
+            "q": "¿Qué registro indica a otros servidores de correo dónde entregar el email de un dominio?",
+            "options": ["MX", "TXT", "NS", "AAAA"],
+            "explain": "MX significa Mail Exchanger."
+          },
+          {
+            "q": "Los sitios web abren por dirección IP pero no por nombre. ¿Qué servicio ha fallado?",
+            "options": ["DHCP", "DNS", "NAT", "ARP"],
+            "explain": "Resolver nombres es el trabajo de DNS."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Cambias el registro A de un sitio web a un servidor nuevo, pero algunos visitantes siguen llegando al servidor antiguo horas después. ¿Por qué, y cómo podrías haber reducido el retraso?",
+        "hint": "Los resolutores no preguntan al servidor autoritativo cada vez.",
+        "solution": "Los resolutores y los dispositivos **guardan en caché** la respuesta antigua hasta que caduca su **TTL**, así que si el TTL era de 24 horas, algunos usuarios conservan la dirección antigua hasta un día. Para reducir el retraso, baja el TTL (por ejemplo a 300 segundos) uno o dos días **antes** del cambio, haz el cambio y luego vuelve a subirlo."
+      },
+      "takeaways": [
+        "DHCP reparte la configuración IP automáticamente con DORA.",
+        "DNS convierte nombres en direcciones mediante una jerarquía de servidores, con caché.",
+        "Registros clave: A, AAAA, CNAME, MX, TXT, NS. DNS usa el puerto 53."
+      ]
+    },
+    "routing": {
+      "title": "Enrutamiento",
+      "concept": {
+        "text": "Un router conecta redes distintas y reenvía cada paquete un salto más cerca de su destino. Decide usando una **tabla de enrutamiento**: una lista de redes de destino y el siguiente salto para llegar a cada una.\n\nSi coinciden varias rutas, gana la más específica (**coincidencia del prefijo más largo**). Si no coincide ninguna, el paquete va a la **ruta por defecto**, `0.0.0.0/0`. Las rutas se introducen a mano (**estáticas**) o se aprenden automáticamente de otros routers con un **protocolo de enrutamiento dinámico**.",
+        "analogy": "Los routers son cruces de carreteras con señales. Un cruce no conoce la ruta completa hasta tu destino. Solo sabe qué salida te acerca, y el siguiente cruce hace lo mismo."
+      },
+      "visual": {
+        "caption": "Una tabla de enrutamiento pequeña. Un paquete para 10.1.2.50 coincide con las dos primeras filas, y gana la /24.",
+        "columns": ["Siguiente salto", "Significado"],
+        "rows": [
+          ["10.1.2.0/24", "192.168.0.2", "La coincidencia más específica para 10.1.2.x"],
+          ["10.1.0.0/16", "192.168.0.3", "Se usa para las demás direcciones 10.1.x.x"],
+          ["192.168.0.0/24", "Conectada directamente", "El router está en esta red"],
+          ["0.0.0.0/0", "203.0.113.1", "Ruta por defecto: todo lo demás, hacia el ISP"]
+        ]
+      },
+      "steps": [
+        { "title": "La decisión del host", "text": "Tu PC compara el destino con su propia subred. Misma subred: lo entrega directamente. Distinta: lo envía a la **puerta de enlace predeterminada**." },
+        { "title": "La decisión del router", "text": "El router busca el destino, elige el prefijo coincidente más largo, reduce en uno el **TTL** del paquete y lo reenvía. Un TTL de 0 significa que el paquete se descarta, lo que evita bucles infinitos." },
+        { "title": "Protocolos dinámicos", "text": "**OSPF** se usa dentro de una organización y encuentra el camino más corto según el coste de los enlaces. **BGP** conecta organizaciones y es el protocolo que mantiene unida internet. **RIP** es un protocolo antiguo que cuenta saltos." },
+        { "title": "Traza un camino", "text": "Mira todos los routers que hay entre tú y un destino." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "Con la tabla de arriba, ¿adónde va un paquete para 10.1.9.9?",
+            "options": ["192.168.0.2", "192.168.0.3", "203.0.113.1", "Se descarta"],
+            "explain": "No coincide con 10.1.2.0/24, pero sí con 10.1.0.0/16."
+          },
+          {
+            "q": "¿Adónde va un paquete para 8.8.8.8?",
+            "options": ["192.168.0.2", "192.168.0.3", "203.0.113.1", "Se descarta"],
+            "explain": "No coincide ninguna ruta específica, así que se usa la ruta por defecto."
+          },
+          {
+            "q": "¿Qué protocolo intercambia rutas entre proveedores de internet?",
+            "options": ["OSPF", "RIP", "BGP", "DHCP"],
+            "explain": "BGP es el protocolo de pasarela exterior de internet."
+          },
+          {
+            "q": "¿Qué impide que un paquete dé vueltas para siempre en un bucle de enrutamiento?",
+            "options": ["La dirección MAC", "Que el campo TTL llegue a cero", "DNS", "La máscara de subred"],
+            "explain": "Cada router reduce el TTL en uno y descarta el paquete al llegar a cero."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Un PC con 192.168.1.10/24 llega a otros dispositivos de su propia red pero a nada más allá. Su puerta de enlace está configurada como 192.168.2.1. ¿Qué está mal?",
+        "hint": "¿Cómo llega un PC a su puerta de enlace predeterminada?",
+        "solution": "La puerta de enlace predeterminada tiene que estar **en la propia subred del PC**, porque el PC le entrega las tramas directamente. 192.168.2.1 está en otra red, así que el PC no tiene forma de llegar a ella. Configura como puerta de enlace la dirección del router en esta red, por ejemplo 192.168.1.1."
+      },
+      "takeaways": [
+        "Los routers reenvían paquetes entre redes usando una tabla de enrutamiento.",
+        "Gana la coincidencia del prefijo más largo. 0.0.0.0/0 es la ruta por defecto.",
+        "OSPF funciona dentro de las organizaciones. BGP funciona entre ellas."
+      ]
+    },
+    "switching-vlans": {
+      "title": "Conmutación y VLAN",
+      "concept": {
+        "text": "Un switch conecta dispositivos dentro de una misma red. Aprende qué dirección MAC está en qué puerto leyendo la dirección de origen de cada trama, y lo guarda en su **tabla de direcciones MAC**. Así puede enviar cada trama solo al puerto correcto en lugar de a todos.\n\nUna VLAN divide un switch físico en varias redes lógicas separadas. Los dispositivos de VLAN distintas no pueden hablar directamente, aunque estén en el mismo switch, sin pasar por un router. Así se separa al personal de los invitados, o las cámaras de los servidores, sin comprar más hardware.",
+        "analogy": "Un switch es la sala de correo de una oficina que aprende en qué mesa se sienta cada persona. Las VLAN son departamentos que comparten el mismo edificio: el correo de Finanzas nunca acaba en una mesa de Ingeniería salvo que pase antes por recepción (el router)."
+      },
+      "visual": {
+        "caption": "Dos tipos de puerto de switch.",
+        "columns": ["Puerto de acceso", "Puerto troncal (trunk)"],
+        "rows": [
+          ["Transporta", "Una VLAN", "Muchas VLAN"],
+          ["Se conecta a", "Dispositivos finales: PC, impresoras", "Otros switches, routers, hipervisores"],
+          ["Etiquetado de tramas", "Sin etiqueta", "La etiqueta 802.1Q indica el ID de VLAN"],
+          ["Ejemplo", "El puerto 5 está en la VLAN 10 (Personal)", "El puerto 24 lleva las VLAN 10, 20 y 30"]
+        ]
+      },
+      "steps": [
+        { "title": "Aprender y reenviar", "text": "Llega una trama: anota la MAC de origen junto al puerto. Destino conocido: reenvía a ese puerto. Destino desconocido, o una difusión: **inunda** todos los puertos de la VLAN excepto el de entrada." },
+        { "title": "ARP une las capas 2 y 3", "text": "Para enviar a una IP de la red local, un dispositivo difunde una petición **ARP**: «¿quién tiene 192.168.1.20?». El dueño responde con su dirección MAC." },
+        { "title": "Crea VLAN", "text": "Asigna los puertos de acceso a las VLAN y configura troncales entre switches. Enrutar entre VLAN necesita un router o un **switch de capa 3**." },
+        { "title": "Evita los bucles", "text": "Los enlaces redundantes entre switches harían que las difusiones dieran vueltas para siempre. El **Spanning Tree Protocol** (STP) bloquea el camino extra hasta que hace falta." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "Un switch recibe una trama para una dirección MAC que no está en su tabla. ¿Qué hace?",
+            "options": ["La descarta", "La inunda por todos los demás puertos de la VLAN", "La envía al router", "Se la devuelve al remitente"],
+            "explain": "Los destinos desconocidos se inundan. La respuesta le enseña al switch dónde está el dispositivo."
+          },
+          {
+            "q": "Un PC de la VLAN 10 necesita llegar a un servidor de la VLAN 20. ¿Qué hace falta?",
+            "options": ["Nada, es el mismo switch", "Un router o un switch de capa 3", "Un cable más largo", "Un hub"],
+            "explain": "Las VLAN son redes separadas, así que el tráfico entre ellas debe enrutarse."
+          },
+          {
+            "q": "¿Qué estándar etiqueta las tramas con un ID de VLAN en un troncal?",
+            "options": ["802.11", "802.1Q", "802.3af", "802.1X"],
+            "explain": "802.1Q inserta una etiqueta con el ID de VLAN."
+          },
+          {
+            "q": "¿Qué evita el Spanning Tree Protocol?",
+            "options": ["Conflictos de IP", "Bucles de conmutación", "DNS lento", "Contraseñas débiles"],
+            "explain": "STP bloquea los caminos redundantes para que las difusiones no entren en bucle."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Una oficina pequeña tiene un switch gestionable de 24 puertos y quiere mantener separados los PC del personal, el Wi-Fi de invitados y las cámaras de seguridad. Diseña las VLAN e indica qué puertos tienen que ser troncales.",
+        "hint": "¿Qué conexiones necesitan llevar más de una VLAN a la vez?",
+        "solution": "Crea tres VLAN, por ejemplo **10 Personal**, **20 Invitados** y **30 Cámaras**, cada una con su propia subred, como 192.168.10.0/24, 192.168.20.0/24 y 192.168.30.0/24.\n\n**Puertos de acceso**: los PC en la VLAN 10 y las cámaras en la VLAN 30.\n\n**Puertos troncales**: el enlace hacia el router o firewall (que enruta entre las VLAN y aplica las reglas) y el puerto del punto de acceso Wi-Fi si emite tanto la red del personal como la de invitados.\n\nDespués añade reglas de firewall: los invitados solo llegan a internet y las cámaras solo al grabador."
+      },
+      "takeaways": [
+        "Los switches aprenden las direcciones MAC de cada puerto y reenvían las tramas solo donde hace falta.",
+        "Las VLAN crean redes separadas sobre hardware compartido. Entre ellas hace falta enrutar.",
+        "Los puertos de acceso llevan una VLAN. Los troncales llevan muchas, etiquetadas con 802.1Q."
+      ]
+    },
+    "ports-protocols": {
+      "title": "Puertos, TCP y UDP",
+      "concept": {
+        "text": "Una dirección IP lleva los datos al ordenador correcto. Un número de puerto los lleva al programa correcto dentro de ese ordenador. Un servidor web escucha en el puerto 443 y un servidor SSH en el 22, y ambos pueden funcionar en la misma máquina.\n\nDos protocolos de transporte llevan casi todo. **TCP** establece una conexión, numera cada byte y reenvía lo que se pierda: fiable, pero con sobrecarga. **UDP** simplemente envía, sin garantías: rápido y sencillo, ideal para audio y vídeo en directo, juegos y consultas DNS.",
+        "analogy": "La dirección IP es la dirección de un edificio y el puerto es el número del piso. TCP es una llamada de teléfono: conectas, confirmas que la otra persona está ahí y repites lo que no oyó. UDP es gritar de una acera a otra: rápido, pero nunca sabes si te oyeron."
+      },
+      "visual": {
+        "caption": "Puertos que todo técnico de redes debería conocer.",
+        "columns": ["Puerto", "Transporte", "Uso"],
+        "rows": [
+          ["SSH", "22", "TCP", "Inicio de sesión remoto seguro"],
+          ["DNS", "53", "UDP y TCP", "Resolución de nombres"],
+          ["DHCP", "67 / 68", "UDP", "Configuración IP automática"],
+          ["HTTP", "80", "TCP", "Web sin cifrar"],
+          ["HTTPS", "443", "TCP", "Web cifrada"],
+          ["SMTP", "25 / 587", "TCP", "Envío de correo"],
+          ["RDP", "3389", "TCP", "Escritorio remoto de Windows"],
+          ["SMB", "445", "TCP", "Compartir archivos en Windows"],
+          ["NTP", "123", "UDP", "Sincronización de la hora"]
+        ]
+      },
+      "steps": [
+        { "title": "El saludo de tres vías", "text": "TCP abre una conexión con **SYN**, **SYN-ACK** y **ACK**. Solo entonces fluyen los datos. Se cierra con FIN." },
+        { "title": "Rangos de puertos", "text": "**0-1023** son puertos bien conocidos para servicios estándar. **1024-49151** son puertos registrados. **49152-65535** son efímeros: tu ordenador elige uno al azar como puerto de origen para cada conexión saliente." },
+        { "title": "Una conexión son cuatro números", "text": "IP de origen, puerto de origen, IP de destino y puerto de destino. Así distingue tu navegador 20 pestañas abiertas al mismo sitio." },
+        { "title": "Comprueba los puertos tú mismo", "text": "Mira qué está escuchando, o prueba si se puede llegar a un puerto remoto." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "¿Qué puerto usa HTTPS por defecto?",
+            "options": ["22", "80", "443", "3389"],
+            "explain": "443 es HTTPS. 80 es HTTP sin cifrar."
+          },
+          {
+            "q": "¿Cuál es el saludo TCP correcto?",
+            "options": ["ACK, SYN, FIN", "SYN, SYN-ACK, ACK", "SYN, ACK, SYN", "HELLO, OK, GO"],
+            "explain": "El cliente envía SYN, el servidor responde SYN-ACK y el cliente confirma con ACK."
+          },
+          {
+            "q": "Una videollamada en directo prefiere descartar un paquete que llega tarde antes que esperarlo. ¿Qué protocolo le conviene?",
+            "options": ["TCP", "UDP", "ARP", "DHCP"],
+            "explain": "UDP no tiene el retraso de las retransmisiones, lo que conviene a los medios en tiempo real."
+          },
+          {
+            "q": "Debes permitir el escritorio remoto a un servidor Windows a través de un firewall. ¿Qué puerto?",
+            "options": ["21", "445", "3389", "53"],
+            "explain": "RDP usa TCP 3389. Exponerlo directamente a internet es arriesgado."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Un servidor web nuevo funciona cuando se navega desde el propio servidor, pero no desde otros ordenadores. El `ping` al servidor funciona. Nombra dos causas probables y cómo comprobarías cada una.",
+        "hint": "El ping demuestra la capa 3. ¿Qué hay entre un cliente remoto y el programa que escucha?",
+        "solution": "1. **Un firewall está bloqueando el puerto.** El ping (ICMP) está permitido, pero TCP 80/443 no. Compruébalo con `Test-NetConnection server -Port 443` o `nc -vz server 443` y revisa las reglas del firewall del equipo y de la red.\n\n2. **El servicio solo escucha en localhost (127.0.0.1)** en lugar de en todas las interfaces. Compruébalo con `netstat -an` o `ss -tlnp`: quieres ver `0.0.0.0:443`, no `127.0.0.1:443`."
+      },
+      "takeaways": [
+        "Los puertos identifican servicios: 22 SSH, 53 DNS, 80 HTTP, 443 HTTPS, 3389 RDP.",
+        "TCP es fiable y orientado a conexión (SYN, SYN-ACK, ACK). UDP es rápido y sin conexión.",
+        "Una conexión se define por la IP y el puerto de origen y de destino."
+      ]
+    }
+  }
+}

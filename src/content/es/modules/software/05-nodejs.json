@@ -1,0 +1,100 @@
+{
+  "title": "Node.js",
+  "summary": "JavaScript fuera del navegador: servidores, scripts, npm y el bucle de eventos.",
+  "lessons": {
+    "syntax-basics": {
+      "title": "Node.js: JavaScript fuera del navegador",
+      "concept": {
+        "text": "Node.js es un programa que ejecuta JavaScript en tu ordenador o en un servidor en lugar de dentro de una página web. Añade capacidades que los navegadores prohíben, como leer archivos y escuchar conexiones de red.\n\nEl código de Node se organiza en **módulos** (archivos que exportan cosas) y **paquetes** (módulos de otras personas, instalados con npm).",
+        "analogy": "JavaScript en el navegador es un chef en un food truck: pocas herramientas y normas de seguridad estrictas. Node.js lleva al mismo chef a la cocina completa de un restaurante, con acceso a la despensa (archivos) y a la puerta de reparto (red)."
+      },
+      "visual": {
+        "columns": ["JavaScript en el navegador", "Node.js"],
+        "rows": [
+          ["Se ejecuta en", "Una página web", "Tu terminal o un servidor"],
+          ["Puede tocar", "La página (DOM), fetch", "Archivos, red, procesos, bases de datos"],
+          ["Objeto global", "window", "globalThis / process"],
+          ["Usar código de otros", "Etiquetas script, empaquetadores", "npm install"],
+          ["Uso típico", "Interfaz interactiva", "APIs, CLIs, herramientas de compilación"]
+        ]
+      },
+      "steps": [
+        { "title": "Ejecuta un archivo", "text": "Instala Node desde nodejs.org, guarda el código en un archivo y ejecútalo desde una terminal." },
+        { "title": "Exporta e importa", "text": "Un archivo exporta y otro importa. Esta es la sintaxis moderna de módulos ES." },
+        { "title": "Usa npm", "text": "`npm init -y` crea package.json, el manifiesto del proyecto. `npm install` añade paquetes y los registra ahí." },
+        { "title": "Usa los módulos integrados", "text": "Node incluye módulos para archivos, rutas, HTTP y más. Ponles el prefijo `node:`." }
+      ],
+      "challenge": {
+        "prompt": "Escribe los dos archivos de un proyecto diminuto: `temperature.js` exporta `toF(c)` y `toC(f)`, y `app.js` importa ambas e imprime 100 °C en Fahrenheit y 32 °F en Celsius.",
+        "hint": "F = C × 9/5 + 32. Usa `export const` en un archivo e `import { toF, toC } from './temperature.js'` en el otro."
+      },
+      "takeaways": [
+        "Node.js ejecuta JavaScript fuera del navegador, con acceso a archivos y a la red.",
+        "Los módulos reparten el código en archivos con export e import.",
+        "npm instala paquetes y package.json registra lo que necesita tu proyecto."
+      ]
+    },
+    "core-concepts": {
+      "title": "Node.js: el bucle de eventos y un servidor web",
+      "concept": {
+        "text": "Node ejecuta tu JavaScript en un solo hilo y, aun así, puede atender miles de conexiones. El truco es el **bucle de eventos**: el trabajo lento (red, disco) se delega y Node sigue ejecutando otro código. Cuando el trabajo lento termina, su callback entra en una cola y se ejecuta cuando el hilo queda libre.\n\nPor eso el código de Node está lleno de `async` y `await`, y por eso nunca debes bloquear el hilo con un cálculo largo.",
+        "analogy": "El bucle de eventos es un único mesero muy rápido. Toma un pedido, lo pasa a la cocina y atiende otra mesa en lugar de quedarse junto a los fogones. Cuando un plato está listo, la cocina toca una campana y el mesero lo lleva."
+      },
+      "visual": {
+        "caption": "Una vuelta del bucle de eventos.",
+        "nodes": [
+          { "label": "Ejecuta el código actual", "detail": "Hasta que la pila de llamadas quede vacía" },
+          { "label": "Microtareas", "detail": "Las promesas resueltas van primero" },
+          { "label": "Temporizadores", "detail": "Callbacks de setTimeout que ya tocan" },
+          { "label": "Callbacks de E/S", "detail": "Trabajo de red y de archivos terminado" },
+          { "label": "Repite", "detail": "Siempre, mientras quede trabajo" }
+        ]
+      },
+      "steps": [
+        { "title": "Predice el orden", "text": "Primero se ejecuta el código síncrono, luego los callbacks de promesas (microtareas) y después los temporizadores, incluso uno de 0 ms." },
+        { "title": "Crea un servidor", "text": "Este callback se ejecuta una vez por petición. Node no se bloquea mientras espera la siguiente." },
+        { "title": "Usa un framework para apps reales", "text": "Express (o Fastify, Hono) añade enrutamiento para que asocies métodos y rutas con sus manejadores." },
+        { "title": "Maneja los errores", "text": "Envuelve las llamadas con await en try/catch y devuelve un código de estado adecuado, como 500, en lugar de dejar que el programa se caiga." }
+      ],
+      "challenge": {
+        "prompt": "Escribe una función async `fetchAll(urls)` que pida todas las URL **a la vez** y devuelva los resultados JSON ya interpretados, en orden. Pruébala con dos URL de usuarios de JSONPlaceholder.",
+        "hint": "`Promise.all(array.map(async ...))` lo arranca todo a la vez y espera a que terminen todas."
+      },
+      "takeaways": [
+        "Node usa un solo hilo pero no se bloquea gracias al bucle de eventos.",
+        "Orden de ejecución: código síncrono, luego promesas y después temporizadores y E/S.",
+        "Promise.all ejecuta en paralelo trabajos asíncronos independientes."
+      ]
+    },
+    "mini-project": {
+      "title": "Mini proyecto de Node.js: una API REST en memoria",
+      "concept": {
+        "text": "Vas a diseñar el núcleo de una API REST de notas: un enrutador que asocia un método y una ruta con un manejador, respaldado por un array en memoria. Es exactamente lo que Express hace por ti, así que construir una versión diminuta le quita el misterio.",
+        "analogy": "Un enrutador es la centralita de un hotel. Entra una llamada para una habitación (método + ruta) y la operadora la pasa al huésped correcto (la función manejadora)."
+      },
+      "visual": {
+        "actors": ["Cliente", "Enrutador", "Manejador"],
+        "messages": [
+          { "label": "POST /notes {text}" },
+          { "label": "createNote(body)" },
+          { "label": "{ status: 201, body }" },
+          { "label": "201 Created" }
+        ]
+      },
+      "steps": [
+        { "title": "Guarda los datos", "text": "Un array de objetos de nota hace las veces de base de datos." },
+        { "title": "Escribe los manejadores", "text": "Cada manejador recibe la petición y devuelve un estado y un cuerpo. Los id desconocidos devuelven 404." },
+        { "title": "Enruta las peticiones", "text": "Compara el método y la ruta, saca el id de la ruta y llama al manejador correcto. En un servidor real conectarías esta función a `createServer`." }
+      ],
+      "challenge": {
+        "prompt": "Añade soporte para `PATCH /notes/:id`, que actualiza el texto de una nota y devuelve 200 con la nota actualizada. Devuelve 400 si el cuerpo no trae `text`.",
+        "hint": "Añade la rama después de encontrar la nota. `Object.assign(note, { text: body.text })` la actualiza en el sitio."
+      },
+      "takeaways": [
+        "Una API REST es un enrutador, unos manejadores y un almacén de datos.",
+        "Devuelve códigos de estado precisos: 201 creado, 204 borrado, 400 entrada incorrecta, 404 no existe.",
+        "Frameworks como Express automatizan el enrutamiento que acabas de escribir a mano."
+      ]
+    }
+  }
+}

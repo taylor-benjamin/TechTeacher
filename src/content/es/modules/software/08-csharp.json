@@ -1,0 +1,99 @@
+{
+  "title": "C#",
+  "summary": "El lenguaje moderno y tipado de Microsoft para apps .NET, APIs web, herramientas de Windows y juegos en Unity.",
+  "lessons": {
+    "syntax-basics": {
+      "title": "C#: sintaxis básica",
+      "concept": {
+        "text": "C# (se pronuncia «si sharp») es un lenguaje con tipado estático que se ejecuta sobre .NET. Se parece mucho a Java pero tiene más atajos, como `var` para que el compilador deduzca el tipo y las cadenas `$\"...\"` para insertar valores.\n\nEl C# moderno te deja escribir sentencias al principio de un archivo sin clase ni método `Main`, lo que es ideal para aprender.",
+        "analogy": "Si Java es un coche manual, C# es el mismo coche con dirección asistida y control de crucero. El mismo motor y las mismas normas de tráfico, con más comodidades."
+      },
+      "visual": {
+        "caption": "C# junto a Java.",
+        "columns": ["C#", "Java"],
+        "rows": [
+          ["Imprimir una línea", "Console.WriteLine(x);", "System.out.println(x);"],
+          ["Texto con valores", "$\"Hi {name}\"", "\"Hi \" + name"],
+          ["Tipo deducido", "var n = 5;", "var n = 5;"],
+          ["Recorrer una lista", "foreach (var x in list)", "for (var x : list)"],
+          ["Entorno de ejecución", ".NET (CLR)", "JVM"]
+        ]
+      },
+      "steps": [
+        { "title": "Variables", "text": "Declara un tipo, o usa `var` cuando el tipo sea obvio por el valor." },
+        { "title": "Imprime con interpolación", "text": "Un `$` delante de la cadena te deja poner expresiones entre llaves." },
+        { "title": "Ramifica y repite", "text": "La sintaxis es la misma que en Java y JavaScript." },
+        { "title": "Crea y ejecuta un proyecto", "text": "Instala el SDK de .NET y luego usa el comando dotnet." }
+      ],
+      "challenge": {
+        "prompt": "Escribe un programa que imprima la tabla de multiplicar del 7, desde `7 x 1 = 7` hasta `7 x 10 = 70`.",
+        "hint": "Recorre `i` de 1 a 10 y usa una cadena interpolada con `{7 * i}` dentro."
+      },
+      "takeaways": [
+        "C# tiene tipado estático y se ejecuta sobre .NET.",
+        "La interpolación de cadenas con $\"...\" mantiene legible el código de salida.",
+        "dotnet new, dotnet run y dotnet build son los comandos principales."
+      ]
+    },
+    "core-concepts": {
+      "title": "C#: clases, propiedades y LINQ",
+      "concept": {
+        "text": "Las clases de C# usan **propiedades**: campos con lógica de lectura (get) y escritura (set) incorporada, escritos en una línea. Para tipos que solo guardan datos, un `record` te da gratis un constructor, comparación de igualdad e impresión.\n\n**LINQ** es la función estrella de C#: consulta cualquier colección con métodos como `Where`, `Select` y `OrderBy`, con el mismo espíritu que SQL.",
+        "analogy": "LINQ es una cinta transportadora con estaciones. Los elementos pasan por una estación de filtrado (Where), una de transformación (Select) y una de ordenación (OrderBy), y al final sale un lote terminado."
+      },
+      "visual": {
+        "caption": "Una cadena de LINQ.",
+        "nodes": [
+          { "label": "people", "detail": "Una List<Person>" },
+          { "label": ".Where(p => p.Age >= 18)", "detail": "Conserva a los adultos" },
+          { "label": ".OrderBy(p => p.Name)", "detail": "Ordena de la A a la Z" },
+          { "label": ".Select(p => p.Name)", "detail": "Conserva solo los nombres" }
+        ]
+      },
+      "steps": [
+        { "title": "Declara un record", "text": "Una línea crea un tipo de datos completo e inmutable." },
+        { "title": "Escribe una clase con propiedades", "text": "`private set` significa que solo la propia clase puede cambiar el valor." },
+        { "title": "Consulta con LINQ", "text": "La flecha `=>` define una pequeña función en línea llamada lambda." },
+        { "title": "Agrega", "text": "`Average`, `Sum`, `Max` y `Count` resumen una colección." }
+      ],
+      "challenge": {
+        "prompt": "Dado `var prices = new List<decimal> { 60m, 220m, 25m, 15m };`, usa LINQ para imprimir el total de todos los precios mayores que 20.",
+        "hint": "Encadena `.Where(...)` y luego `.Sum()`."
+      },
+      "takeaways": [
+        "Las propiedades envuelven campos con get y set en una línea.",
+        "Los records son tipos de datos concisos e inmutables.",
+        "LINQ filtra, ordena y transforma colecciones con métodos encadenados."
+      ]
+    },
+    "mini-project": {
+      "title": "Mini proyecto de C#: un control de inventario",
+      "concept": {
+        "text": "Construye un pequeño control de inventario: una lista de artículos, un informe de existencias bajas y el valor total del stock. Usa records, una lista y LINQ juntos, que es el núcleo de la mayoría del código .NET de gestión empresarial.",
+        "analogy": "Eres el encargado del almacén con una tablilla. La lista es tu tablilla, y cada consulta LINQ es una pregunta que le harías: ¿qué se está acabando y cuánto vale todo?"
+      },
+      "visual": {
+        "nodes": [
+          { "label": "record Item", "detail": "Name, Qty, Price" },
+          { "label": "List<Item>", "detail": "El almacén" },
+          { "label": "Where(Qty < 5)", "detail": "Informe de existencias bajas" },
+          { "label": "Sum(Qty * Price)", "detail": "Valor total" }
+        ]
+      },
+      "steps": [
+        { "title": "Modela un artículo", "text": "Un record con un nombre, una cantidad y un precio unitario." },
+        { "title": "Informa de las existencias bajas", "text": "Filtra con `Where` y recorre el resultado para imprimirlo." },
+        { "title": "Suma el valor", "text": "`Sum` recibe una lambda para que multipliques la cantidad por el precio de cada artículo. El formato `:C` imprime moneda." }
+      ],
+      "challenge": {
+        "prompt": "Imprime la línea de stock más valiosa (el mayor `Qty * Price`) como `Most valuable: Keyboard`.",
+        "hint": "`OrderByDescending(...)` seguido de `.First()`, o `MaxBy(...)` en .NET moderno."
+      },
+      "takeaways": [
+        "Los records más List<T> modelan la mayoría de los datos de negocio.",
+        "LINQ responde preguntas sobre colecciones sin bucles manuales.",
+        "Usa decimal, no double, para el dinero."
+      ]
+    }
+  }
+}

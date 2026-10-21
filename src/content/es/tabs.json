@@ -1,0 +1,22 @@
+{
+  "software": {
+    "title": "Desarrollo de software",
+    "summary": "APIs, ocho lenguajes de programación con ejecución en el navegador, y Git/GitHub."
+  },
+  "ai": {
+    "title": "IA / ML",
+    "summary": "Cómo funcionan de verdad las redes neuronales y los LLM, además de prompts, RAG, agentes y modelos locales."
+  },
+  "networking": {
+    "title": "Redes",
+    "summary": "Fundamentos de Network+, las tres grandes nubes y cómo montar tu propio laboratorio casero."
+  },
+  "webdesign": {
+    "title": "Diseño web",
+    "summary": "Fundamentos de diseño, herramientas modernas, vibe coding con IA y cómo publicar un sitio."
+  },
+  "security": {
+    "title": "Ciberseguridad",
+    "summary": "Criptografía, identidad, protocolos seguros, análisis de paquetes, defensa y salidas profesionales."
+  }
+}

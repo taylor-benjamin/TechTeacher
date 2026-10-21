@@ -1,0 +1,26 @@
+{
+  "cloud-engineer": {
+    "title": "Ingeniero/a de nube",
+    "description": "Fundamentos de redes, la línea de comandos, las tres grandes nubes y las bases de seguridad que necesita cualquier puesto en la nube."
+  },
+  "soc-analyst": {
+    "title": "Analista de SOC",
+    "description": "Desde cómo funcionan las redes hasta leer paquetes, clasificar alertas y responder a incidentes. Alineado con Security+ y CySA+."
+  },
+  "full-stack-developer": {
+    "title": "Desarrollador/a full-stack",
+    "description": "Construye el front end, el back end y la base de datos; luego versiónalo con Git y publícalo."
+  },
+  "ai-engineer": {
+    "title": "Ingeniero/a de IA",
+    "description": "Entiende cómo funcionan los modelos y luego construye con ellos: prompts, RAG, herramientas, agentes y modelos locales."
+  },
+  "web-designer": {
+    "title": "Diseñador/a web y vibe coder",
+    "description": "Aprende qué hace que un diseño funcione, domina las herramientas, construye con IA y publica un sitio real."
+  },
+  "network-admin": {
+    "title": "Administrador/a de redes",
+    "description": "Todo lo de los fundamentos de Network+, practicado en un laboratorio casero que construyes tú."
+  }
+}

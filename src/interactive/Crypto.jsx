@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Trans, useTranslation } from 'react-i18next'
 import { btn, btnPrimary, field, input } from '../lib/ui'
 
 const enc = new TextEncoder()
@@ -24,6 +25,7 @@ function bitsDifferent(a, b) {
 
 // Live hash generator. Two inputs side by side show the avalanche effect.
 export function Hasher() {
+  const { t } = useTranslation()
   const [a, setA] = useState('Hello, world')
   const [b, setB] = useState('Hello, world!')
   const [h, setH] = useState(null)
@@ -36,13 +38,13 @@ export function Hasher() {
   return (
     <div className="space-y-4">
       <div className="grid gap-3 md:grid-cols-2">
-        {[['Input A', a, setA, 'a'], ['Input B', b, setB, 'b']].map(([label, value, set, k]) => (
+        {[[t('hash.inputA'), a, setA, 'a'], [t('hash.inputB'), b, setB, 'b']].map(([label, value, set, k]) => (
           <div key={k}>
             <label htmlFor={`hash-${k}`} className="block text-sm font-medium">{label}</label>
             <input id={`hash-${k}`} className={`${input} mt-1 w-full font-mono`} value={value} onChange={(e) => set(e.target.value)} />
             {h && Object.entries(h[k]).map(([algo, buf]) => (
               <div key={algo} className="mt-2">
-                <p className="text-xs font-semibold text-muted">{algo} ({buf.byteLength * 8} bits)</p>
+                <p className="text-xs font-semibold text-muted">{t('hash.bits', { algo, bits: buf.byteLength * 8 })}</p>
                 <p className={mono}>{hex(buf)}</p>
               </div>
             ))}
@@ -51,8 +53,8 @@ export function Hasher() {
       </div>
       <p className="rounded-lg border-l-4 border-accent bg-accent-soft p-3 text-sm" aria-live="polite">
         {a === b
-          ? 'Identical inputs always produce identical hashes. That is what makes hashes useful for checking integrity.'
-          : <><strong>{diff} of 256</strong> SHA-256 bits differ ({Math.round((diff / 256) * 100)}%). A tiny change to the input flips about half the output bits: the avalanche effect.</>}
+          ? t('hash.same')
+          : <Trans i18nKey="hash.diff" values={{ diff, pct: Math.round((diff / 256) * 100) }} components={[<strong />]} />}
       </p>
     </div>
   )
@@ -64,7 +66,8 @@ async function aesKey(password, salt) {
 }
 
 function Symmetric() {
-  const [text, setText] = useState('Meet me at noon.')
+  const { t } = useTranslation()
+  const [text, setText] = useState(() => t('cipher.sampleMessage'))
   const [password, setPassword] = useState('correct horse battery staple')
   const [cipher, setCipher] = useState('')
   const [tryPass, setTryPass] = useState('')
@@ -84,41 +87,42 @@ function Symmetric() {
       const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, await aesKey(tryPass, salt), data)
       setResult({ ok: true, text: dec.decode(plain) })
     } catch {
-      setResult({ ok: false, text: 'Decryption failed. The key is wrong or the ciphertext was changed. AES-GCM detects both.' })
+      setResult({ ok: false, text: t('cipher.aesFailed') })
     }
   }
   return (
     <div className="space-y-3">
-      <p className="text-sm text-muted">AES-256-GCM. The same secret encrypts and decrypts. Your password is stretched into a key with PBKDF2.</p>
-      <label className="block text-sm font-medium">Message
+      <p className="text-sm text-muted">{t('cipher.aesIntro')}</p>
+      <label className="block text-sm font-medium">{t('cipher.message')}
         <input className={`${input} mt-1 block w-full`} value={text} onChange={(e) => setText(e.target.value)} />
       </label>
-      <label className="block text-sm font-medium">Shared secret (password)
+      <label className="block text-sm font-medium">{t('cipher.secret')}
         <input className={`${input} mt-1 block w-full font-mono`} value={password} onChange={(e) => setPassword(e.target.value)} />
       </label>
-      <button type="button" className={btnPrimary} onClick={encrypt}>🔒 Encrypt</button>
+      <button type="button" className={btnPrimary} onClick={encrypt}>{t('cipher.encrypt')}</button>
       {cipher && (
         <>
-          <label className="block text-sm font-medium">Ciphertext (salt.iv.data, Base64). Try editing a character.
+          <label className="block text-sm font-medium">{t('cipher.ciphertext')}
             <textarea rows={3} className={`${field} mt-1 block w-full font-mono text-xs`} value={cipher} onChange={(e) => setCipher(e.target.value)} />
           </label>
-          <label className="block text-sm font-medium">Password to decrypt with
+          <label className="block text-sm font-medium">{t('cipher.decryptWith')}
             <input className={`${input} mt-1 block w-full font-mono`} value={tryPass} onChange={(e) => setTryPass(e.target.value)} />
           </label>
-          <button type="button" className={btn} onClick={decrypt}>🔓 Decrypt</button>
+          <button type="button" className={btn} onClick={decrypt}>{t('cipher.decrypt')}</button>
         </>
       )}
       <p aria-live="polite" className={result ? (result.ok ? 'font-semibold text-ok' : 'font-semibold text-bad') : ''}>
-        {result && (result.ok ? `Decrypted: ${result.text}` : result.text)}
+        {result && (result.ok ? t('cipher.decrypted', { text: result.text }) : result.text)}
       </p>
     </div>
   )
 }
 
 function Asymmetric() {
+  const { t } = useTranslation()
   const [keys, setKeys] = useState(null)
   const [pub, setPub] = useState('')
-  const [text, setText] = useState('For your eyes only.')
+  const [text, setText] = useState(() => t('cipher.rsaSample'))
   const [cipher, setCipher] = useState(null)
   const [plain, setPlain] = useState('')
   const [busy, setBusy] = useState(false)
@@ -140,26 +144,26 @@ function Asymmetric() {
 
   return (
     <div className="space-y-3">
-      <p className="text-sm text-muted">RSA-OAEP 2048. Anyone can encrypt with the public key; only the private key can decrypt.</p>
-      <button type="button" className={btnPrimary} onClick={generate} disabled={busy}>{busy ? 'Generating…' : keys ? 'Generate a new key pair' : '1. Generate a key pair'}</button>
+      <p className="text-sm text-muted">{t('cipher.rsaIntro')}</p>
+      <button type="button" className={btnPrimary} onClick={generate} disabled={busy}>{busy ? t('cipher.generating') : keys ? t('cipher.regenerate') : t('cipher.generate')}</button>
       {keys && (
         <>
           <div>
-            <p className="text-sm font-medium">Public key (safe to share)</p>
+            <p className="text-sm font-medium">{t('cipher.publicKey')}</p>
             <p className={`${mono} max-h-20 overflow-auto`}>{pub}</p>
-            <p className="mt-1 text-sm text-muted">Private key: kept inside your browser and never shown. That is the point.</p>
+            <p className="mt-1 text-sm text-muted">{t('cipher.privateKey')}</p>
           </div>
-          <label className="block text-sm font-medium">Message (up to about 190 characters with this key size)
+          <label className="block text-sm font-medium">{t('cipher.rsaMessage')}
             <input className={`${input} mt-1 block w-full`} maxLength={180} value={text} onChange={(e) => setText(e.target.value)} />
           </label>
-          <button type="button" className={btn} onClick={encrypt}>2. 🔒 Encrypt with public key</button>
+          <button type="button" className={btn} onClick={encrypt}>{t('cipher.rsaEncrypt')}</button>
           {cipher && (
             <>
               <p className={mono}>{b64(cipher)}</p>
-              <button type="button" className={btn} onClick={decrypt}>3. 🔓 Decrypt with private key</button>
+              <button type="button" className={btn} onClick={decrypt}>{t('cipher.rsaDecrypt')}</button>
             </>
           )}
-          <p aria-live="polite" className="font-semibold text-ok">{plain && `Decrypted: ${plain}`}</p>
+          <p aria-live="polite" className="font-semibold text-ok">{plain && t('cipher.decrypted', { text: plain })}</p>
         </>
       )}
     </div>
@@ -167,11 +171,12 @@ function Asymmetric() {
 }
 
 export function Cipher({ mode = 'symmetric' }) {
+  const { t } = useTranslation()
   const [tab, setTab] = useState(mode)
   return (
     <div>
-      <div className="mb-4 flex gap-1" role="group" aria-label="Encryption type">
-        {[['symmetric', 'Symmetric (AES)'], ['asymmetric', 'Asymmetric (RSA)']].map(([id, label]) => (
+      <div className="mb-4 flex gap-1" role="group" aria-label={t('cipher.type')}>
+        {[['symmetric', t('cipher.symmetric')], ['asymmetric', t('cipher.asymmetric')]].map(([id, label]) => (
           <button key={id} type="button" aria-pressed={tab === id} className={tab === id ? btnPrimary : btn} onClick={() => setTab(id)}>{label}</button>
         ))}
       </div>

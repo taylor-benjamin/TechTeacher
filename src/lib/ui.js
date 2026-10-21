@@ -9,11 +9,11 @@ export const input =
 export const field = 'rounded-xl border border-edge bg-panel px-3 py-2 text-sm text-ink placeholder:text-muted'
 export const card = 'rounded-2xl border border-line bg-panel'
 
-// Dots give the level a non-colour cue.
+// Dots give the level a non-colour cue. Labels come from t('levels.<id>').
 export const LEVELS = {
-  beginner: { label: 'Beginner', dots: '●○○' },
-  intermediate: { label: 'Intermediate', dots: '●●○' },
-  advanced: { label: 'Advanced', dots: '●●●' },
+  beginner: { dots: '●○○' },
+  intermediate: { dots: '●●○' },
+  advanced: { dots: '●●●' },
 }
 
 export const href = (key) => '#/' + key

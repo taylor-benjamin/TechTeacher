@@ -1,0 +1,111 @@
+{
+  "title": "Wireshark",
+  "summary": "Captura y lee el tráfico de red paquete a paquete, con capturas de ejemplo en tu navegador.",
+  "lessons": {
+    "packet-analysis": {
+      "title": "Leer una captura: una visita a una web",
+      "concept": {
+        "text": "**Wireshark** es una herramienta gratuita que captura el tráfico que pasa por una interfaz de red y muestra cada paquete en detalle. Es como los ingenieros de redes descubren por qué algo va lento o falla, y como los analistas de seguridad ven lo que pasó de verdad.\n\nLa ventana tiene tres paneles: la **lista de paquetes** (una fila por paquete), los **detalles del paquete** (cada capa del protocolo, desplegable) y los bytes en bruto. La habilidad clave es filtrar: una red con mucho tráfico produce miles de paquetes por segundo, y un **filtro de visualización** como `dns` o `ip.addr==10.0.0.5` muestra solo los que importan.",
+        "analogy": "Wireshark es la repetición a cámara lenta de una conversación entre ordenadores. En tiempo real es un borrón, pero fotograma a fotograma puedes ver exactamente quién dijo qué, en qué orden y dónde se torció."
+      },
+      "visual": {
+        "caption": "El panel de detalles de Wireshark muestra las mismas capas que el modelo OSI, para un solo paquete.",
+        "layers": [
+          { "name": "Frame", "detail": "Metadatos de la captura: tamaño, hora" },
+          { "name": "Ethernet II", "detail": "Direcciones MAC de origen y de destino" },
+          { "name": "Internet Protocol", "detail": "Direcciones IP de origen y de destino, TTL" },
+          { "name": "TCP o UDP", "detail": "Puertos, indicadores, números de secuencia" },
+          { "name": "Datos de aplicación", "detail": "DNS, HTTP, TLS…" }
+        ]
+      },
+      "steps": [
+        { "title": "Captura", "text": "En la herramienta real, elige tu interfaz de red y pulsa la aleta azul. Captura solo en redes que sean tuyas o que tengas autorización para vigilar. El ejemplo de abajo es una visita grabada a un sitio web." },
+        { "title": "Sigue la historia", "text": "Lee la columna Info desde arriba. Una petición **ARP** busca la dirección MAC de la puerta de enlace. Una consulta y una respuesta **DNS** convierten el nombre en una IP. Tres paquetes **TCP** (SYN, SYN-ACK, ACK) abren la conexión. Los saludos **TLS** establecen el cifrado. A partir de ahí, solo se ve «Application Data»." },
+        { "title": "Filtra", "text": "Escribe un filtro de visualización para acotar la lista. Combina condiciones con `&&`." },
+        { "title": "Detecta lo que destaca", "text": "Filtra por `http`. El paquete 13 es un inicio de sesión sin cifrar: cualquiera en el camino puede leer el usuario y la contraseña. Luego filtra por `tcp.port==23` para encontrar un intento de conexión Telnet que se rechaza." }
+      ],
+      "interactive": {
+        "packets": [
+          { "note": "El PC necesita la dirección MAC de la puerta de enlace antes de poder enviar nada fuera de su red." },
+          { "note": "La respuesta es unicast, directa a quien preguntó." },
+          { "note": "DNS usa el puerto UDP 53. El puerto de origen es un puerto efímero aleatorio." },
+          { "note": "La respuesta se puede guardar en caché 3600 segundos (su TTL)." },
+          { "note": "Paso 1 del saludo de tres vías." },
+          { "note": "Paso 2: el servidor acepta y confirma. El hueco de 22 ms es el tiempo de ida y vuelta hasta el servidor." },
+          { "note": "Paso 3: conexión establecida." },
+          { "note": "El nombre del servidor se ve aquí aunque el resto de la sesión vaya cifrada." },
+          { "note": "En TLS 1.3 el certificado ya va cifrado, así que Wireshark lo muestra como Application Data." },
+          { "note": "Esta es la petición HTTP, pero lo único que ves es que existe y cuánto ocupa." },
+          { "note": "La respuesta cifrada: la página web." },
+          { "note": "Puerto 80: esta siguiente conexión es HTTP normal, sin cifrar." },
+          { "note": "Un inicio de sesión por HTTP. La contraseña va en texto claro para cualquiera en el camino. Compáralo con los paquetes 10 y 11." },
+          { "note": "La cookie de sesión también va en texto claro, así que se podría robar y reutilizar." },
+          { "note": "Algo intenta abrir Telnet, un protocolo heredado e inseguro." },
+          { "note": "RST significa que el puerto está cerrado: no hay nada escuchando. Muchos SYN a puertos distintos respondidos con RST son la firma de un escaneo de puertos." }
+        ]
+      },
+      "challenge": {
+        "prompt": "Con la captura de ejemplo: (1) ¿qué filtro de visualización muestra solo la sesión web cifrada con example.com? (2) ¿Cuáles son el usuario y la contraseña del inicio de sesión inseguro, y en qué paquete están? (3) ¿Cómo sabes que el puerto Telnet de 192.168.1.50 está cerrado?",
+        "hint": "Prueba los botones de filtro `tcp.port==443` y `http`, haz clic en los números de paquete para inspeccionarlos y mira los indicadores TCP del último paquete.",
+        "solution": "1. `tcp.port==443` (o `ip.addr==93.184.215.14`) muestra los paquetes 5 a 11: el saludo, los saludos TLS y los datos de aplicación cifrados.\n\n2. **Paquete 13**: usuario `jsmith`, contraseña `Summer2024!`, visibles porque el formulario se envió por HTTP normal en el puerto 80.\n\n3. El **paquete 16** es un segmento TCP con el indicador **RST**, enviado como respuesta inmediata al SYN del paquete 15. Un reset significa que no hay ningún servicio escuchando en el puerto 23. Un puerto abierto habría respondido con SYN-ACK."
+      },
+      "takeaways": [
+        "Wireshark muestra cada paquete capa por capa. Los filtros de visualización encuentran los que importan.",
+        "Una visita web es ARP, DNS, un saludo TCP, un saludo TLS y luego datos cifrados.",
+        "HTTP normal y Telnet exponen las credenciales. Un SYN respondido con RST significa puerto cerrado."
+      ]
+    },
+    "suspicious-traffic": {
+      "title": "Detectar un ataque en una captura",
+      "concept": {
+        "text": "Los analistas rara vez leen las capturas paquete a paquete. Buscan **patrones** que no encajan: un equipo que habla con muchos puertos, muchos inicios de sesión fallidos, una estación de trabajo que contacta con una dirección que nadie reconoce, o consultas DNS grandes con nombres extraños.\n\nEsta captura registra las primeras fases de una intrusión en una red pequeña: un atacante **escanea** un servidor para encontrar puertos abiertos y luego intenta entrar. Reconocer estas fases pronto es lo que da a los defensores tiempo para reaccionar.",
+        "analogy": "Un ladrón recorre una calle probando todos los picaportes. Un intento no significa nada. El patrón, una persona y todas las puertas en un minuto, es lo que nota un vecino atento. Un escaneo de puertos es exactamente ese patrón en una red."
+      },
+      "visual": {
+        "caption": "Cómo revela un escaneo SYN el estado de los puertos.",
+        "columns": ["Respuesta del objetivo", "Significado"],
+        "rows": [
+          ["Puerto abierto", "SYN, ACK", "Hay un servicio escuchando. El escáner envía entonces RST en lugar de terminar la conexión."],
+          ["Puerto cerrado", "RST, ACK", "El equipo está encendido, pero no hay nada escuchando."],
+          ["Puerto filtrado", "Ninguna respuesta", "Un firewall descartó el paquete en silencio."]
+        ]
+      },
+      "steps": [
+        { "title": "Encuentra a quien más habla", "text": "En el Wireshark real, **Statistics, Conversations** ordena los equipos por tráfico. Aquí, fíjate en que `10.0.0.66` inicia todos los intercambios. Aplica `ip.src==10.0.0.66`." },
+        { "title": "Reconoce el escaneo", "text": "Paquetes 1 a 10: un origen, un objetivo, seis puertos de destino distintos en unos milisegundos. Los puertos cerrados responden RST. Los puertos 22 y 80 responden SYN-ACK, así que están abiertos." },
+        { "title": "Mira qué pasa después", "text": "Filtra `tcp.port==22`. Después del escaneo, el mismo equipo abre conexiones SSH repetidas con segundos de diferencia. Sesiones cortas y repetidas contra un servicio de autenticación son el patrón de un **intento de adivinar contraseñas**." },
+        { "title": "Busca el peor caso", "text": "El paquete 15 es distinto: el propio servidor abre una conexión **saliente** hacia el atacante en el puerto 4444. Un servidor que inicia una conexión con un equipo desconocido en un puerto inusual sugiere una **reverse shell**. Es el momento de aislar la máquina." }
+      ],
+      "interactive": {
+        "packets": [
+          { "note": "El primero de una ráfaga de SYN a puertos distintos." },
+          { "note": "Cerrado." },
+          {},
+          { "note": "Abierto: SSH está escuchando." },
+          { "note": "El escáner corta la conexión sin completarla: un escaneo semiabierto (SYN)." },
+          {},
+          { "note": "Cerrado." },
+          {},
+          { "note": "Abierto: un servidor web." },
+          { "note": "Ninguna respuesta: filtrado por un firewall." },
+          { "note": "Una biblioteca de scripting, y no un cliente SSH normal, es una pista de automatización." },
+          { "note": "Una segunda conexión desde un puerto de origen nuevo." },
+          { "note": "Una tercera. Intervalos regulares y sesiones cortas sugieren una herramienta para adivinar contraseñas." },
+          { "note": "Esta sesión dura mucho más que las otras. Puede que un intento haya acertado." },
+          { "note": "La dirección se ha invertido: ahora es el servidor el que llama al atacante. El puerto 4444 es un valor por defecto habitual de las reverse shells." },
+          { "note": "El atacante estaba escuchando y acepta la conexión." }
+        ]
+      },
+      "challenge": {
+        "prompt": "A partir de la captura: (1) ¿qué puertos de 10.0.0.20 están abiertos, cerrados y filtrados? (2) ¿Qué filtro aísla la supuesta reverse shell? (3) Escribe un resumen del incidente de tres líneas para tu jefe de equipo.",
+        "hint": "Usa la tabla de respuestas de arriba para la parte 1. Para la parte 2, busca el tráfico que inició el servidor.",
+        "solution": "1. **Abiertos**: 22 (SSH) y 80 (HTTP), que respondieron SYN-ACK. **Cerrados**: 21 y 23, que respondieron RST. **Filtrado**: 3389, que no respondió.\n\n2. `tcp.port==4444`, o `ip.src==10.0.0.20` para ver todo lo que inició el servidor.\n\n3. Resumen de ejemplo: «El equipo 10.0.0.66 escaneó los puertos del servidor 10.0.0.20 y luego hizo intentos automáticos y repetidos de inicio de sesión SSH, de los que uno parece haber tenido éxito. Unos 40 segundos después, el servidor abrió una conexión saliente hacia 10.0.0.66 en el puerto 4444, compatible con una reverse shell. Recomiendo aislar ya 10.0.0.20, bloquear 10.0.0.66, conservar los registros y restablecer todas las credenciales SSH»."
+      },
+      "takeaways": [
+        "Busca patrones: un origen y muchos puertos, muchos intentos o una dirección invertida.",
+        "Respuestas a un escaneo SYN: SYN-ACK es abierto, RST es cerrado y el silencio es filtrado.",
+        "Un servidor que inicia una conexión con un equipo desconocido en un puerto raro es una señal de alarma."
+      ]
+    }
+  }
+}

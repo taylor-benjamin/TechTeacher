@@ -1,0 +1,108 @@
+{
+  "title": "Publicar un sitio",
+  "summary": "Pon tu sitio en internet gratis con GitHub Pages, Netlify o Vercel.",
+  "lessons": {
+    "github-pages": {
+      "title": "Publicar con GitHub Pages",
+      "concept": {
+        "text": "Desplegar significa copiar los archivos de tu sitio en un servidor que está siempre encendido, para que cualquiera pueda llegar a él en una dirección pública. **GitHub Pages** lo hace gratis con cualquier repositorio de GitHub: subes tus archivos y quedan publicados.\n\nAloja sitios **estáticos**: HTML, CSS, JavaScript e imágenes que se envían al navegador tal cual. Eso cubre portafolios, documentación, landing pages y el resultado compilado de apps de React o Vue. No puede ejecutar código en el servidor ni una base de datos.",
+        "analogy": "Tu sitio en el portátil es un póster enrollado en tu habitación. Desplegar es clavarlo en un tablón de anuncios público que nunca cierra. GitHub Pages es un tablón gratuito pegado al archivador (el repositorio) donde ya guardas tu trabajo."
+      },
+      "visual": {
+        "caption": "De tu ordenador a una URL pública.",
+        "nodes": [
+          { "label": "Archivos locales", "detail": "index.html, style.css…" },
+          { "label": "git push", "detail": "Súbelo a GitHub" },
+          { "label": "Compilación de Pages", "detail": "Se ejecuta automáticamente" },
+          { "label": "Sitio en vivo", "detail": "usuario.github.io/repo" }
+        ]
+      },
+      "steps": [
+        { "title": "Pon el sitio en un repositorio", "text": "La página de inicio debe llamarse `index.html` y estar en el nivel superior (o en una carpeta `docs`)." },
+        { "title": "Activa Pages", "text": "En GitHub abre el repositorio y luego **Settings, Pages**. En **Build and deployment**, elige **Deploy from a branch**, selecciona `main` y la carpeta `/ (root)`, y guarda." },
+        { "title": "Visita tu sitio", "text": "Al cabo de un minuto está en vivo en `https://USUARIO.github.io/my-site/`. Cada push posterior a `main` vuelve a desplegar automáticamente." },
+        { "title": "Arregla el problema habitual", "text": "Si faltan estilos o imágenes, seguramente tus rutas empiezan por `/`. Un sitio de proyecto vive en una subcarpeta, así que usa rutas relativas como `style.css` o `./images/photo.jpg`." }
+      ],
+      "interactive": {
+        "prompt": "Ordena los pasos para publicar un sitio con GitHub Pages.",
+        "items": [
+          "Crea index.html y el resto de tus archivos",
+          "git init, git add ., git commit",
+          "Crea un repositorio en GitHub y añádelo como remoto",
+          "git push -u origin main",
+          "Settings, Pages: desplegar desde la rama main",
+          "Abre https://USUARIO.github.io/REPO/"
+        ]
+      },
+      "challenge": {
+        "prompt": "Un sitio funciona en tu ordenador, pero en GitHub Pages, en `https://sam.github.io/portfolio/`, no carga el CSS. El HTML contiene `<link rel=\"stylesheet\" href=\"/css/style.css\">`. ¿Por qué falla y cómo se arregla?",
+        "hint": "Averigua la URL completa que pide el navegador para una ruta que empieza por una barra.",
+        "solution": "Una ruta que empieza por `/` se resuelve desde la **raíz del dominio**, así que el navegador pide `https://sam.github.io/css/style.css`. El archivo está en realidad en `https://sam.github.io/portfolio/css/style.css`, así que la petición devuelve 404.\n\n**Solución**: usa una ruta relativa sin barra inicial: `href=\"css/style.css\"`. Lo mismo vale para las imágenes y los scripts."
+      },
+      "takeaways": [
+        "GitHub Pages aloja sitios estáticos gratis, directamente desde un repositorio.",
+        "Haz push a main y el sitio se vuelve a desplegar automáticamente.",
+        "Usa rutas relativas, porque los sitios de proyecto viven en una subcarpeta."
+      ]
+    },
+    "netlify-vercel": {
+      "title": "Netlify y Vercel",
+      "concept": {
+        "text": "**Netlify** y **Vercel** son plataformas de alojamiento pensadas para proyectos de front end modernos. Conectas un repositorio de Git una sola vez. A partir de ahí, cada push lanza una compilación y un despliegue en una CDN global, normalmente en menos de un minuto. Esto se llama **despliegue continuo**.\n\nAdemás de los archivos estáticos, añaden **despliegues de vista previa** (una URL única para cada pull request), **funciones serverless** para el código de backend, variables de entorno para los secretos, dominios propios y HTTPS automático, todo con planes gratuitos generosos.",
+        "analogy": "GitHub Pages es una fotocopiadora de autoservicio: fiable y gratis, pero solo copia lo que le das. Netlify y Vercel son una imprenta completa: les das los archivos en bruto y ellos los montan, los imprimen y los reparten por todo el mundo, y te dan una prueba para revisar antes de la tirada final."
+      },
+      "visual": {
+        "columns": ["GitHub Pages", "Netlify", "Vercel"],
+        "rows": [
+          ["Ideal para", "Sitios estáticos sencillos y documentación", "Sitios estáticos y apps JAMstack", "Apps de Next.js y React"],
+          ["Paso de compilación", "Básico, o GitHub Actions", "Automático para la mayoría de los frameworks", "Automático para la mayoría de los frameworks"],
+          ["URL de vista previa por pull request", "No", "Sí", "Sí"],
+          ["Funciones serverless", "No", "Sí", "Sí"],
+          ["Extras integrados", "Ninguno", "Formularios, redirecciones, identidad", "Optimización de imágenes, analítica"],
+          ["Plan gratuito", "Sí", "Sí", "Sí, para proyectos personales"]
+        ]
+      },
+      "steps": [
+        { "title": "Sube el proyecto a GitHub", "text": "Las dos plataformas despliegan desde un repositorio de Git, así que empieza por ahí." },
+        { "title": "Importa el repositorio", "text": "Inicia sesión en Netlify o Vercel con GitHub, elige **Add new site** o **New project** y escoge el repositorio. La plataforma detecta el framework." },
+        { "title": "Confirma la configuración de compilación", "text": "Para un proyecto de Vite estos son los valores habituales. Un sitio de HTML sin más no necesita comando de compilación." },
+        { "title": "Añade variables de entorno", "text": "Pon las claves de API en la configuración de entorno del panel, nunca en el repositorio. Recuerda que todo lo que se envía al navegador es público, así que las claves secretas de verdad van en una función serverless." },
+        { "title": "Añade un dominio propio", "text": "Añade tu dominio en el panel y crea los registros DNS que te indica. Los certificados HTTPS se emiten y se renuevan automáticamente." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "¿Qué es un despliegue de vista previa?",
+            "options": ["Una captura de tu sitio", "Una URL en vivo temporal construida a partir de una rama o un pull request", "Un plan de pago", "Un servidor local"],
+            "explain": "Quien revisa puede hacer clic en un enlace real y probar los cambios antes de fusionarlos."
+          },
+          {
+            "q": "En un proyecto construido con Vite, ¿cuál es el directorio de salida habitual?",
+            "options": ["src", "node_modules", "dist", "public"],
+            "explain": "Vite escribe la compilación de producción en dist."
+          },
+          {
+            "q": "¿Dónde debería estar la clave de API secreta de un proveedor de pagos?",
+            "options": ["En index.html", "En el JavaScript del frontend", "En una variable de entorno que usa una función serverless", "En el README"],
+            "explain": "Todo lo que se envía al navegador lo pueden leer los visitantes."
+          },
+          {
+            "q": "¿Qué significa despliegue continuo?",
+            "options": ["Subes archivos a mano todos los días", "Cada push al repositorio compila y publica el sitio automáticamente", "El sitio se reconstruye cada segundo", "El despliegue nunca termina"],
+            "explain": "Git se convierte en el único disparador de las publicaciones."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Tienes un sitio de React construido con Vite que llama a una API del tiempo que necesita una clave secreta. Describe cómo lo desplegarías para que el sitio se actualice solo al hacer push y la clave siga siendo privada.",
+        "hint": "Dos partes: el flujo de alojamiento y dónde se usa la clave.",
+        "solution": "1. Sube el proyecto a GitHub e impórtalo en Netlify o Vercel. Comando de compilación `npm run build`, directorio de salida `dist`. Ahora cada push a `main` vuelve a desplegar, y cada pull request tiene una URL de vista previa.\n\n2. Crea una **función serverless**, por ejemplo `/api/weather`, que lea la clave de una **variable de entorno** y llame a la API del tiempo desde el servidor.\n\n3. Define la variable en el panel de la plataforma, no en el repositorio.\n\n4. Haz que la app de React llame a `/api/weather` en lugar de al servicio del tiempo directamente. La clave nunca llega al navegador."
+      },
+      "takeaways": [
+        "Conecta un repositorio una vez y cada push se despliega automáticamente.",
+        "Los despliegues de vista previa te permiten probar los cambios en una URL real antes de fusionarlos.",
+        "Guarda los secretos en variables de entorno y úsalos solo en funciones serverless."
+      ]
+    }
+  }
+}

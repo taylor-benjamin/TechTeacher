@@ -1,0 +1,97 @@
+{
+  "title": "HTML y CSS",
+  "summary": "La estructura y el estilo de cualquier página web, con vista previa en vivo.",
+  "lessons": {
+    "syntax-basics": {
+      "title": "HTML y CSS: sintaxis básica",
+      "concept": {
+        "text": "HTML describe **qué** hay en una página mediante elementos escritos como etiquetas, como `<h1>` para un título y `<p>` para un párrafo. CSS describe **cómo se ve** mediante reglas: un selector elige elementos y las declaraciones fijan propiedades como el color y el tamaño.",
+        "analogy": "HTML es la estructura y las habitaciones de una casa. CSS es la pintura, los muebles y la iluminación. Puedes redecorar (CSS) sin tirar paredes (HTML)."
+      },
+      "visual": {
+        "caption": "Anatomía de una regla CSS.",
+        "nodes": [
+          { "label": "h1", "detail": "Selector: qué elementos" },
+          { "label": "{ color:", "detail": "Propiedad: qué cambiar" },
+          { "label": "teal;", "detail": "Valor: cámbialo a esto" },
+          { "label": "}", "detail": "Fin de la regla" }
+        ]
+      },
+      "steps": [
+        { "title": "Escribe un elemento", "text": "La mayoría de los elementos tienen una etiqueta de apertura, contenido y una etiqueta de cierre. Los atributos añaden detalles dentro de la etiqueta de apertura." },
+        { "title": "Anida elementos", "text": "Los elementos van dentro de otros elementos y forman un árbol. Usa sangría para mostrar el anidamiento." },
+        { "title": "Da estilo con una regla", "text": "Pon el CSS en un bloque `<style>` o en un archivo aparte. Apunta a un nombre de etiqueta, a una `.clase` o a un `#id`." }
+      ],
+      "challenge": {
+        "prompt": "Construye un mini perfil: un título con tu nombre, un párrafo sobre ti y una lista de tres pasatiempos. Pon el título de cualquier color menos negro.",
+        "hint": "Usa `<h1>`, `<p>` y `<ul>` con tres elementos `<li>`. Añade una regla `h1 { color: ... }` dentro de `<style>`."
+      },
+      "takeaways": [
+        "HTML es estructura (elementos y atributos). CSS es presentación (selectores y declaraciones).",
+        "Los elementos se anidan y forman un árbol llamado DOM.",
+        "Las clases te permiten reutilizar un mismo estilo en muchos elementos."
+      ]
+    },
+    "core-concepts": {
+      "title": "HTML y CSS: modelo de caja, flexbox y semántica",
+      "concept": {
+        "text": "Cada elemento es una caja rectangular con cuatro capas: contenido, relleno (padding), borde y margen. Maquetar es el arte de colocar esas cajas. **Flexbox** coloca las cajas en fila o en columna y reparte el espacio entre ellas.\n\nLos elementos **semánticos** como `<nav>`, `<main>` y `<button>` describen significado, no apariencia. Los lectores de pantalla y los buscadores dependen de ellos.",
+        "analogy": "El modelo de caja es un cuadro enmarcado: la foto es el contenido, el paspartú es el relleno, el marco es el borde y el hueco hasta el siguiente cuadro de la pared es el margen."
+      },
+      "visual": {
+        "caption": "El modelo de caja, de fuera hacia dentro.",
+        "layers": [
+          { "name": "Margen", "detail": "Espacio transparente fuera de la caja que aparta a los vecinos" },
+          { "name": "Borde", "detail": "El contorno visible de la caja" },
+          { "name": "Relleno (padding)", "detail": "Espacio dentro del borde, alrededor del contenido" },
+          { "name": "Contenido", "detail": "El texto o la imagen en sí" }
+        ]
+      },
+      "steps": [
+        { "title": "Haz que los tamaños sean predecibles", "text": "Por defecto, el ancho no incluye el relleno ni el borde. Esta única regla hace que el ancho signifique la caja entera." },
+        { "title": "Activa flexbox", "text": "Pon `display: flex` en el padre. Los hijos se alinean en una fila. `gap` los separa, `justify-content` los reparte a lo largo de la fila y `align-items` los alinea en el otro eje." },
+        { "title": "Hazlo responsive", "text": "Una media query aplica CSS solo a ciertos anchos de pantalla." },
+        { "title": "Usa el elemento correcto", "text": "Un `<button>` recibe el foco y funciona con el teclado sin hacer nada más. Un `<div>` clicable no. Usa primero HTML semántico." }
+      ],
+      "challenge": {
+        "prompt": "Crea una barra de navegación: el nombre del sitio a la izquierda y tres enlaces a la derecha, todos centrados verticalmente en una sola fila.",
+        "hint": "Usa `<nav>` como contenedor flex con `justify-content: space-between` y `align-items: center`. Pon los enlaces en su propio `<div>` flex con un `gap`."
+      },
+      "takeaways": [
+        "Cada elemento es una caja: contenido, relleno, borde y margen.",
+        "Flexbox coloca a los hijos en una dirección y reparte el espacio.",
+        "El HTML semántico te da accesibilidad y SEO casi gratis."
+      ]
+    },
+    "mini-project": {
+      "title": "Mini proyecto de HTML y CSS: una tarjeta de perfil",
+      "concept": {
+        "text": "Es hora de combinar estructura, modelo de caja y flexbox en un componente pulido: una tarjeta de perfil como las de las páginas de equipo. Componentes así son los ladrillos de los sitios reales.",
+        "analogy": "Ya aprendiste acordes sueltos. Un componente es tu primera canción completa: los mismos pocos acordes, ordenados con intención."
+      },
+      "visual": {
+        "caption": "Orden de construcción para cualquier componente.",
+        "nodes": [
+          { "label": "1. Estructura", "detail": "Escribe el HTML sin estilos" },
+          { "label": "2. Maquetación", "detail": "Flexbox, anchos, espaciado" },
+          { "label": "3. Estilo", "detail": "Color, tipografía, bordes, sombra" },
+          { "label": "4. Pulido", "detail": "Estados hover, pantallas pequeñas" }
+        ]
+      },
+      "steps": [
+        { "title": "Primero la estructura", "text": "Un `<article>` contiene un avatar, un nombre, un puesto y un botón. Deja bien el contenido antes de escribir CSS." },
+        { "title": "Maquétalo", "text": "Centra el contenido de la tarjeta con flexbox en columna y dale a la tarjeta un ancho máximo fijo." },
+        { "title": "Estilo y pulido", "text": "Añade bordes redondeados, una sombra suave y un estado hover en el botón. Usa `transition` para que el cambio sea suave." }
+      ],
+      "challenge": {
+        "prompt": "Amplía la tarjeta: añade una fila de tres estadísticas (por ejemplo Publicaciones, Seguidores, Siguiendo) entre el puesto y el botón, repartidas de forma uniforme.",
+        "hint": "Añade un `<div class=\"stats\">` con tres hijos y conviértelo en una fila flex con `gap` o `justify-content: space-around` y `width: 100%`."
+      },
+      "takeaways": [
+        "Construye los componentes en orden: estructura, maquetación, estilo, pulido.",
+        "Flexbox en columna con align-items: center es la forma más rápida de centrar una pila de elementos.",
+        "Los pequeños detalles como el redondeo, la sombra y los estados hover hacen que un diseño se sienta terminado."
+      ]
+    }
+  }
+}

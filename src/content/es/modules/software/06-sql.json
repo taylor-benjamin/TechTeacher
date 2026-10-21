@@ -1,0 +1,99 @@
+{
+  "title": "SQL",
+  "summary": "Hazle preguntas a los datos: SELECT, filtros, joins y agregados sobre una base de datos SQLite real.",
+  "lessons": {
+    "syntax-basics": {
+      "title": "SQL: sintaxis básica",
+      "concept": {
+        "text": "SQL (Structured Query Language, lenguaje de consulta estructurado) es la forma de hablar con una base de datos relacional. Los datos viven en **tablas** formadas por filas y columnas, como una hoja de cálculo con reglas estrictas.\n\nDescribes **qué** quieres, no cómo conseguirlo. `SELECT name FROM students WHERE grade > 80` se lee casi como una frase, y la base de datos averigua la forma más rápida de responder.",
+        "analogy": "Una base de datos es un enorme archivo y SQL es la ficha de solicitud que le das al archivero: qué armario (FROM), qué carpetas (WHERE) y qué páginas fotocopiar (SELECT)."
+      },
+      "visual": {
+        "caption": "El orden en que la base de datos procesa realmente una consulta.",
+        "nodes": [
+          { "label": "FROM", "detail": "Elige la tabla" },
+          { "label": "WHERE", "detail": "Conserva las filas que coinciden" },
+          { "label": "SELECT", "detail": "Elige las columnas" },
+          { "label": "ORDER BY", "detail": "Ordena el resultado" },
+          { "label": "LIMIT", "detail": "Conserva las N primeras" }
+        ]
+      },
+      "steps": [
+        { "title": "Selecciona columnas", "text": "`*` significa todas las columnas. Nombrar las columnas es más claro y más rápido." },
+        { "title": "Filtra filas", "text": "Los valores de texto van entre comillas simples. Combina condiciones con AND y OR." },
+        { "title": "Ordena y limita", "text": "DESC ordena de mayor a menor." },
+        { "title": "Cambia datos", "text": "INSERT añade filas, UPDATE las cambia y DELETE las elimina. Incluye siempre WHERE en UPDATE y DELETE, o afectarás a todas las filas." }
+      ],
+      "challenge": {
+        "prompt": "Muestra los nombres y las ciudades de los dos estudiantes con la nota más baja que **no** son de Denver.",
+        "hint": "Usa `WHERE city != 'Denver'`, ordena de forma ascendente por nota y pon `LIMIT 2`."
+      },
+      "takeaways": [
+        "Las tablas tienen filas y columnas. SELECT lee; INSERT/UPDATE/DELETE escriben.",
+        "WHERE filtra filas, ORDER BY ordena y LIMIT pone un tope al número de resultados.",
+        "Nunca ejecutes UPDATE o DELETE sin una cláusula WHERE."
+      ]
+    },
+    "core-concepts": {
+      "title": "SQL: joins, agrupaciones y claves",
+      "concept": {
+        "text": "Las bases de datos reales reparten los datos en varias tablas para no repetirlos. Una **clave primaria** identifica de forma única cada fila, y una **clave foránea** en otra tabla apunta a ella. Un **JOIN** une las tablas en el momento de la consulta.\n\n**GROUP BY** reduce muchas filas a una por grupo para que puedas contarlas, sumarlas o promediarlas.",
+        "analogy": "Un join es emparejar gafetes. Una tabla lista a los invitados con su número de gafete y otra lista números de gafete con el menú elegido. Alinea los números y sabrás quién come qué."
+      },
+      "visual": {
+        "caption": "Los joins que realmente usarás.",
+        "columns": ["Conserva", "Úsalo cuando"],
+        "rows": [
+          ["INNER JOIN", "Solo las filas que coinciden en ambas tablas", "Necesitas parejas completas"],
+          ["LEFT JOIN", "Todas las filas de la izquierda, más las coincidencias (o NULL)", "No puedes perder filas de la izquierda, p. ej. estudiantes sin club"],
+          ["GROUP BY", "Una fila por grupo", "Contar o sumar por categoría"],
+          ["HAVING", "Los grupos que pasan una prueba", "Filtrar después de agregar"]
+        ]
+      },
+      "steps": [
+        { "title": "Une dos tablas", "text": "`ON` indica qué columnas deben coincidir. Los alias cortos (s, c) lo mantienen legible." },
+        { "title": "Conserva las filas sin pareja", "text": "Un LEFT JOIN conserva a los estudiantes sin club. Su columna club es NULL." },
+        { "title": "Agrega", "text": "COUNT, SUM, AVG, MIN y MAX resumen cada grupo." },
+        { "title": "Filtra grupos", "text": "WHERE filtra filas antes de agrupar. HAVING filtra grupos después." }
+      ],
+      "challenge": {
+        "prompt": "Muestra cada club con su número de miembros y la nota media de esos miembros, de la media más alta a la más baja.",
+        "hint": "Une clubs con students y luego `GROUP BY c.club`."
+      },
+      "takeaways": [
+        "Las claves primarias identifican filas. Las claves foráneas enlazan tablas.",
+        "INNER JOIN conserva solo las coincidencias. LEFT JOIN conserva todas las filas de la izquierda.",
+        "GROUP BY más un agregado responde a preguntas del tipo «¿cuántos hay por…?»."
+      ]
+    },
+    "mini-project": {
+      "title": "Mini proyecto de SQL: la base de datos de una tienda",
+      "concept": {
+        "text": "Vas a diseñar un esquema para una tienda, cargar datos y responder preguntas de negocio. Diseñar las tablas es la verdadera habilidad: cada dato debe guardarse una sola vez, en un solo lugar. Ese principio se llama normalización.",
+        "analogy": "Guardar la dirección de un cliente en cada pedido es como escribir tu número de teléfono en cada página de un cuaderno. Si lo cambias una vez, todas las demás páginas quedan mal. Guárdalo en una sola página y apunta a ella."
+      },
+      "visual": {
+        "caption": "Cómo se enlazan las tres tablas.",
+        "nodes": [
+          { "label": "customers", "detail": "id, name" },
+          { "label": "orders", "detail": "id, customer_id, product_id, qty" },
+          { "label": "products", "detail": "id, name, price" }
+        ]
+      },
+      "steps": [
+        { "title": "Crea las tablas", "text": "Cada tabla tiene una clave primaria entera. La tabla orders tiene dos claves foráneas." },
+        { "title": "Inserta los datos", "text": "Inserta primero los padres (customers, products) y después los hijos (orders), para que las referencias existan." },
+        { "title": "Responde preguntas", "text": "Los ingresos por cliente necesitan los dos joins: orders con customers para el nombre y orders con products para el precio." }
+      ],
+      "challenge": {
+        "prompt": "Añade al editor de arriba una consulta que muestre los clientes que **nunca** han hecho un pedido.",
+        "hint": "Haz un LEFT JOIN de customers con orders y conserva las filas en las que el lado de orders es NULL."
+      },
+      "takeaways": [
+        "Guarda cada dato una sola vez y enlaza las tablas con claves.",
+        "Las preguntas sobre varias tablas son cadenas de joins seguidas de GROUP BY.",
+        "LEFT JOIN ... WHERE derecha.id IS NULL encuentra las filas sin coincidencia."
+      ]
+    }
+  }
+}

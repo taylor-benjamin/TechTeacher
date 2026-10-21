@@ -1,0 +1,126 @@
+{
+  "title": "Vibe coding",
+  "summary": "Construye sitios web describiéndoselos a la IA: cómo escribir prompts, iterar y depurar.",
+  "lessons": {
+    "prompting-to-build": {
+      "title": "Pedirle a la IA que construya un sitio",
+      "concept": {
+        "text": "El vibe coding consiste en construir software describiendo lo que quieres en lenguaje natural y dejando que una IA escriba el código, mientras tú lo diriges reaccionando al resultado. El término lo acuñó el investigador de IA Andrej Karpathy en 2025.\n\nPermite a los principiantes publicar cosas reales y a los expertos ir mucho más rápido. Pero la IA solo sabe lo que tú le dices. La habilidad ya no es escribir sintaxis. Es describir el resultado con claridad, dividir un proyecto en pasos y juzgar si lo que obtuviste está bien.",
+        "analogy": "Tú eres quien dirige la película y la IA es el equipo de rodaje. No manejas la cámara, pero la película solo será tan buena como tu dirección. «Que quede bien» da un desastre. «Plano general, hora dorada, ella camina hacia la cámara» da la escena."
+      },
+      "visual": {
+        "caption": "Qué incluir en un primer prompt de construcción.",
+        "items": [
+          { "title": "Qué y para qué", "text": "¿Qué es el sitio y qué debe hacer en él un visitante?" },
+          { "title": "Público", "text": "¿Para quién es y en qué dispositivo?" },
+          { "title": "Páginas y secciones", "text": "Enuméralas en orden. Sé concreto con el contenido." },
+          { "title": "Aspecto y sensación", "text": "Colores, ambiente y sitios de referencia o una captura." },
+          { "title": "Restricciones técnicas", "text": "Por ejemplo, HTML y CSS sin más, o React con Tailwind." },
+          { "title": "Nivel de calidad", "text": "Responsive, accesible, rápido. Dilo, o puede que no lo consigas." }
+        ]
+      },
+      "steps": [
+        { "title": "Planifica antes de escribir el prompt", "text": "Escribe tres frases: qué es el sitio, para quién es y la acción principal que quieres que hagan los visitantes. Pídele a la IA que proponga un plan y una estructura de páginas antes de escribir código." },
+        { "title": "Escribe el encargo", "text": "Un buen primer prompt cubre las seis tarjetas de arriba." },
+        { "title": "Construye por partes", "text": "Haz que funcione primero la estructura de la página, luego dale estilo y después añade las interacciones. No lo pidas todo a la vez." },
+        { "title": "Guarda las versiones que funcionan", "text": "Haz commit en Git, o usa los puntos de control de la herramienta, cada vez que algo funcione. Vas a querer volver atrás." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "¿Qué primer prompt dará el mejor punto de partida?",
+            "options": [
+              "Hazme una web chula",
+              "Una web para mi negocio, que quede bonita",
+              "Un sitio de una página para un servicio de reparación de bicis a domicilio en Leeds: portada con botón de reserva, 3 servicios con precios, mapa de la zona que cubrimos, formulario de contacto. Cercano, llamativo, acento verde. Responsive.",
+              "Web. Rápido."
+            ],
+            "explain": "Indica el propósito, las secciones, el estilo y las restricciones."
+          },
+          {
+            "q": "¿Por qué pedirle a la IA un plan antes de que escriba código?",
+            "options": ["Es perder el tiempo", "Puedes corregir malentendidos antes de que queden metidos en cientos de líneas", "Si no, la IA no puede escribir código", "Los planes hacen que el sitio cargue más rápido"],
+            "explain": "Un plan equivocado se arregla barato. Un código equivocado sale caro."
+          },
+          {
+            "q": "¿Cuál es el trabajo principal de quien desarrolla con vibe coding?",
+            "options": ["Escribir rápido", "Describir el objetivo con claridad y juzgar el resultado", "Memorizar sintaxis", "No mirar la vista previa"],
+            "explain": "Dirigir y revisar sustituye a la mayor parte del tecleo."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Escribe un prompt de construcción para tu propio sitio de portafolio personal. Cubre los seis elementos: qué y para qué, público, secciones, aspecto y sensación, restricciones técnicas y nivel de calidad.",
+        "hint": "Usa el ejemplo del fotógrafo como plantilla y cambia cada detalle por los tuyos.",
+        "solution": "Un ejemplo para comparar con el tuyo:\n\n«Crea un sitio de portafolio personal para Sam Taylor, desarrolladora web junior que busca su primer empleo. Público: reclutadores y responsables de contratación que lo hojean en un portátil en menos de un minuto.\n\nSecciones: (1) portada con mi nombre, la frase \"Construyo sitios web rápidos y accesibles\" y un botón \"Ver mi trabajo\"; (2) tres tarjetas de proyecto con una captura, una descripción breve, las tecnologías usadas y enlaces al sitio en vivo y al código; (3) habilidades, agrupadas por categoría; (4) un párrafo breve Sobre mí; (5) enlaces de contacto para email, GitHub y LinkedIn.\n\nEstilo: limpio y moderno, fondo azul marino oscuro, texto blanco roto, un acento verde azulado y espaciado generoso.\n\nTecnología: un único index.html con el CSS incrustado y sin frameworks, para poder alojarlo en GitHub Pages.\n\nCalidad: responsive desde 360 px, contraste WCAG AA, HTML semántico y foco de teclado visible»."
+      },
+      "takeaways": [
+        "El vibe coding es dirigir a una IA con descripciones claras y revisar lo que construye.",
+        "Un buen encargo indica propósito, público, secciones, estilo, tecnología y nivel de calidad.",
+        "Planifica primero, construye por partes y guarda cada versión que funcione."
+      ]
+    },
+    "iterate-and-debug": {
+      "title": "Iterar y depurar con IA",
+      "concept": {
+        "text": "La primera versión que produce una IA es un borrador. La mayor parte del trabajo es iterar: mirar el resultado, decir con precisión qué cambiar y volver a comprobar. Y tarde o temprano algo se rompe.\n\nDepurar con IA funciona cuando le das pruebas en lugar de sensaciones. «No funciona» no le da a la IA nada con lo que trabajar. El mensaje de error exacto, lo que esperabas y lo que pasó en su lugar le dan casi todo.",
+        "analogy": "Depurar con IA es como ir al médico. «Me encuentro mal» no lleva a ninguna parte. «Dolor punzante aquí, empezó el martes, peor al subir escaleras» lleva a un diagnóstico. Los síntomas, cuándo empezó y qué cambió son las pruebas."
+      },
+      "visual": {
+        "caption": "El ciclo de iteración.",
+        "nodes": [
+          { "label": "Mirar", "detail": "Pruébalo tú, también con ancho de móvil" },
+          { "label": "Describir", "detail": "Un cambio concreto o un error" },
+          { "label": "Aplicar", "detail": "La IA edita el código" },
+          { "label": "Verificar", "detail": "¿Funcionó? ¿Se rompió algo más?" },
+          { "label": "Guardar", "detail": "Haz commit y repite" }
+        ]
+      },
+      "steps": [
+        { "title": "Haz peticiones de cambio concretas", "text": "Nombra el elemento, cómo se comporta ahora y cómo quieres que se comporte." },
+        { "title": "Abre las herramientas de desarrollo del navegador", "text": "Pulsa **F12**. La pestaña **Console** muestra los errores de JavaScript en rojo. La pestaña **Network** muestra las peticiones que fallaron. El inspector de elementos muestra qué reglas CSS se aplican." },
+        { "title": "Informa de los errores con pruebas", "text": "Pega el error exacto y di qué hiciste, qué esperabas y qué pasó." },
+        { "title": "Sabe cuándo volver atrás", "text": "Si tres intentos no lo han arreglado, para. Vuelve a la última versión que funcionaba y pídele a la IA que explique la causa antes de probar otro enfoque. Amontonar arreglos sobre arreglos lo empeora." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "¿Qué informe de error se arreglará antes?",
+            "options": [
+              "Está roto, arréglalo",
+              "La página está rara",
+              "Al hacer clic en «Add to cart» no pasa nada. Consola: 'ReferenceError: cart is not defined at app.js:40'. Esperaba que el contador del carrito subiera en 1.",
+              "¿¿¿Por qué no funciona esto???"
+            ],
+            "explain": "Incluye la acción, el error exacto y el resultado esperado."
+          },
+          {
+            "q": "¿Dónde aparecen los errores de JavaScript en el navegador?",
+            "options": ["En la barra de direcciones", "En la pestaña Console de las herramientas de desarrollo", "En el menú de marcadores", "En la vista previa de impresión"],
+            "explain": "Pulsa F12 y abre Console."
+          },
+          {
+            "q": "La IA ha probado cuatro arreglos, el error sigue ahí y aparecen otros nuevos. ¿Y ahora qué?",
+            "options": ["Pedir un quinto arreglo encima", "Volver a la última versión que funcionaba y pedir la causa de fondo", "Borrar el proyecto", "Ignorar el error"],
+            "explain": "Las conjeturas amontonadas agravan el problema. Reinicia y diagnostica."
+          },
+          {
+            "q": "¿Por qué deberías leer el código que escribe la IA, aunque seas principiante?",
+            "options": ["No deberías", "Para aprender, para detectar errores y porque eres responsable de lo que publicas", "Para ir más lento", "Lo exigen los navegadores"],
+            "explain": "Entender tu propio sitio es lo que te permite arreglarlo y ampliarlo."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Tu página construida con IA muestra un botón que debería activar el modo oscuro, pero al hacer clic no pasa nada. La consola muestra: `Uncaught TypeError: Cannot read properties of null (reading 'addEventListener') at script.js:3`. Escribe el mensaje que le enviarías a la IA y adivina la causa probable.",
+        "hint": "El error dice que algo era `null` cuando el script intentó asociarle un manejador de clic.",
+        "solution": "**Mensaje**: «El botón de modo oscuro no hace nada al hacer clic. La consola muestra `Uncaught TypeError: Cannot read properties of null (reading 'addEventListener') at script.js:3`. La línea 3 es `document.querySelector('#theme-toggle').addEventListener('click', ...)`. Esperaba que al hacer clic se alternara una clase `dark` en el body. Busca la causa de fondo y explícamela antes de cambiar nada».\n\n**Causa probable**: `querySelector` devolvió `null`, es decir, no encontró el botón. O bien el id del botón en el HTML no coincide con `#theme-toggle`, o bien el script se ejecuta antes de que exista el botón. Corrige el id, o carga el script al final del body o con el atributo `defer`."
+      },
+      "takeaways": [
+        "Itera con un solo cambio concreto y bien descrito cada vez.",
+        "Depura con pruebas: el error exacto, lo que hiciste, lo que esperabas y lo que pasó.",
+        "Tras unos cuantos arreglos fallidos, vuelve atrás y pide la causa de fondo."
+      ]
+    }
+  }
+}

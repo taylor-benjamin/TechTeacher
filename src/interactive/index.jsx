@@ -1,4 +1,5 @@
 import { Suspense, lazy, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { btn, btnPrimary } from '../lib/ui'
 import ApiTester from './ApiTester'
 import NeuralNet from './NeuralNet'
@@ -13,6 +14,7 @@ import Contrast from './Contrast'
 const CodeRunner = lazy(() => import('./CodeRunner'))
 
 function Quiz({ questions }) {
+  const { t } = useTranslation()
   const [picked, setPicked] = useState({})
   const [checked, setChecked] = useState({})
   const score = questions.filter((q, i) => checked[i] && picked[i] === q.answer).length
@@ -42,12 +44,12 @@ function Quiz({ questions }) {
             <div className="mt-2 flex flex-wrap items-center gap-3" aria-live="polite">
               {!checked[i] && (
                 <button type="button" className={btnPrimary} disabled={picked[i] == null} onClick={() => setChecked({ ...checked, [i]: true })}>
-                  Check answer
+                  {t('quiz.check')}
                 </button>
               )}
               {checked[i] && (
                 <p className="text-sm">
-                  <strong className={right ? 'text-ok' : 'text-bad'}>{right ? '✓ Correct.' : `✗ Not quite. Answer: ${q.options[q.answer]}.`}</strong>{' '}
+                  <strong className={right ? 'text-ok' : 'text-bad'}>{right ? t('quiz.correct') : t('quiz.wrong', { answer: q.options[q.answer] })}</strong>{' '}
                   {q.explain}
                 </p>
               )}
@@ -57,8 +59,8 @@ function Quiz({ questions }) {
       })}
       {allChecked && (
         <p className="flex flex-wrap items-center gap-3 font-semibold" role="status">
-          Score: {score} / {questions.length}
-          <button type="button" className={btn} onClick={() => { setPicked({}); setChecked({}) }}>Try again</button>
+          {t('quiz.score', { score, total: questions.length })}
+          <button type="button" className={btn} onClick={() => { setPicked({}); setChecked({}) }}>{t('quiz.again')}</button>
         </p>
       )}
     </div>
@@ -79,6 +81,7 @@ function shuffled(items) {
 
 // Drag-and-drop ordering, with up/down buttons as the keyboard and touch alternative.
 function Order({ prompt, items }) {
+  const { t } = useTranslation()
   const [list, setList] = useState(() => shuffled(items))
   const [drag, setDrag] = useState(null)
   const [checked, setChecked] = useState(false)
@@ -93,7 +96,7 @@ function Order({ prompt, items }) {
   return (
     <div>
       <p className="font-medium">{prompt}</p>
-      <p className="text-sm text-muted">Drag the items, or use the arrow buttons.</p>
+      <p className="text-sm text-muted">{t('order.help')}</p>
       <ol className="mt-3 space-y-1.5">
         {list.map((x, i) => (
           <li
@@ -108,15 +111,15 @@ function Order({ prompt, items }) {
           >
             <span aria-hidden="true" className="text-muted">⠿</span>
             <span className="flex-1">{x.text}</span>
-            {checked && <span className={x.id === i ? 'text-ok' : 'text-bad'}>{x.id === i ? '✓ right spot' : '✗ move me'}</span>}
-            <button type="button" className={btn} disabled={i === 0} onClick={() => move(i, i - 1)} aria-label={`Move "${x.text}" up`}>↑</button>
-            <button type="button" className={btn} disabled={i === list.length - 1} onClick={() => move(i, i + 1)} aria-label={`Move "${x.text}" down`}>↓</button>
+            {checked && <span className={x.id === i ? 'text-ok' : 'text-bad'}>{x.id === i ? t('order.right') : t('order.wrong')}</span>}
+            <button type="button" className={btn} disabled={i === 0} onClick={() => move(i, i - 1)} aria-label={t('order.up', { item: x.text })}>↑</button>
+            <button type="button" className={btn} disabled={i === list.length - 1} onClick={() => move(i, i + 1)} aria-label={t('order.down', { item: x.text })}>↓</button>
           </li>
         ))}
       </ol>
       <div className="mt-3 flex items-center gap-3" aria-live="polite">
-        <button type="button" className={btnPrimary} onClick={() => setChecked(true)}>Check order</button>
-        {checked && <strong className={correct ? 'text-ok' : 'text-bad'}>{correct ? '✓ Perfect order!' : 'Some items are out of place.'}</strong>}
+        <button type="button" className={btnPrimary} onClick={() => setChecked(true)}>{t('order.check')}</button>
+        {checked && <strong className={correct ? 'text-ok' : 'text-bad'}>{correct ? t('order.perfect') : t('order.off')}</strong>}
       </div>
     </div>
   )
@@ -138,10 +141,11 @@ const TYPES = {
 }
 
 export default function Interactive({ spec, theme }) {
+  const { t } = useTranslation()
   const Type = TYPES[spec.type]
-  if (!Type) return <p className="text-bad">Unknown interactive type: {spec.type}</p>
+  if (!Type) return <p className="text-bad">{t('interactive.unknown', { type: spec.type })}</p>
   return (
-    <Suspense fallback={<p className="text-muted">Loading…</p>}>
+    <Suspense fallback={<p className="text-muted">{t('interactive.loading')}</p>}>
       <Type {...spec} theme={theme} />
     </Suspense>
   )

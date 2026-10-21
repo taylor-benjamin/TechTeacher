@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { btn, btnPrimary, input } from '../lib/ui'
 
 const DATA = [[0, 0], [0, 1], [1, 0], [1, 1]]
@@ -47,6 +48,7 @@ function trainStep(net, targets, lr) {
 const loss = (net, t) => DATA.reduce((s, x, n) => s + (forward(net, x).y - t[n]) ** 2, 0) / 4
 
 export default function NeuralNet() {
+  const { t } = useTranslation()
   const net = useRef(null)
   net.current ??= init()
   const [task, setTask] = useState('XOR')
@@ -86,43 +88,43 @@ export default function NeuralNet() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-end gap-3">
         <label className="text-sm font-medium">
-          Task to learn
+          {t('net.task')}
           <select className={`${input} mt-1 block`} value={task} onChange={(e) => { setTask(e.target.value); reset() }}>
             {Object.keys(TARGETS).map((t) => <option key={t}>{t}</option>)}
           </select>
         </label>
         <label className="text-sm font-medium">
-          Learning rate: {lr}
+          {t('net.rate', { lr })}
           <input type="range" min="0.05" max="2" step="0.05" value={lr} onChange={(e) => setLr(+e.target.value)} className="mt-2 block w-36 accent-[var(--accent)]" />
         </label>
-        <button type="button" className={btn} onClick={() => train(1)}>Train 1 step</button>
-        <button type="button" className={btnPrimary} onClick={() => train(100)}>Train 100 steps</button>
-        <button type="button" className={btn} onClick={reset}>Reset weights</button>
+        <button type="button" className={btn} onClick={() => train(1)}>{t('net.train1')}</button>
+        <button type="button" className={btnPrimary} onClick={() => train(100)}>{t('net.train100')}</button>
+        <button type="button" className={btn} onClick={reset}>{t('net.reset')}</button>
       </div>
 
       <div className="grid gap-4 md:grid-cols-[1fr_auto]">
         <svg viewBox="0 0 420 250" className="w-full max-w-xl" role="img"
-          aria-label={`Network with 2 inputs, ${H} hidden neurons and 1 output. Current output ${y.toFixed(2)}.`}>
+          aria-label={t('net.aria', { hidden: H, y: y.toFixed(2) })}>
           {net.current.w1.flatMap((w, j) => [edge(w[0], 60, inY[0], 210, hidY[j], `a${j}`), edge(w[1], 60, inY[1], 210, hidY[j], `b${j}`)])}
           {net.current.w2.map((w, j) => edge(w, 210, hidY[j], 360, outY, `c${j}`))}
-          {node(60, inY[0], DATA[probe][0], 'Input x1')}
-          {node(60, inY[1], DATA[probe][1], 'Input x2')}
-          {h.map((v, j) => node(210, hidY[j], v, `Hidden neuron ${j + 1}`))}
-          {node(360, outY, y, 'Output')}
-          <text x="60" y="16" textAnchor="middle" fontSize="12" fill="var(--muted)">inputs</text>
-          <text x="210" y="16" textAnchor="middle" fontSize="12" fill="var(--muted)">hidden layer</text>
-          <text x="360" y="16" textAnchor="middle" fontSize="12" fill="var(--muted)">output</text>
+          {node(60, inY[0], DATA[probe][0], t('net.inputN', { n: 1 }))}
+          {node(60, inY[1], DATA[probe][1], t('net.inputN', { n: 2 }))}
+          {h.map((v, j) => node(210, hidY[j], v, t('net.hiddenN', { n: j + 1 })))}
+          {node(360, outY, y, t('net.outputNode'))}
+          <text x="60" y="16" textAnchor="middle" fontSize="12" fill="var(--muted)">{t('net.inputs')}</text>
+          <text x="210" y="16" textAnchor="middle" fontSize="12" fill="var(--muted)">{t('net.hidden')}</text>
+          <text x="360" y="16" textAnchor="middle" fontSize="12" fill="var(--muted)">{t('net.output')}</text>
         </svg>
 
         <div className="text-sm">
           <p aria-live="polite">
-            <strong>Steps trained:</strong> {epochs}<br />
-            <strong>Loss (error):</strong> {loss(net.current, targets).toFixed(4)}
+            <strong>{t('net.steps')}</strong> {epochs}<br />
+            <strong>{t('net.loss')}</strong> {loss(net.current, targets).toFixed(4)}
           </p>
           <table className="mt-2 border-collapse text-center">
-            <caption className="mb-1 text-left text-muted">Pick a row to send it through the network</caption>
+            <caption className="mb-1 text-left text-muted">{t('net.pick')}</caption>
             <thead>
-              <tr>{['x1', 'x2', 'want', 'got', ''].map((c) => <th key={c} scope="col" className="border border-line px-2 py-1">{c}</th>)}</tr>
+              <tr>{['x1', 'x2', t('net.want'), t('net.got'), ''].map((c, i) => <th key={i} scope="col" className="border border-line px-2 py-1">{c}</th>)}</tr>
             </thead>
             <tbody>
               {DATA.map((x, n) => {
@@ -135,7 +137,7 @@ export default function NeuralNet() {
                     <td className="border border-line px-2 py-1">{targets[n]}</td>
                     <td className={`border border-line px-2 py-1 font-mono ${ok ? 'text-ok' : 'text-bad'}`}>{got.toFixed(2)} {ok ? '✓' : '✗'}</td>
                     <td className="border border-line px-1 py-1">
-                      <button type="button" className={btn} aria-pressed={n === probe} onClick={() => setProbe(n)}>Show</button>
+                      <button type="button" className={btn} aria-pressed={n === probe} onClick={() => setProbe(n)}>{t('net.show')}</button>
                     </td>
                   </tr>
                 )
@@ -145,7 +147,7 @@ export default function NeuralNet() {
         </div>
       </div>
       <p className="text-sm text-muted">
-        Line thickness is weight strength; solid lines are positive weights and dashed lines are negative. Numbers inside circles are each neuron’s activation for the selected row.
+        {t('net.legend')}
       </p>
     </div>
   )

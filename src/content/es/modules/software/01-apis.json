@@ -1,0 +1,246 @@
+{
+  "title": "APIs",
+  "summary": "Cómo se comunican los programas entre sí: peticiones, respuestas, REST, GraphQL y autenticación.",
+  "lessons": {
+    "what-is-an-api": {
+      "title": "¿Qué es una API?",
+      "concept": {
+        "text": "Una API (Interfaz de Programación de Aplicaciones) es un conjunto de reglas que permite a un programa pedirle a otro datos o que haga algo. Tu app del tiempo no tiene estaciones meteorológicas. Envía una petición a la API de un servicio meteorológico y te muestra lo que recibe.\n\nLas APIs web hablan HTTP, el mismo protocolo que usa tu navegador. La app envía una **petición** a un endpoint (una URL) y el servidor devuelve una **respuesta**, normalmente en formato JSON.",
+        "analogy": "Una API es el mesero de un restaurante. Tú (el cliente) no entras en la cocina (el servidor). Lees el menú (la documentación de la API), le das tu pedido al mesero (la petición) y el mesero te trae la comida (la respuesta)."
+      },
+      "visual": {
+        "caption": "Un viaje de ida y vuelta: el cliente pregunta, la API busca y el cliente recibe JSON.",
+        "actors": ["Tu app", "Servidor de la API", "Base de datos"],
+        "messages": [
+          { "label": "GET /weather?city=Paris" },
+          { "label": "buscar París" },
+          { "label": "18 °C, nublado" },
+          { "label": "200 OK + JSON" }
+        ]
+      },
+      "steps": [
+        { "title": "El cliente arma una petición", "text": "Una petición tiene un método (qué hacer), una URL (qué recurso), cabeceras (información extra) y a veces un cuerpo (datos que enviar)." },
+        { "title": "El servidor hace el trabajo", "text": "La API comprueba que la petición es válida y está permitida, y luego ejecuta código, muchas veces leyendo de una base de datos." },
+        { "title": "El servidor responde", "text": "La respuesta tiene un código de estado (¿funcionó?), cabeceras y un cuerpo con los datos." },
+        { "title": "El cliente usa los datos", "text": "Tu código lee el JSON y actualiza la pantalla. El usuario nunca ve la API, solo el resultado." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "En la analogía del restaurante, ¿qué es el menú?",
+            "options": ["La base de datos", "La documentación de la API", "El cuerpo de la respuesta", "El cliente"],
+            "explain": "La documentación indica qué puedes pedir y cómo."
+          },
+          {
+            "q": "¿Qué formato usan la mayoría de las APIs web para los datos de respuesta?",
+            "options": ["PDF", "JSON", "MP4", "Solo CSV"],
+            "explain": "JSON es texto ligero que cualquier lenguaje puede leer."
+          },
+          {
+            "q": "¿Qué parte de una petición indica qué recurso quieres?",
+            "options": ["El código de estado", "La URL (endpoint)", "El cuerpo de la respuesta", "La cookie"],
+            "explain": "La URL del endpoint nombra el recurso, como /weather o /users/1."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Abre una pestaña nueva del navegador y visita `https://jsonplaceholder.typicode.com/users/1`. Tu navegador acaba de hacer una petición a una API. ¿Cuál es el `name` de este usuario y qué campo guarda su ciudad?",
+        "hint": "La respuesta es JSON. Busca objetos anidados: un campo contiene otro conjunto de campos.",
+        "solution": "El nombre es **Leanne Graham**. La ciudad está anidada en `address.city` (Gwenborough). Escribir una URL en la barra de direcciones siempre envía una petición GET."
+      },
+      "takeaways": [
+        "Una API permite que los programas pidan datos o acciones a otros programas siguiendo reglas acordadas.",
+        "Las APIs web usan HTTP: una petición va a un endpoint y vuelve una respuesta, normalmente en JSON.",
+        "El cliente nunca toca directamente la base de datos del servidor. La API es la puerta de entrada controlada."
+      ]
+    },
+    "http-methods-status-codes": {
+      "title": "Métodos HTTP y códigos de estado",
+      "concept": {
+        "text": "Toda petición HTTP empieza con un **método**: un verbo que le dice al servidor qué quieres hacer con un recurso. Toda respuesta empieza con un **código de estado**: un número de tres cifras que indica cómo fue.\n\nLas cuatro acciones básicas sobre datos son Crear, Leer, Actualizar y Borrar (CRUD, por sus siglas en inglés). Corresponden a POST, GET, PUT/PATCH y DELETE. Los códigos de estado se agrupan por su primera cifra: 2xx funcionó, 3xx ve a otro sitio, 4xx te equivocaste tú, 5xx se equivocó el servidor.",
+        "analogy": "Los métodos son los verbos que usas con un bibliotecario: enséñame un libro (GET), añade este libro (POST), sustituye este libro (PUT), corrige una errata (PATCH), retíralo (DELETE). Los códigos de estado son su respuesta: aquí tienes (200), añadido (201), no lo tenemos (404), la biblioteca está en llamas (500)."
+      },
+      "visual": {
+        "caption": "Los cinco métodos que usarás el 99 % de las veces.",
+        "columns": ["Acción CRUD", "Código de éxito típico", "¿Se puede repetir sin riesgo?"],
+        "rows": [
+          ["GET", "Leer", "200 OK", "Sí, no cambia nada"],
+          ["POST", "Crear", "201 Created", "No, crea un duplicado"],
+          ["PUT", "Sustituir el elemento entero", "200 OK", "Sí, mismo resultado cada vez"],
+          ["PATCH", "Actualizar parte del elemento", "200 OK", "Normalmente"],
+          ["DELETE", "Borrar", "204 No Content", "Sí, sigue borrado"]
+        ]
+      },
+      "steps": [
+        { "title": "Elige el verbo según la acción", "text": "Leer datos es GET. Enviar datos nuevos es POST. Cambiar datos existentes es PUT (todo) o PATCH (una parte). Eliminar es DELETE." },
+        { "title": "Lee la primera cifra del estado", "text": "**2xx** éxito. **3xx** redirección. **4xx** error del cliente: corrige tu petición. **5xx** error del servidor: no es culpa tuya, reintenta más tarde." },
+        { "title": "Apréndete los famosos", "text": "`200` OK, `201` Created, `204` No Content, `301` Moved Permanently, `400` Bad Request, `401` Unauthorized (¿quién eres?), `403` Forbidden (sé quién eres, y no), `404` Not Found, `429` Too Many Requests, `500` Internal Server Error, `503` Service Unavailable." },
+        { "title": "Entiende la idempotencia", "text": "Una petición idempotente tiene el mismo efecto si la envías una vez o diez. GET, PUT y DELETE son idempotentes, así que se pueden reintentar sin riesgo. POST no lo es." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "Envías un formulario de registro que crea una cuenta nueva. ¿Qué método?",
+            "options": ["GET", "POST", "DELETE", "PATCH"],
+            "explain": "POST crea un recurso nuevo."
+          },
+          {
+            "q": "Recibes un 401. ¿Cuál es la solución más probable?",
+            "options": ["Esperar a que reparen el servidor", "Enviar credenciales válidas o una clave de API", "Cambiar GET por POST", "Nada, 401 significa éxito"],
+            "explain": "401 significa que el servidor no sabe quién eres."
+          },
+          {
+            "q": "¿Qué familia de códigos de estado significa que falló el propio servidor?",
+            "options": ["2xx", "3xx", "4xx", "5xx"],
+            "explain": "Los códigos 5xx son errores del lado del servidor."
+          },
+          {
+            "q": "¿Por qué es arriesgado reintentar un POST?",
+            "options": ["Es lento", "Puede crear lo mismo dos veces", "POST no se puede reintentar", "Borra datos"],
+            "explain": "POST no es idempotente, así que un reintento puede cobrar o crear dos veces."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Una app móvil permite a los usuarios cambiar solo su foto de perfil. ¿Qué método encaja mejor, qué forma de URL esperarías y qué código de estado debería devolver si todo va bien?",
+        "hint": "Solo cambia un campo del usuario, no el usuario entero.",
+        "solution": "`PATCH /users/42` con un cuerpo como `{ \"photoUrl\": \"...\" }`, que devuelve `200 OK` con el usuario actualizado (o `204 No Content`). PUT obligaría a enviar el objeto de usuario completo."
+      },
+      "takeaways": [
+        "GET lee, POST crea, PUT sustituye, PATCH edita, DELETE elimina.",
+        "Primera cifra del código de estado: 2 éxito, 3 redirección, 4 error tuyo, 5 error del servidor.",
+        "Los métodos idempotentes (GET, PUT, DELETE) se pueden reintentar sin riesgo. POST no."
+      ]
+    },
+    "live-api-tester": {
+      "title": "Llama a una API real",
+      "concept": {
+        "text": "Leer sobre peticiones solo te lleva hasta cierto punto. En esta lección envías peticiones HTTP reales a una API pública real y lees las respuestas reales.\n\nUsarás JSONPlaceholder, una API REST gratuita de práctica. Acepta todos los métodos pero solo finge guardar los cambios, así que no puedes romper nada.",
+        "analogy": "Esta es la clase práctica de manejo después del examen teórico. El coche tiene doble mando (la API de práctica no borrará nada de verdad), pero la carretera y el tráfico son reales."
+      },
+      "visual": {
+        "caption": "La anatomía de la URL que estás a punto de enviar.",
+        "nodes": [
+          { "label": "https://", "detail": "Protocolo: HTTP cifrado" },
+          { "label": "jsonplaceholder.typicode.com", "detail": "Host: qué servidor" },
+          { "label": "/todos", "detail": "Ruta: qué recurso" },
+          { "label": "?userId=1", "detail": "Consulta: filtra los resultados" }
+        ]
+      },
+      "steps": [
+        { "title": "Envía un GET", "text": "Pulsa **Obtener una publicación** y luego **Enviar**. Fíjate en el estado (200), el tiempo que tardó y el cuerpo JSON." },
+        { "title": "Filtra con una cadena de consulta", "text": "Pulsa **Listar las tareas de un usuario**. La parte `?userId=1` le pide al servidor que devuelva solo los elementos que coinciden. Cambia el 1 por un 2 y envía de nuevo." },
+        { "title": "Crea con POST", "text": "Pulsa **Crear una publicación**. Observa que ahora la petición lleva un cuerpo JSON, y el estado de la respuesta es `201 Created` con un `id` nuevo." },
+        { "title": "Provoca un error a propósito", "text": "Pulsa **Provocar un 404**. Los errores son normales. Los buenos desarrolladores leen el código de estado antes que nada." }
+      ],
+      "challenge": {
+        "prompt": "Con el probador, encuentra el **correo electrónico del usuario 5** y el **título del primer álbum de ese usuario**. Necesitarás dos peticiones.",
+        "hint": "Los recursos siguen un patrón: `/users/5` para un usuario y `/albums?userId=5` para filtrar álbumes por dueño.",
+        "solution": "GET `https://jsonplaceholder.typicode.com/users/5` devuelve el correo `Lucio_Hettinger@annie.ca`. GET `https://jsonplaceholder.typicode.com/albums?userId=5` devuelve una lista; el título del primer álbum es el campo `title` del primer elemento."
+      },
+      "takeaways": [
+        "Una URL es protocolo + host + ruta + una cadena de consulta opcional.",
+        "Comprueba siempre primero el código de estado y luego lee el cuerpo.",
+        "Las peticiones GET no llevan cuerpo. POST, PUT y PATCH envían JSON con una cabecera Content-Type."
+      ]
+    },
+    "rest-vs-graphql": {
+      "title": "REST frente a GraphQL",
+      "concept": {
+        "text": "REST y GraphQL son dos estilos para diseñar una API web. En **REST**, cada recurso tiene su propia URL y usas métodos HTTP sobre ella: `GET /users/1`, `GET /users/1/posts`. El servidor decide qué contiene cada respuesta.\n\nEn **GraphQL** hay un solo endpoint. El cliente envía una consulta que describe exactamente qué campos quiere y recibe exactamente esa forma. Así se evita el exceso de datos (recibir campos que no necesitas) y la falta de datos (necesitar varios viajes de ida y vuelta).",
+        "analogy": "REST es un menú del día: pides el plato número 4 y te llega todo lo que lleva ese plato. GraphQL es un bowl a tu gusto: enumeras exactamente los ingredientes que quieres y recibes un solo bowl con solo eso."
+      },
+      "visual": {
+        "columns": ["REST", "GraphQL"],
+        "rows": [
+          ["Endpoints", "Muchos: una URL por recurso", "Uno: normalmente /graphql"],
+          ["Quién da forma a la respuesta", "El servidor", "La consulta del cliente"],
+          ["Obtener datos relacionados", "A menudo varias peticiones", "Una consulta anidada"],
+          ["Caché HTTP", "Fácil: las URL se cachean de forma natural", "Más difícil: necesita bibliotecas de cliente"],
+          ["Errores", "Códigos de estado HTTP", "Normalmente 200 con un array de errores"],
+          ["Ideal para", "APIs simples, públicas y con mucha caché", "Interfaces complejas con muchos objetos relacionados"]
+        ]
+      },
+      "steps": [
+        { "title": "REST: una petición por recurso", "text": "Para mostrar un usuario y los títulos de sus publicaciones podrías llamar a dos endpoints y unir los resultados." },
+        { "title": "GraphQL: describe la forma", "text": "La misma pantalla en GraphQL es una sola petición. La respuesta refleja la consulta." },
+        { "title": "El esquema es el contrato", "text": "Un servidor GraphQL publica un esquema tipado con todos sus tipos y campos. Las herramientas lo usan para autocompletar y validar antes de que envíes nada." },
+        { "title": "Elige según la necesidad, no la moda", "text": "REST es más fácil de construir, cachear y depurar. GraphQL compensa cuando muchos clientes distintos necesitan partes diferentes de datos conectados." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "Una pantalla móvil necesita el nombre de un usuario, sus 3 últimos pedidos y los nombres de los artículos de cada pedido. ¿Qué estilo puede hacerlo en una sola petición por diseño?",
+            "options": ["REST", "GraphQL", "Ninguno", "Ambos necesitan siempre tres peticiones"],
+            "explain": "Una consulta GraphQL anidada lo devuelve todo en un solo viaje de ida y vuelta."
+          },
+          {
+            "q": "¿Cuál es una desventaja real de GraphQL?",
+            "options": ["No puede devolver JSON", "La caché HTTP estándar es más difícil", "Solo funciona con JavaScript", "No tiene tipos"],
+            "explain": "Todo pasa por un único endpoint POST, así que la caché basada en URL no sirve."
+          },
+          {
+            "q": "El «exceso de datos» (over-fetching) significa…",
+            "options": ["Enviar demasiadas peticiones", "Recibir más campos de los que necesitas", "Alcanzar un límite de peticiones", "Usar demasiada CPU"],
+            "explain": "Los endpoints REST devuelven una forma fija, que puede incluir datos que no usarás."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Escribe una consulta GraphQL que obtenga un `post` con id 7 y devuelva su `title`, y el `name` y el `email` de su `author`.",
+        "hint": "Anida los campos del autor dentro del post, igual que antes se anidaban los posts dentro del usuario."
+      },
+      "takeaways": [
+        "REST: muchas URL, respuestas definidas por el servidor, caché excelente, fácil de aprender.",
+        "GraphQL: un endpoint, respuestas definidas por el cliente, sin exceso ni falta de datos.",
+        "Ninguno es mejor en general. Elige según lo complejos y variados que sean tus clientes."
+      ]
+    },
+    "api-authentication": {
+      "title": "Autenticación de APIs: claves y OAuth",
+      "concept": {
+        "text": "La mayoría de las APIs necesitan saber quién llama para limitar el uso y proteger los datos privados. Los dos métodos más comunes son las claves de API y OAuth.\n\nUna **clave de API** es una cadena secreta larga que identifica a tu aplicación. La envías en una cabecera en cada petición. **OAuth 2.0** resuelve otro problema: permitir que una app actúe en nombre de un usuario sin ver nunca su contraseña. El usuario aprueba el acceso y la app recibe un token de acceso de corta duración con permisos limitados (scopes).",
+        "analogy": "Una clave de API es la llave de tu casa: quien la tenga entra, así que guárdala bien. OAuth es la tarjeta de un hotel: la recepción (el servidor de autorización) comprueba tu identidad y te da una tarjeta que solo abre tu habitación, y solo hasta la salida."
+      },
+      "visual": {
+        "caption": "Flujo de código de autorización de OAuth 2.0: la app nunca ve la contraseña.",
+        "actors": ["Usuario", "App", "Servidor de autorización", "API"],
+        "messages": [
+          { "label": "Clic en «Iniciar sesión con GitHub»" },
+          { "label": "Redirige al usuario para iniciar sesión" },
+          { "label": "Inicia sesión + aprueba scopes" },
+          { "label": "Código de autorización" },
+          { "label": "Cambia el código por un token de acceso" },
+          { "label": "Petición + token Bearer" }
+        ]
+      },
+      "steps": [
+        { "title": "Envía la clave de API en una cabecera", "text": "Nunca pongas claves en la URL: las URL acaban en registros y en el historial del navegador." },
+        { "title": "Mantén las claves fuera del código", "text": "Guarda los secretos en variables de entorno o en un gestor de secretos, nunca en Git. Una clave en el JavaScript del frontend es pública: cualquiera puede leerla en el navegador." },
+        { "title": "Usa OAuth cuando actúes por un usuario", "text": "La app redirige al usuario al proveedor, el usuario aprueba scopes concretos como `read:email` y la app recibe un token." },
+        { "title": "Envía el token como Bearer", "text": "Los tokens de acceso caducan pronto. Un token de refresco consigue uno nuevo sin volver a molestar al usuario." }
+      ],
+      "interactive": {
+        "prompt": "Ordena el flujo de código de autorización de OAuth.",
+        "items": [
+          "El usuario hace clic en «Iniciar sesión con Google» en la app",
+          "La app redirige al usuario a la página de inicio de sesión de Google",
+          "El usuario inicia sesión y aprueba los scopes solicitados",
+          "Google redirige de vuelta a la app con un código de autorización",
+          "La app cambia el código por un token de acceso",
+          "La app llama a la API con el token en la cabecera Authorization"
+        ]
+      },
+      "challenge": {
+        "prompt": "Un compañero sube esto a un repositorio público de GitHub: `const API_KEY = 'sk_live_51Hx...'`. Enumera las tres cosas que deberían pasar a continuación, en orden.",
+        "hint": "Borrar la línea en un commit nuevo no la elimina del historial de Git, y hay bots que rastrean GitHub en busca de claves en cuestión de minutos.",
+        "solution": "1. **Revoca o rota la clave de inmediato** en el panel del proveedor: da por hecho que ya la robaron.\n\n2. **Mueve la clave nueva a una variable de entorno** (por ejemplo `.env`, incluido en `.gitignore`) o a un gestor de secretos.\n\n3. **Revisa los registros de uso** por si hubo abuso y, si quieres, borra la clave antigua del historial. Lo que de verdad lo arregla es la rotación."
+      },
+      "takeaways": [
+        "Las claves de API identifican a una aplicación. Trátalas como contraseñas y envíalas en cabeceras.",
+        "OAuth permite que una app actúe por un usuario con un token limitado y con caducidad, sin compartir contraseñas.",
+        "401 significa no autenticado. 403 significa autenticado pero sin permiso."
+      ]
+    }
+  }
+}

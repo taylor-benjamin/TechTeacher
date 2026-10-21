@@ -236,6 +236,35 @@ await check('Theme toggle', async () => {
   return (await js(`document.documentElement.classList.contains('dark')`)) !== before
 })
 
+// Spanish: the EN/ES switch translates the interface, the lessons and the widgets.
+await check('Language switch: Spanish interface', async () => {
+  await goto('')
+  await js(`document.querySelector('button[role=switch][aria-label="Español"]').click()`)
+  return (await has('Aprende tecnología')) && js(`document.documentElement.lang === 'es'`)
+})
+await check('Spanish lesson and glossary tooltip', async () => {
+  await goto('software/apis/what-is-an-api')
+  if (!(await has('¿Qué es una API?')) || !(await has('Comprobar respuesta'))) return false
+  await js(`document.querySelector('button.term').click()`)
+  return waitFor(`(document.querySelector('[role=tooltip]')?.innerText ?? '').includes('Interfaz de Programación')`)
+})
+await check('Spanish search ignores accents', async () => {
+  await type('#global-search', 'criptografia simetrico')
+  return has('Cifrado simétrico', '[role=search]')
+})
+await check('Spanish widget text (AES demo)', async () => {
+  await goto('security/cryptography/symmetric-encryption')
+  await click('🔒 Cifrar')
+  await waitFor(`!!document.querySelector('textarea')`)
+  await click('🔓 Descifrar')
+  return has('Descifrado: Nos vemos a mediodía.')
+})
+await check('Spanish choice is remembered', async () => {
+  await goto('paths')
+  return has('Rutas de aprendizaje sugeridas')
+})
+await js(`localStorage.setItem('tt.lang', '"en"')`)
+
 // Layout: no page may scroll sideways on a phone.
 await send('Emulation.setDeviceMetricsOverride', { width: 375, height: 800, deviceScaleFactor: 2, mobile: true })
 for (const route of ['', 'software', 'software/apis/live-api-tester', 'software/python/syntax-basics', 'ai/how-ai-works/neural-networks', 'networking/fundamentals/subnetting', 'networking/home-lab/pfsense-topology', 'security/wireshark/packet-analysis', 'security/cryptography/hashing', 'paths', 'glossary']) {
@@ -252,6 +281,21 @@ await check('Header controls fit on a phone', async () => {
   await shot('mobile')
   return js(`document.querySelector('button[aria-label^="Switch to"]').getBoundingClientRect().right <= 375`)
 })
+// Spanish labels are longer, so check the phone layout again in Spanish.
+await js(`localStorage.setItem('tt.lang', '"es"')`)
+for (const route of ['', 'software/apis/live-api-tester', 'networking/home-lab/pfsense-topology', 'security/wireshark/packet-analysis']) {
+  await check(`Spanish: no horizontal scroll at 375px: /${route}`, async () => {
+    await goto(route)
+    await sleep(600)
+    const w = await js(`document.documentElement.scrollWidth`)
+    return w <= 375 ? true : (console.log(`      scrollWidth=${w}`), false)
+  })
+}
+await check('Spanish: header controls fit on a phone', async () => {
+  await shot('mobile-es')
+  return js(`document.querySelector('button[aria-label^="Cambiar a"]').getBoundingClientRect().right <= 375`)
+})
+await js(`localStorage.setItem('tt.lang', '"en"')`)
 
 // Screenshots in both themes for a visual check.
 await send('Emulation.setDeviceMetricsOverride', { width: 1280, height: 1600, deviceScaleFactor: 1, mobile: false })

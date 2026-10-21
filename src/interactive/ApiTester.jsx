@@ -1,19 +1,19 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { btn, btnPrimary, field, input } from '../lib/ui'
 
 const PRESETS = [
-  { label: 'Get one post', method: 'GET', url: 'https://jsonplaceholder.typicode.com/posts/1' },
-  { label: 'List a user’s todos', method: 'GET', url: 'https://jsonplaceholder.typicode.com/todos?userId=1' },
-  { label: 'Create a post', method: 'POST', url: 'https://jsonplaceholder.typicode.com/posts', body: '{\n  "title": "Hello API",\n  "body": "My first POST request",\n  "userId": 1\n}' },
-  { label: 'Update a post', method: 'PUT', url: 'https://jsonplaceholder.typicode.com/posts/1', body: '{\n  "id": 1,\n  "title": "Updated title",\n  "body": "Replaced",\n  "userId": 1\n}' },
-  { label: 'Delete a post', method: 'DELETE', url: 'https://jsonplaceholder.typicode.com/posts/1' },
-  { label: 'Trigger a 404', method: 'GET', url: 'https://jsonplaceholder.typicode.com/posts/99999' },
-  { label: 'GitHub user', method: 'GET', url: 'https://api.github.com/users/octocat' },
+  { id: 'getPost', method: 'GET', url: 'https://jsonplaceholder.typicode.com/posts/1' },
+  { id: 'todos', method: 'GET', url: 'https://jsonplaceholder.typicode.com/todos?userId=1' },
+  { id: 'create', method: 'POST', url: 'https://jsonplaceholder.typicode.com/posts', body: '{\n  "title": "Hello API",\n  "body": "My first POST request",\n  "userId": 1\n}' },
+  { id: 'update', method: 'PUT', url: 'https://jsonplaceholder.typicode.com/posts/1', body: '{\n  "id": 1,\n  "title": "Updated title",\n  "body": "Replaced",\n  "userId": 1\n}' },
+  { id: 'delete', method: 'DELETE', url: 'https://jsonplaceholder.typicode.com/posts/1' },
+  { id: 'notFound', method: 'GET', url: 'https://jsonplaceholder.typicode.com/posts/99999' },
+  { id: 'github', method: 'GET', url: 'https://api.github.com/users/octocat' },
 ]
 
-const MEANING = { 2: 'Success', 3: 'Redirect', 4: 'Client error: the request was wrong', 5: 'Server error: the server failed' }
-
 export default function ApiTester() {
+  const { t } = useTranslation()
   const [method, setMethod] = useState('GET')
   const [url, setUrl] = useState(PRESETS[0].url)
   const [body, setBody] = useState('')
@@ -37,32 +37,32 @@ export default function ApiTester() {
       try { pretty = JSON.stringify(JSON.parse(text), null, 2) } catch {}
       setRes({ status: r.status, statusText: r.statusText, ms: Math.round(performance.now() - started), type: r.headers.get('content-type'), body: pretty })
     } catch (err) {
-      setRes({ error: `${err.message}. The request never got a response: the URL may be wrong, you may be offline, or the API does not allow browser calls (CORS).` })
+      setRes({ error: t('api.failed', { message: err.message }) })
     }
     setBusy(false)
   }
 
   return (
     <form onSubmit={send} className="space-y-3">
-      <div className="flex flex-wrap gap-1.5" role="group" aria-label="Example requests">
+      <div className="flex flex-wrap gap-1.5" role="group" aria-label={t('api.examples')}>
         {PRESETS.map((p) => (
-          <button key={p.label} type="button" className={btn} onClick={() => { setMethod(p.method); setUrl(p.url); setBody(p.body ?? '') }}>
-            {p.label}
+          <button key={p.id} type="button" className={btn} onClick={() => { setMethod(p.method); setUrl(p.url); setBody(p.body ?? '') }}>
+            {t(`api.presets.${p.id}`)}
           </button>
         ))}
       </div>
       <div className="flex flex-wrap gap-2">
-        <label className="sr-only" htmlFor="api-method">HTTP method</label>
+        <label className="sr-only" htmlFor="api-method">{t('api.method')}</label>
         <select id="api-method" className={`${input} font-mono font-semibold`} value={method} onChange={(e) => setMethod(e.target.value)}>
           {['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].map((m) => <option key={m}>{m}</option>)}
         </select>
-        <label className="sr-only" htmlFor="api-url">Request URL</label>
+        <label className="sr-only" htmlFor="api-url">{t('api.url')}</label>
         <input id="api-url" type="url" required className={`${input} min-w-0 flex-1 font-mono`} value={url} onChange={(e) => setUrl(e.target.value)} />
-        <button className={btnPrimary} disabled={busy}>{busy ? 'Sending…' : 'Send'}</button>
+        <button className={btnPrimary} disabled={busy}>{busy ? t('api.sending') : t('api.send')}</button>
       </div>
       {hasBody && (
         <div>
-          <label htmlFor="api-body" className="text-sm font-medium">Request body (JSON)</label>
+          <label htmlFor="api-body" className="text-sm font-medium">{t('api.body')}</label>
           <textarea id="api-body" rows={5} className={`${field} mt-1 block w-full font-mono`} value={body} onChange={(e) => setBody(e.target.value)} spellCheck={false} />
         </div>
       )}
@@ -72,11 +72,11 @@ export default function ApiTester() {
           <div className="rounded-lg border border-line">
             <p className="flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-line bg-surface px-3 py-2 text-sm">
               <strong className={res.status < 400 ? 'text-ok' : 'text-bad'}>{res.status} {res.statusText}</strong>
-              <span>{MEANING[Math.floor(res.status / 100)]}</span>
+              <span>{t(`api.meaning.${Math.floor(res.status / 100)}`, { defaultValue: '' })}</span>
               <span className="text-muted">{res.ms} ms</span>
               <span className="text-muted">{res.type}</span>
             </p>
-            <pre className="max-h-80 overflow-auto p-3 font-mono text-sm" tabIndex={0} aria-label="Response body">{res.body || '(empty body)'}</pre>
+            <pre className="max-h-80 overflow-auto p-3 font-mono text-sm" tabIndex={0} aria-label={t('api.response')}>{res.body || t('api.empty')}</pre>
           </div>
         )}
       </div>

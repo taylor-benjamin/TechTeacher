@@ -1,0 +1,142 @@
+{
+  "title": "Laboratorio casero",
+  "summary": "Monta un entorno de práctica en casa: hardware, virtualización con Proxmox, pfSense y una topología completa.",
+  "lessons": {
+    "hardware": {
+      "title": "Elegir el hardware del laboratorio casero",
+      "concept": {
+        "text": "Un laboratorio casero es tu propia red de práctica, donde puedes construir, romper y arreglar cosas sin consecuencias. Es la forma más rápida de convertir la teoría en habilidad, y te da historias reales que contar en las entrevistas.\n\nNo necesitas un rack de servidores. Un mini PC de segunda mano con bastante RAM puede ejecutar una docena de máquinas virtuales. Gasta primero en memoria y luego en almacenamiento, y recuerda que un laboratorio encendido todo el día gasta electricidad y hace ruido.",
+        "analogy": "Un laboratorio casero es un simulador de vuelo para TI. Los pilotos no aprenden aterrizajes de emergencia con pasajeros a bordo, y tú no deberías aprender reglas de firewall en una red de producción."
+      },
+      "visual": {
+        "caption": "Tres puntos de partida razonables.",
+        "columns": ["Hardware", "Ideal para", "Ojo con"],
+        "rows": [
+          ["Inicial", "Un portátil o PC antiguo con 16 GB de RAM", "Unas pocas VM, aprender Linux", "Poca memoria y, normalmente, un solo puerto de red"],
+          ["Punto óptimo", "Mini PC usado, 32-64 GB de RAM, SSD", "Un hipervisor con más de 10 VM, silencioso y de bajo consumo", "Pocas bahías para discos"],
+          ["Entusiasta", "Servidor de rack usado o un clúster de varios nodos", "Clústeres, mucho almacenamiento, funciones empresariales", "Ruido, calor, factura de la luz"],
+          ["Redes", "Switch gestionable + un equipo con 2 o más puertos de red", "VLAN y montar tu propio firewall", "Los switches no gestionables no pueden hacer VLAN"]
+        ]
+      },
+      "steps": [
+        { "title": "Prioriza la RAM", "text": "Las máquinas virtuales reservan memoria. 32 GB dan holgura para un firewall, unos cuantos servidores Linux y una VM con Windows. La CPU rara vez es el límite." },
+        { "title": "Usa almacenamiento SSD", "text": "Un SSD NVMe o SATA hace que las VM vayan rápidas. Más adelante añade un disco duro grande o un NAS para las copias de seguridad." },
+        { "title": "Planifica el equipo de red", "text": "Para montar tu propio firewall necesitas al menos dos puertos de red: uno hacia internet (WAN) y otro hacia tu laboratorio (LAN). Un **switch gestionable** te permite practicar VLAN." },
+        { "title": "Revisa el coste de funcionamiento", "text": "Un mini PC de unos 15 W cuesta poco tenerlo encendido todo el año. Un servidor de rack antiguo de 150 W o más cuesta diez veces más y suena como un secador de pelo." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "¿Qué componente suele limitar cuántas VM puedes ejecutar?",
+            "options": ["El monitor", "La RAM", "La caja", "El teclado"],
+            "explain": "Cada VM necesita su propia memoria, así que la RAM es lo primero que se acaba."
+          },
+          {
+            "q": "¿Por qué necesitas un switch gestionable para practicar VLAN?",
+            "options": ["Los no gestionables son más lentos", "Solo los switches gestionables permiten configurar VLAN y troncales", "Los gestionables son inalámbricos", "No lo necesitas"],
+            "explain": "Los switches no gestionables no tienen interfaz de configuración."
+          },
+          {
+            "q": "¿Cuál es el número mínimo de puertos de red para un equipo dedicado a firewall?",
+            "options": ["Uno", "Dos", "Cuatro", "Ocho"],
+            "explain": "Uno para WAN y otro para LAN. Varias VLAN pueden compartir el puerto LAN mediante un troncal."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Tienes presupuesto para una sola máquina usada. Elige entre (a) un servidor de rack de hace 10 años con dos CPU y 128 GB de RAM y (b) un mini PC de hace 3 años con 32 GB de RAM. Va a estar en tu dormitorio. Decide y justifícalo.",
+        "hint": "Ten en cuenta lo que vas a ejecutar de verdad, además del ruido, el calor y la electricidad.",
+        "solution": "Para un dormitorio, elige el **mini PC**. Con 32 GB puedes ejecutar una VM de firewall, varios servidores Linux y una VM con Windows, lo que cubre la mayor parte de la práctica de Network+, Security+ y nube. Es silencioso y consume aproximadamente una décima parte. El servidor de rack ofrece mucha más capacidad y funciones empresariales como la gestión remota, pero es ruidoso, caluroso y caro de mantener. Cómpralo más adelante si el mini PC se te queda corto y tienes dónde ponerlo."
+      },
+      "takeaways": [
+        "Empieza con poco. Una sola máquina con suficiente RAM ya es un laboratorio completo.",
+        "Prioriza la RAM, luego el almacenamiento SSD y luego los puertos de red.",
+        "Un switch gestionable y un equipo con dos puertos te abren la práctica de VLAN y firewall."
+      ]
+    },
+    "proxmox-virtualization": {
+      "title": "Virtualización con Proxmox",
+      "concept": {
+        "text": "La virtualización permite que un ordenador físico ejecute muchas máquinas virtuales separadas, cada una con su propio sistema operativo. El software que lo hace posible es un hipervisor. Un hipervisor de **tipo 1** se instala directamente sobre el hardware. Uno de **tipo 2**, como VirtualBox, funciona como una app dentro de tu sistema operativo normal.\n\n**Proxmox VE** es un hipervisor de tipo 1 gratuito y de código abierto que gestionas desde un navegador web. Ejecuta VM completas y **contenedores** Linux ligeros (LXC), y admite instantáneas, copias de seguridad y clústeres.",
+        "analogy": "Un hipervisor convierte una casa en un edificio de pisos. Cada inquilino (VM) tiene su propia puerta, su cocina y sus muebles y no puede ver lo que hay en los demás, pero todos comparten los mismos cimientos, las tuberías y la electricidad (CPU, RAM, disco)."
+      },
+      "visual": {
+        "caption": "Las capas de virtualización en un servidor Proxmox.",
+        "layers": [
+          { "name": "VM y contenedores", "detail": "pfSense, Ubuntu Server, Windows, Pi-hole…" },
+          { "name": "Hardware virtual", "detail": "CPU, RAM, discos y tarjetas de red virtuales" },
+          { "name": "Puentes virtuales", "detail": "vmbr0, vmbr1: switches de software que conectan las VM" },
+          { "name": "Proxmox VE", "detail": "Hipervisor de tipo 1, basado en Debian, que usa KVM" },
+          { "name": "Hardware físico", "detail": "CPU, RAM, SSD, puertos de red" }
+        ]
+      },
+      "steps": [
+        { "title": "Instala Proxmox", "text": "Descarga la ISO, grábala en una memoria USB, arranca la máquina desde ella y sigue el instalador. Dale al servidor una dirección IP estática." },
+        { "title": "Abre la interfaz web", "text": "Desde otro ordenador, navega al servidor en el puerto 8006." },
+        { "title": "Crea una VM", "text": "Sube la ISO de un sistema operativo, pulsa **Create VM** y elige los núcleos de CPU, la memoria, el tamaño del disco y el puente de red. Arráncala y usa la consola integrada." },
+        { "title": "Haz una instantánea antes de romper cosas", "text": "Una **instantánea** (snapshot) guarda el estado exacto de una VM. Experimenta con libertad y vuelve atrás en segundos. Es la costumbre más útil en un laboratorio." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "¿Cuál es un hipervisor de tipo 1 (bare-metal)?",
+            "options": ["VirtualBox", "Proxmox VE", "Microsoft Word", "VMware Workstation"],
+            "explain": "Proxmox se instala directamente sobre el hardware. VirtualBox y Workstation funcionan encima de otro sistema operativo."
+          },
+          {
+            "q": "¿En qué se diferencia un contenedor (LXC) de una VM completa?",
+            "options": ["Es más lento", "Comparte el kernel del servidor, así que es más ligero pero está menos aislado", "Necesita su propio servidor físico", "No puede usar la red"],
+            "explain": "Los contenedores arrancan en segundos y usan poca memoria, pero deben ser Linux sobre un servidor Linux."
+          },
+          {
+            "q": "¿Qué deberías hacer justo antes de un cambio arriesgado en una VM?",
+            "options": ["Borrarla", "Hacer una instantánea", "Desenchufar el servidor", "Cambiarle el nombre"],
+            "explain": "Una instantánea te permite volver atrás al instante si el cambio sale mal."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Tu servidor Proxmox tiene 32 GB de RAM. Planifica un conjunto de VM y contenedores para un laboratorio de aprendizaje, con la memoria de cada uno, dejando margen para el servidor.",
+        "hint": "Reserva unos 4 GB para el propio Proxmox. Los contenedores necesitan mucha menos memoria que las VM.",
+        "solution": "Un plan razonable (unos 26 GB en uso):\n\n**VM de firewall pfSense**: 2 GB. **VM con Ubuntu Server** para Docker y apps web: 6 GB. **VM con Windows Server** para practicar Active Directory: 6 GB. **VM cliente con Windows 11**: 6 GB. **VM con Kali Linux** para practicar seguridad: 4 GB. **Contenedor Pi-hole** para DNS: 512 MB. **Contenedor de monitorización** como Uptime Kuma: 1 GB.\n\nEso deja unos 6 GB para el servidor y para los picos. No hace falta que todas las VM estén encendidas a la vez."
+      },
+      "takeaways": [
+        "Un hipervisor ejecuta muchas VM aisladas en una sola máquina. Proxmox es una opción gratuita de tipo 1.",
+        "Las VM están totalmente aisladas. Los contenedores son más ligeros y comparten el kernel del servidor.",
+        "Los puentes virtuales conectan las VM. Las instantáneas hacen que experimentar sea seguro."
+      ]
+    },
+    "pfsense-topology": {
+      "title": "pfSense y una topología de laboratorio de ejemplo",
+      "concept": {
+        "text": "**pfSense** es un firewall y router gratuito y de código abierto que funciona en un PC normal o dentro de una VM. Te da en casa funciones de empresa: reglas de firewall, VLAN, servicios DHCP y DNS, VPN y complementos de detección de intrusiones. OPNsense es una alternativa muy parecida.\n\nEn un laboratorio, pfSense se sitúa entre la red de tu casa y la red del laboratorio. Su interfaz **WAN** da al router de casa y su interfaz **LAN** da al switch del laboratorio. Todo lo que hay en el laboratorio sale al exterior a través de pfSense, así que lo controlas y lo observas todo.",
+        "analogy": "pfSense es el control de seguridad en la entrada de un edificio. Todo el que entra o sale pasa por él, lo comprueba contra una lista de reglas de arriba abajo y lleva un registro de quién fue adónde."
+      },
+      "visual": {
+        "caption": "El laboratorio casero de ejemplo. Pulsa «Cargar laboratorio casero de ejemplo» en el constructor de abajo para verlo.",
+        "nodes": [
+          { "label": "Internet", "detail": "Tu ISP" },
+          { "label": "pfSense", "detail": "Entra por WAN, sale por LAN. Reglas, DHCP, VLAN" },
+          { "label": "Switch gestionable", "detail": "Troncal desde pfSense, puertos de acceso a los dispositivos" },
+          { "label": "Proxmox, NAS, punto de acceso Wi-Fi, PC", "detail": "Cada uno en su VLAN" }
+        ]
+      },
+      "steps": [
+        { "title": "Instala y asigna las interfaces", "text": "Instala pfSense en un equipo con dos puertos de red, o como VM de Proxmox con dos tarjetas de red virtuales en puentes distintos. Asigna una como WAN y otra como LAN." },
+        { "title": "Ejecuta el asistente de configuración", "text": "Navega a la dirección LAN (por defecto `192.168.1.1`), cambia la contraseña de administrador y pon en la LAN un rango que no choque con la red de tu casa, como `10.10.10.1/24`." },
+        { "title": "Añade VLAN", "text": "Crea VLAN en la interfaz LAN, por ejemplo 10 Servidores, 20 Clientes, 30 IoT y 99 Gestión. Dale a cada una su propia subred y su rango DHCP, y llévalas por un troncal al switch gestionable." },
+        { "title": "Escribe reglas de firewall", "text": "Las reglas se leen de arriba abajo y gana la primera que coincide. Todo lo que no se permite queda bloqueado por defecto. Ejemplo: IoT puede salir a internet pero no llegar a la VLAN de Servidores." }
+      ],
+      "challenge": {
+        "prompt": "En el constructor, pulsa **Cargar laboratorio casero de ejemplo**. Luego amplíalo: añade un segundo switch para una zona IoT, conéctalo al switch principal y conecta a él un nuevo punto de acceso Wi-Fi y un PC. Por último, explica qué enlace debe ser troncal y por qué.",
+        "hint": "Usa los botones de dispositivos para añadir elementos, arrástralos a su sitio y luego usa **Conectar dispositivos** y haz clic en dos dispositivos. Un enlace debe ser troncal si por él tiene que pasar más de una VLAN.",
+        "solution": "Añade un **Switch**, un **Punto de acceso Wi-Fi** y un **PC**. Conecta switch principal ↔ switch nuevo, switch nuevo ↔ punto de acceso y switch nuevo ↔ PC.\n\nEl **enlace entre los dos switches debe ser troncal**, porque lleva varias VLAN: por ejemplo IoT para los dispositivos del punto de acceso y Clientes para el PC. El enlace de pfSense al switch principal también es troncal por el mismo motivo. El enlace al PC es un puerto de acceso en una sola VLAN. El enlace al punto de acceso es troncal si este emite más de una red."
+      },
+      "takeaways": [
+        "pfSense es un firewall y router gratuito: WAN da hacia fuera y LAN hacia tu laboratorio.",
+        "Las reglas de firewall se aplican de arriba abajo, gana la primera coincidencia y por defecto se deniega.",
+        "Segmenta con VLAN: servidores, clientes, IoT y gestión tienen cada uno su subred y sus reglas."
+      ]
+    }
+  }
+}

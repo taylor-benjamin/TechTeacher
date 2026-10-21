@@ -1,0 +1,265 @@
+{
+  "title": "Trabajar con LLM",
+  "summary": "Cómo se comportan los modelos de lenguaje grandes y cómo guiarlos con prompts, RAG, fine-tuning y herramientas.",
+  "lessons": {
+    "how-llms-work": {
+      "title": "Qué es un LLM y qué no es",
+      "concept": {
+        "text": "Un LLM es un transformer entrenado con una cantidad enorme de texto para hacer una sola cosa: predecir el siguiente token. Conversar, programar y resumir surgen de hacer esa única cosa extremadamente bien.\n\nUn LLM no tiene una base de datos de hechos ni una vista en directo del mundo. Su conocimiento está comprimido en sus pesos y congelado en una **fecha de corte del entrenamiento**. Dentro de una conversación, lo único que sabe es lo que está en su ventana de contexto: el prompt del sistema, los mensajes hasta ahora y lo que haya añadido alguna herramienta.",
+        "analogy": "Un LLM es un improvisador que ha leído muchísimo. Ha absorbido millones de libros y puede continuar cualquier texto de forma convincente. Pero improvisa de memoria, no consulta nada, y por eso puede ser fluido y estar equivocado a la vez."
+      },
+      "visual": {
+        "caption": "Generar es un bucle que produce un token por vuelta.",
+        "nodes": [
+          { "label": "Contexto", "detail": "Prompt del sistema + conversación" },
+          { "label": "Modelo", "detail": "Puntúa cada posible token siguiente" },
+          { "label": "Muestreo", "detail": "La temperatura controla el azar" },
+          { "label": "Añadir", "detail": "Suma el token al contexto" },
+          { "label": "Repetir", "detail": "Hasta un token de parada" }
+        ]
+      },
+      "steps": [
+        { "title": "Preentrenamiento", "text": "El modelo lee cantidades enormes de texto y aprende a predecir lo que viene después. De ahí salen el conocimiento general y la capacidad lingüística." },
+        { "title": "Ajuste por instrucciones", "text": "Un entrenamiento adicional con conversaciones y comentarios humanos enseña al predictor en bruto a comportarse como un asistente útil." },
+        { "title": "Inferencia", "text": "Cuando envías un mensaje, los pesos no cambian. El modelo solo ejecuta el bucle de predecir y añadir sobre tu contexto." },
+        { "title": "Ajustes de muestreo", "text": "Una **temperatura** cercana a 0 elige siempre el token más probable, lo que da una salida consistente. Valores más altos añaden variedad y riesgo. **Max tokens** pone un tope a la longitud de la respuesta." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "Un LLM cita con total seguridad un artículo científico que no existe. ¿Por qué?",
+            "options": ["Miente a propósito", "Genera texto verosímil y no consulta los hechos", "Su base de datos está corrupta", "La temperatura era 0"],
+            "explain": "Es una alucinación: una continuación con aspecto probable que resulta ser falsa."
+          },
+          {
+            "q": "¿Conversar con un modelo cambia sus pesos?",
+            "options": ["Sí, cada mensaje lo entrena", "No, los pesos son fijos durante la inferencia", "Solo los martes", "Solo con mensajes largos"],
+            "explain": "El modelo solo «recuerda» lo que está en su ventana de contexto."
+          },
+          {
+            "q": "Para extraer datos en un formato estricto, ¿qué temperatura es mejor?",
+            "options": ["Baja (cerca de 0)", "Alta (más de 1)", "Da igual", "Negativa"],
+            "explain": "Una temperatura baja da una salida predecible y repetible."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Un amigo dice: «Ayer le dije mi nombre al chatbot y hoy, en un chat nuevo, lo ha olvidado. Debe de estar roto». Explica qué está pasando de verdad.",
+        "hint": "¿Dónde guarda la información un modelo durante una conversación?",
+        "solution": "No hay nada roto. Un modelo no tiene memoria entre conversaciones a menos que el producto le añada una. Todo lo que «sabe» de ti vive en la **ventana de contexto** del chat actual. Un chat nuevo empieza con el contexto vacío. Los productos que parecen recordar guardan notas y las insertan en el contexto de chats posteriores."
+      },
+      "takeaways": [
+        "Un LLM predice el siguiente token. Todo lo demás se construye sobre ese bucle.",
+        "Su conocimiento se congela al entrenarlo y no consulta información por su cuenta.",
+        "La ventana de contexto es su única memoria de trabajo."
+      ]
+    },
+    "prompt-engineering": {
+      "title": "Ingeniería de prompts",
+      "concept": {
+        "text": "Un prompt es todo lo que le das al modelo: instrucciones, contexto, ejemplos y la pregunta. El modelo no puede leerte la mente, así que la calidad de la respuesta depende de la calidad del prompt.\n\nEscribir buenos prompts es sobre todo comunicar con claridad. Di para quién es la respuesta, qué quieres, qué sabes ya y qué forma debe tener la salida.",
+        "analogy": "Escribir un prompt es dar instrucciones a un compañero nuevo y brillante que no tiene ningún contexto sobre tu proyecto. «Arregla el informe» te da una suposición. Unas instrucciones como es debido, con el objetivo, el público, el material de partida y un ejemplo, te dan lo que necesitabas."
+      },
+      "visual": {
+        "caption": "Las piezas de un buen prompt.",
+        "items": [
+          { "title": "Rol y público", "text": "¿Quién responde y para quién es?" },
+          { "title": "Tarea", "text": "Una instrucción clara y concreta" },
+          { "title": "Contexto", "text": "El material y los antecedentes con los que trabajar" },
+          { "title": "Ejemplos", "text": "Una o dos muestras de cómo es un buen resultado (few-shot)" },
+          { "title": "Formato", "text": "¿Viñetas? ¿JSON? ¿100 palabras? Dilo." },
+          { "title": "Restricciones", "text": "Qué evitar y qué hacer en caso de duda" }
+        ]
+      },
+      "steps": [
+        { "title": "Sé concreto", "text": "Compara un prompt vago con uno concreto." },
+        { "title": "Muestra ejemplos", "text": "Prompting few-shot: da parejas de entrada y salida y luego la nueva entrada. El modelo copia el patrón." },
+        { "title": "Dale espacio para pensar", "text": "En tareas de razonamiento, pídele al modelo que resuelva el problema paso a paso antes de dar su respuesta final." },
+        { "title": "Separa las instrucciones de los datos", "text": "Envuelve el material pegado en delimitadores claros, como etiquetas al estilo XML, para que el modelo sepa qué es contenido y qué es instrucción." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "¿Qué prompt dará el resultado más útil?",
+            "options": ["Mejora esto.", "Reescribe este correo para que sea más educado y tenga menos de 80 palabras. Mantén la fecha límite del viernes.", "Correo.", "Haz lo que puedas."],
+            "explain": "Indica la tarea, el tono, la longitud y lo que hay que conservar."
+          },
+          {
+            "q": "¿Qué es el prompting few-shot?",
+            "options": ["Usar un prompt corto", "Dar unos cuantos ejemplos de la entrada y la salida deseadas", "Hacer la misma pregunta varias veces", "Limitar la respuesta a pocas palabras"],
+            "explain": "Los ejemplos suelen ser la forma más rápida de comunicar un formato o un estilo."
+          },
+          {
+            "q": "¿Por qué envolver los documentos pegados en delimitadores o etiquetas?",
+            "options": ["Queda más ordenado", "Para que el modelo distinga tus instrucciones del contenido", "Hace que el modelo vaya más rápido", "Lo exige la ley"],
+            "explain": "Los límites claros reducen la confusión y hacen menos probable que funcione una inyección de prompt."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Mejora este prompt: **«Resume esta reunión».** Supón que vas a pegar una transcripción y que el resumen es para una jefa que no pudo asistir.",
+        "hint": "Cubre el público, la longitud, la estructura y lo que más le importa a una jefa.",
+        "solution": "Una versión sólida:\n\n«Vas a resumir una reunión para una jefa que no pudo asistir y tiene dos minutos para leerlo. Usando solo la transcripción que está dentro de las etiquetas transcript, escribe: (1) un resumen de dos frases, (2) las decisiones tomadas, en viñetas, (3) las tareas pendientes como lista de responsable, tarea y fecha límite, (4) las preguntas abiertas. Si la transcripción no dice quién es responsable de una tarea, escribe \"responsable sin determinar\" en lugar de adivinar»."
+      },
+      "takeaways": [
+        "Los prompts claros, concretos y con contexto ganan a los trucos ingeniosos.",
+        "Los ejemplos y un formato de salida explícito eliminan las conjeturas.",
+        "Dile al modelo qué hacer cuando no esté seguro, para que no se invente una respuesta."
+      ]
+    },
+    "rag": {
+      "title": "RAG: darle tus documentos a un modelo",
+      "concept": {
+        "text": "Un modelo no conoce la wiki de tu empresa, las noticias de ayer ni tus archivos privados. RAG lo soluciona sin reentrenar nada: cuando llega una pregunta, el sistema primero **recupera** los fragmentos más relevantes de tus documentos y luego los añade al prompt para que el modelo responda a partir de ellos.\n\nComo la respuesta se basa en el texto proporcionado, RAG reduce las alucinaciones, mantiene el conocimiento al día y permite que el modelo cite sus fuentes.",
+        "analogy": "Un examen a libro cerrado pone a prueba la memoria. RAG lo convierte en un examen a libro abierto: al estudiante le dan las tres páginas más relevantes antes de responder cada pregunta."
+      },
+      "visual": {
+        "caption": "Una consulta RAG, de principio a fin.",
+        "actors": ["Usuario", "App", "BD vectorial", "LLM"],
+        "messages": [
+          { "label": "«¿Cuál es nuestra política de reembolsos?»" },
+          { "label": "Embedding de la pregunta, búsqueda" },
+          { "label": "Los 3 fragmentos más parecidos" },
+          { "label": "Pregunta + fragmentos" },
+          { "label": "Respuesta fundamentada" },
+          { "label": "Respuesta con fuentes" }
+        ]
+      },
+      "steps": [
+        { "title": "Indexa (por adelantado)", "text": "Divide los documentos en fragmentos, calcula el embedding de cada fragmento y guarda los vectores en una base de datos vectorial." },
+        { "title": "Recupera", "text": "Calcula el embedding de la pregunta del usuario y busca los fragmentos más cercanos. Los buenos sistemas combinan la búsqueda vectorial con la búsqueda por palabras clave y luego reordenan los resultados." },
+        { "title": "Aumenta", "text": "Construye un prompt que contenga los fragmentos y le diga al modelo que responda solo a partir de ellos." },
+        { "title": "Genera y cita", "text": "El modelo escribe la respuesta. Devuelve los enlaces a las fuentes para que los usuarios puedan comprobarla." }
+      ],
+      "interactive": {
+        "prompt": "Ordena el proceso de RAG, desde preparar los documentos hasta responder.",
+        "items": [
+          "Divide los documentos en fragmentos",
+          "Calcula el embedding de cada fragmento y guárdalo en una base de datos vectorial",
+          "El usuario hace una pregunta",
+          "Calcula el embedding de la pregunta",
+          "Recupera los fragmentos más parecidos",
+          "Añade los fragmentos al prompt",
+          "El modelo genera una respuesta con citas"
+        ]
+      },
+      "challenge": {
+        "prompt": "Tu chatbot RAG responde «No lo sé» a una pregunta que estás seguro de que cubren los documentos. Enumera tres puntos del proceso en los que podría estar fallando.",
+        "hint": "Sigue la pregunta a lo largo del proceso: ¿se guardó el texto correcto?, ¿se encontró?, ¿se usó?",
+        "solution": "1. **Indexación**: el documento nunca se cargó, o los fragmentos están cortados de forma que la respuesta queda partida entre dos piezas.\n\n2. **Recuperación**: el fragmento correcto existe pero no está entre los primeros resultados, porque la redacción es distinta o se recuperan muy pocos fragmentos. La búsqueda híbrida y el reordenamiento ayudan.\n\n3. **Generación**: se recuperó el fragmento correcto, pero quedó enterrado entre otros irrelevantes, o el prompt es tan estricto que el modelo se niega a responder. Registra siempre los fragmentos recuperados, para saber qué etapa falló."
+      },
+      "takeaways": [
+        "RAG recupera texto relevante y lo pone en el prompt antes de que el modelo responda.",
+        "Mantiene las respuestas actualizadas y fundamentadas sin reentrenar el modelo.",
+        "La mayoría de los fallos de RAG son fallos de recuperación. Revisa qué se recuperó."
+      ]
+    },
+    "fine-tuning": {
+      "title": "Fine-tuning: cuándo y por qué",
+      "concept": {
+        "text": "El fine-tuning (ajuste fino) continúa el entrenamiento de un modelo existente con tus propios ejemplos y cambia sus pesos para que un comportamiento quede integrado. Sirve para enseñar un estilo, un formato o una habilidad concreta de forma consistente. Es una mala forma de enseñar hechos, que cambian y es mejor aportar mediante RAG.\n\nEl fine-tuning moderno rara vez actualiza el modelo entero. Métodos como **LoRA** entrenan un pequeño conjunto de pesos extra acoplados a un modelo congelado, lo que sale mucho más barato.",
+        "analogy": "Escribir un prompt es dar instrucciones a un profesional. RAG es pasarle documentos de referencia. El fine-tuning es mandarlo a un curso de formación: más lento y más caro, pero la habilidad se le vuelve natural."
+      },
+      "visual": {
+        "caption": "Tres formas de personalizar un modelo. Pruébalas de izquierda a derecha.",
+        "columns": ["Prompting", "RAG", "Fine-tuning"],
+        "rows": [
+          ["¿Cambia los pesos?", "No", "No", "Sí"],
+          ["Ideal para", "Instrucciones y formato", "Conocimiento privado o cambiante", "Estilo consistente o una habilidad concreta"],
+          ["Necesita", "Un buen prompt", "Documentos y un sistema de recuperación", "Cientos o más de ejemplos de calidad"],
+          ["Coste y esfuerzo", "El más bajo", "Medio", "El más alto"],
+          ["Velocidad de actualización", "Instantánea", "Reindexar los documentos", "Reentrenar"]
+        ]
+      },
+      "steps": [
+        { "title": "Prueba primero con prompts", "text": "La mayoría de los problemas se resuelven con un prompt mejor y unos cuantos ejemplos. Mide antes de recurrir a algo más pesado." },
+        { "title": "Prepara los ejemplos", "text": "Los datos de fine-tuning son parejas de entrada y salida ideal, normalmente un objeto JSON por línea. La calidad importa mucho más que la cantidad." },
+        { "title": "Entrena y evalúa", "text": "Reserva un conjunto de prueba. Compara el modelo ajustado con el modelo base usando un buen prompt, con los mismos ejemplos." },
+        { "title": "Vigila los efectos secundarios", "text": "Un modelo muy ajustado para una tarea concreta puede empeorar en todo lo demás. Combina fine-tuning para el comportamiento con RAG para el conocimiento cuando necesites ambos." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "Tu catálogo de productos cambia a diario y el bot debe dar los precios actuales. ¿Mejor enfoque?",
+            "options": ["Fine-tuning cada noche", "RAG sobre el catálogo en vivo", "Un prompt del sistema más largo sin datos", "Subir la temperatura"],
+            "explain": "Los hechos que cambian rápido van en la recuperación, no en los pesos."
+          },
+          {
+            "q": "Necesitas que todas las respuestas tengan la voz tan característica de tu marca, en millones de llamadas y con prompts cortos. ¿Mejor enfoque?",
+            "options": ["Fine-tuning", "RAG", "Bajar max tokens", "No se puede hacer"],
+            "explain": "Un estilo consistente a gran escala es un uso clásico del fine-tuning."
+          },
+          {
+            "q": "¿Qué hace LoRA?",
+            "options": ["Borra la mitad del modelo", "Entrena un pequeño conjunto de pesos añadidos mientras el modelo base sigue congelado", "Convierte un modelo para que funcione en CPU", "Cifra los pesos"],
+            "explain": "Así el fine-tuning sale mucho más barato en cómputo y almacenamiento."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Un despacho de abogados quiere un asistente que responda preguntas sobre sus 20 000 expedientes internos y que conteste siempre con el estilo formal de la casa. Recomienda una arquitectura y justifícala.",
+        "hint": "Aquí hay dos necesidades distintas: conocimiento y comportamiento.",
+        "solution": "Usa **RAG para el conocimiento**: indexa los expedientes, con controles de acceso para que cada persona solo recupere lo que puede ver, y cita los archivos de origen. Empieza con **un prompt del sistema más ejemplos para el estilo de la casa**. Solo si el estilo sigue siendo inconsistente después de medirlo deberías añadir un fine-tuning ligero para el tono. No hagas fine-tuning con los expedientes: los hechos serían poco fiables, imposibles de citar y quedarían obsoletos en cuanto llegara un caso nuevo."
+      },
+      "takeaways": [
+        "Orden de escalada: prompt, luego RAG y luego fine-tuning.",
+        "Fine-tuning para el comportamiento y el estilo. RAG para los hechos.",
+        "LoRA y métodos parecidos abaratan el fine-tuning al entrenar solo un pequeño complemento."
+      ]
+    },
+    "mcp-tool-use": {
+      "title": "Uso de herramientas y MCP",
+      "concept": {
+        "text": "Por sí solo, un modelo solo puede producir texto. El **uso de herramientas** (también llamado function calling) le permite actuar: describes las herramientas disponibles y, cuando el modelo necesita una, emite una petición estructurada como `get_weather(city: \"Paris\")`. Tu aplicación ejecuta la herramienta y devuelve el resultado, y el modelo continúa con datos reales.\n\nMCP, el Model Context Protocol, es un estándar abierto para esta conexión. En lugar de escribir código de unión a medida para cada app y cada herramienta, una herramienta se empaqueta una vez como **servidor MCP** y cualquier app de IA compatible con MCP puede usarla.",
+        "analogy": "Un modelo sin herramientas es un genio encerrado en una habitación sin teléfono. El uso de herramientas es el teléfono. MCP es el estándar universal de conector, como USB-C: construyes un dispositivo una vez y se enchufa a cualquier anfitrión compatible."
+      },
+      "visual": {
+        "caption": "Una llamada a una herramienta. El modelo la pide y tu aplicación hace el trabajo.",
+        "actors": ["Usuario", "App de IA", "LLM", "Herramienta / servidor MCP"],
+        "messages": [
+          { "label": "«¿Qué tiempo hace en París?»" },
+          { "label": "Pregunta + lista de herramientas" },
+          { "label": "Llamar a get_weather(Paris)" },
+          { "label": "Ejecutar la herramienta" },
+          { "label": "18 °C, nublado" },
+          { "label": "Resultado de la herramienta" },
+          { "label": "«Hace 18 °C y está nublado.»" }
+        ]
+      },
+      "steps": [
+        { "title": "Describe una herramienta", "text": "Una herramienta tiene un nombre, una descripción que lee el modelo y un esquema JSON para sus entradas. Las descripciones claras importan tanto como los prompts." },
+        { "title": "El modelo pide, tú ejecutas", "text": "El modelo nunca ejecuta código por sí mismo. Emite una petición y tu aplicación decide si la ejecuta. Ese es tu punto de control para la seguridad." },
+        { "title": "Las tres piezas de MCP", "text": "Un servidor MCP puede ofrecer **herramientas** (acciones que el modelo puede realizar), **recursos** (datos que puede leer) y **prompts** (plantillas reutilizables)." },
+        { "title": "Conecta un servidor", "text": "Anfitriones como Claude Desktop, Claude Code y muchos IDE cargan servidores MCP desde un archivo de configuración. Hay servidores para GitHub, bases de datos, sistemas de archivos, navegadores y más." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "Cuando un modelo «llama a una herramienta», ¿qué es lo que realmente la ejecuta?",
+            "options": ["Los pesos del modelo", "La aplicación que aloja el modelo", "El teclado del usuario", "Los datos de entrenamiento"],
+            "explain": "El modelo solo emite una petición estructurada. La aplicación anfitriona la ejecuta."
+          },
+          {
+            "q": "¿Qué problema resuelve MCP?",
+            "options": ["Hace los modelos más pequeños", "Estandariza cómo se conectan las apps de IA con herramientas y datos", "Elimina la necesidad de prompts", "Entrena los modelos más rápido"],
+            "explain": "Un solo protocolo significa que una herramienta construida una vez funciona en todos los anfitriones compatibles."
+          },
+          {
+            "q": "¿Por qué las herramientas que borran datos o gastan dinero deberían requerir aprobación humana?",
+            "options": ["Los modelos son lentos", "Los modelos pueden malinterpretar instrucciones o ser manipulados por el texto que leen", "La aprobación hace las herramientas más rápidas", "No hace falta"],
+            "explain": "Las páginas web y los documentos pueden contener instrucciones que secuestran a un modelo (inyección de prompt)."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Diseña una definición de herramienta llamada `create_calendar_event`. Escribe su descripción y enumera sus campos de entrada con sus tipos, indicando cuáles son obligatorios.",
+        "hint": "Piensa en lo mínimo que necesita un calendario y en lo que es opcional. La descripción debe decirle al modelo cuándo usar la herramienta."
+      },
+      "takeaways": [
+        "El uso de herramientas permite a un modelo pedir acciones. Tu aplicación las ejecuta.",
+        "MCP es un estándar abierto que conecta las apps de IA con herramientas, recursos y prompts.",
+        "Mantén un paso de aprobación humana para todo lo destructivo o irreversible."
+      ]
+    }
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "title": "Computación cuántica",
+  "summary": "Qubits, superposición y entrelazamiento en lenguaje sencillo, y lo que la computación cuántica significa de verdad para la IA.",
+  "lessons": {
+    "quantum-basics": {
+      "title": "Fundamentos de la computación cuántica",
+      "concept": {
+        "text": "Un bit clásico es 0 o 1. Un qubit puede estar en superposición: una mezcla de 0 y 1 descrita por dos amplitudes. Cuando lo **mides**, la mezcla colapsa en un 0 o un 1 normal, con probabilidades que fijan esas amplitudes.\n\nLos qubits también pueden estar **entrelazados**, de modo que sus resultados de medición quedan vinculados por muy lejos que estén. Un algoritmo cuántico se organiza para que las respuestas incorrectas se anulen y las correctas se refuercen, un proceso llamado **interferencia**, de forma que al medir sea probable obtener el resultado correcto.",
+        "analogy": "Un bit es una moneda tumbada en la mesa: cara o cruz. Un qubit es una moneda girando sobre la mesa: ni una cosa ni otra, hasta que la aplastas con la mano. Un algoritmo cuántico es una forma ingeniosa de hacer girar muchas monedas a la vez para que tengan más probabilidad de caer en la respuesta que quieres."
+      },
+      "visual": {
+        "columns": ["Bit clásico", "Qubit"],
+        "rows": [
+          ["Estado", "0 o 1", "Una mezcla de 0 y 1 hasta que se mide"],
+          ["n unidades pueden representar", "Uno de 2ⁿ valores a la vez", "Una superposición de los 2ⁿ valores"],
+          ["Leerlo", "No lo cambia", "Lo colapsa en 0 o 1"],
+          ["Copiarlo", "Fácil", "Imposible en general (teorema de no clonación)"],
+          ["Principal enemigo", "Fallos de hardware poco frecuentes", "El ruido: los estados se degradan en una fracción de segundo"]
+        ]
+      },
+      "steps": [
+        { "title": "Crea una superposición", "text": "Una **puerta de Hadamard** convierte un 0 definido en una mezcla a partes iguales de 0 y 1. Si lo mides, obtienes cada resultado la mitad de las veces." },
+        { "title": "Entrelaza dos qubits", "text": "Aplica una Hadamard a un qubit y luego una puerta **CNOT**. El par queda en un estado de Bell: medirás 00 o 11, nunca 01 ni 10." },
+        { "title": "Usa la interferencia", "text": "Algoritmos como la búsqueda de Grover y la factorización de Shor coreografían las amplitudes para que las respuestas incorrectas se anulen." },
+        { "title": "Conoce los límites", "text": "Los ordenadores cuánticos no son más rápidos en todo. Ofrecen grandes aceleraciones para problemas concretos. Las máquinas actuales son ruidosas y pequeñas, y el uso a gran escala necesita **corrección de errores**, que todavía se está desarrollando." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "¿Qué pasa cuando mides un qubit que está en superposición?",
+            "options": ["No cambia nada", "Colapsa en 0 o 1", "Se convierte en dos qubits", "Se copia"],
+            "explain": "La medición da un resultado clásico definido y destruye la superposición."
+          },
+          {
+            "q": "Dos qubits están entrelazados en un estado de Bell. Mides el primero y obtienes 1. El segundo será…",
+            "options": ["0", "1", "Aleatorio", "Imposible de medir"],
+            "explain": "En ese estado los resultados son siempre iguales: 00 o 11."
+          },
+          {
+            "q": "¿Qué afirmación es correcta?",
+            "options": ["Los ordenadores cuánticos son más rápidos en cualquier tarea", "Los ordenadores cuánticos prueban todas las respuestas y leen la mejor", "Los ordenadores cuánticos ofrecen aceleraciones para tipos concretos de problemas", "Los ordenadores cuánticos ya sustituyen a los portátiles"],
+            "explain": "Solo obtienes un resultado de medición, así que los algoritmos deben usar la interferencia con ingenio, y eso solo funciona para algunos problemas."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Alguien afirma: «Un ordenador cuántico de 300 qubits guarda más valores que átomos hay en el universo, así que puede comprobar todas las contraseñas a la vez». ¿Qué tiene de cierto y qué tiene de falso esta afirmación?",
+        "hint": "Piensa en qué obtienes realmente al medir.",
+        "solution": "**Cierto**: 300 qubits pueden estar en una superposición de 2³⁰⁰ estados, que es efectivamente un número astronómico.\n\n**Falso**: no puedes leer esos estados. Medir da un único resultado de 300 bits, elegido al azar salvo que el algoritmo haya usado la interferencia para potenciar la respuesta correcta. Para la búsqueda no estructurada, el algoritmo de Grover solo da una aceleración de raíz cuadrada, no una respuesta instantánea. Así que un ordenador cuántico debilita la resistencia frente a la fuerza bruta, pero no «lo comprueba todo a la vez»."
+      },
+      "takeaways": [
+        "Los qubits usan superposición y entrelazamiento. La medición los colapsa en bits normales.",
+        "Los algoritmos cuánticos usan la interferencia para que las respuestas correctas sean más probables.",
+        "La ventaja se aplica a problemas concretos, y el hardware actual sigue siendo ruidoso y pequeño."
+      ]
+    },
+    "quantum-and-ai": {
+      "title": "Computación cuántica e IA",
+      "concept": {
+        "text": "La computación cuántica y la IA se mencionan a menudo juntas, pero son tecnologías distintas y en etapas de madurez muy diferentes. La IA actual funciona por completo en chips clásicos como las GPU. Ningún ordenador cuántico actual entrena ni ejecuta un modelo de lenguaje grande.\n\nLa relación funciona en tres direcciones. Las máquinas cuánticas quizá aceleren algún día tareas concretas dentro de la IA y la ciencia. La IA ya está ayudando a construir mejores ordenadores cuánticos. Y ambas chocan en la seguridad, porque un ordenador cuántico grande rompería gran parte de la criptografía de clave pública actual.",
+        "analogy": "La IA actual es una red de autopistas madura que lleva casi todo el tráfico. La computación cuántica es un avión experimental: algún día imbatible para ciertos trayectos, pero todavía no sirve para ir al trabajo, y nunca sustituirá a las carreteras."
+      },
+      "visual": {
+        "caption": "Dónde se encuentran de verdad la computación cuántica y la IA.",
+        "items": [
+          { "title": "Cuántica para la IA", "text": "Investigación para acelerar la optimización, el muestreo y el álgebra lineal. Prometedora en teoría, sin ventaja práctica todavía para el aprendizaje automático habitual." },
+          { "title": "IA para la cuántica", "text": "El aprendizaje automático ya se usa para decodificar errores, calibrar qubits y diseñar circuitos." },
+          { "title": "Cuántica para la ciencia", "text": "Simular moléculas y materiales es el uso más natural, y podría aportar datos a modelos de IA para investigar fármacos y baterías." },
+          { "title": "Impacto en la seguridad", "text": "El algoritmo de Shor rompería RSA y la criptografía de curva elíptica. Ya se están desplegando algoritmos poscuánticos." }
+        ]
+      },
+      "steps": [
+        { "title": "Separa el bombo publicitario del estado real", "text": "Las máquinas actuales tienen un número limitado de qubits ruidosos. El trabajo útil a gran escala necesita **qubits lógicos** con corrección de errores, cada uno construido con muchos qubits físicos." },
+        { "title": "Entiende el aprendizaje automático cuántico", "text": "El QML explora circuitos con parámetros ajustables, entrenados de forma parecida a las redes neuronales. Cargar grandes conjuntos de datos clásicos en estados cuánticos es en sí un gran cuello de botella sin resolver." },
+        { "title": "Mira cómo la IA ayuda a la cuántica", "text": "Las redes neuronales se usan para decodificar las señales de corrección de errores y ajustar el hardware más rápido que una persona, un beneficio real y actual." },
+        { "title": "Prepárate para la criptografía poscuántica", "text": "Los organismos de normalización han publicado algoritmos resistentes a la computación cuántica, como ML-KEM para el intercambio de claves. Los datos cifrados que se roban hoy podrían descifrarse más adelante («cosechar ahora, descifrar después»), así que la migración ya ha empezado." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "¿En qué hardware funcionan los grandes modelos de IA actuales?",
+            "options": ["Procesadores cuánticos", "Chips clásicos como las GPU", "En los dos por igual", "En ninguno"],
+            "explain": "Todo el entrenamiento y la inferencia de la IA habitual son clásicos."
+          },
+          {
+            "q": "¿Cuál es un vínculo real y actual entre los dos campos?",
+            "options": ["Los ordenadores cuánticos entrenan ChatGPT", "La IA ayuda a decodificar errores y a calibrar el hardware cuántico", "Los qubits sustituyen a los tokens", "Los ordenadores cuánticos no tienen errores"],
+            "explain": "El aprendizaje automático es una herramienta activa en la corrección de errores y el control cuánticos."
+          },
+          {
+            "q": "¿Qué significa «cosechar ahora, descifrar después»?",
+            "options": ["Agricultura con IA", "Guardar hoy datos cifrados para descifrarlos cuando los ordenadores cuánticos puedan romperlos", "Retrasar las actualizaciones de software", "Cachear las respuestas del modelo"],
+            "explain": "Es el motivo para adoptar la criptografía poscuántica antes de que existan ordenadores cuánticos grandes."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "La presentación de una startup dice: «Nuestra IA cuántica entrena modelos de lenguaje grandes 1000 veces más rápido que las GPU, disponible hoy». Enumera tres preguntas que harías para poner a prueba la afirmación.",
+        "hint": "Piensa en la escala, la carga de datos y las pruebas.",
+        "solution": "1. **¿Cuántos qubits lógicos con corrección de errores necesita esto y cuántos existen?** Entrenar a escala de LLM necesitaría muchos más qubits fiables de los que tiene cualquier máquina actual.\n\n2. **¿Cómo se cargan los datos de entrenamiento en estados cuánticos?** Codificar enormes conjuntos de datos clásicos es un cuello de botella conocido que puede anular cualquier aceleración.\n\n3. **¿Dónde está la comparativa independiente y reproducible frente a una alternativa clásica bien ajustada?** Muchas supuestas ventajas cuánticas desaparecen al compararlas con los mejores métodos clásicos."
+      },
+      "takeaways": [
+        "La IA moderna funciona en hardware clásico. Los ordenadores cuánticos no entrenan ni ejecutan LLM hoy.",
+        "La IA ya es útil para construir ordenadores cuánticos. Lo contrario sigue siendo investigación.",
+        "El solapamiento más urgente es la seguridad: planifica el paso a la criptografía poscuántica."
+      ]
+    }
+  }
+}

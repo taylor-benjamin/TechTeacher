@@ -1,0 +1,110 @@
+{
+  "title": "Modelos en local",
+  "summary": "Ejecuta modelos abiertos en tu propia máquina con Ollama y LM Studio, y calcula el hardware que necesitas.",
+  "lessons": {
+    "ollama-lm-studio": {
+      "title": "Ollama y LM Studio",
+      "concept": {
+        "text": "No necesitas un servicio en la nube para usar un LLM. Los modelos de pesos abiertos como Llama, Mistral, Gemma, Qwen y Phi se pueden descargar y ejecutar en tu propio ordenador. Tus datos nunca salen de la máquina, funciona sin conexión y no hay factura por token.\n\n**Ollama** es una herramienta de línea de comandos que descarga y ejecuta modelos con un solo comando y ofrece una API local. **LM Studio** es una app de escritorio con una ventana de chat, un explorador de modelos y un servidor local. Ambos ejecutan el mismo tipo de archivos de modelo.",
+        "analogy": "La IA en la nube es un restaurante: comida excelente, pero pagas por plato y ven lo que pides. Un modelo local es cocinar en casa: tu cocina pone los límites, pero es privado y cada comida extra no cuesta nada."
+      },
+      "visual": {
+        "columns": ["Ollama", "LM Studio"],
+        "rows": [
+          ["Interfaz", "Línea de comandos + API", "App de escritorio con chat"],
+          ["Ideal para", "Desarrolladores, scripts, servidores", "Principiantes, explorar y comparar modelos"],
+          ["Conseguir un modelo", "ollama pull llama3.2", "Busca y haz clic en descargar"],
+          ["API local", "http://localhost:11434", "http://localhost:1234 (compatible con OpenAI)"],
+          ["Licencia", "Código abierto", "Gratis de usar, código cerrado"]
+        ]
+      },
+      "steps": [
+        { "title": "Instala y ejecuta con Ollama", "text": "Instálalo desde ollama.com y luego un solo comando descarga el modelo y abre un chat en tu terminal." },
+        { "title": "Llámalo desde código", "text": "Ollama sirve una API HTTP en tu máquina, así que cualquier lenguaje puede usarla." },
+        { "title": "O usa LM Studio", "text": "Instálalo desde lmstudio.ai, busca un modelo, elige un tamaño que tu máquina pueda manejar (la app marca cuáles caben) y conversa. La pestaña Developer inicia un servidor local." },
+        { "title": "Ejecuta agentes en local", "text": "Las herramientas que hablan el formato de la API de OpenAI pueden apuntar a tu servidor local en lugar de a la nube. Elige un modelo entrenado para llamar a herramientas, y espera que los modelos pequeños sean menos fiables en trabajos de agente de varios pasos." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "¿Cuál es una ventaja real de ejecutar un modelo en local?",
+            "options": ["Siempre es más listo que los modelos en la nube", "Tus prompts y tus datos se quedan en tu máquina", "No necesita hardware", "Se actualiza solo con noticias en directo"],
+            "explain": "La privacidad y el uso sin conexión son las principales razones para ir a local."
+          },
+          {
+            "q": "¿Qué hace `ollama run llama3.2` la primera vez?",
+            "options": ["Entrena un modelo nuevo", "Descarga el modelo y luego abre un chat", "Sube tus archivos", "Abre un navegador web"],
+            "explain": "Descarga el archivo del modelo si hace falta, lo carga en memoria e inicia una sesión interactiva."
+          },
+          {
+            "q": "Una app espera la API de OpenAI. ¿Cómo puede usar un modelo local?",
+            "options": ["No puede", "Apuntando su URL base al servidor local", "Reescribiendo el modelo en Python", "Comprando una licencia"],
+            "explain": "Tanto LM Studio como Ollama ofrecen endpoints compatibles con OpenAI."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Escribe una llamada `fetch` en JavaScript que pida a un modelo local de Ollama llamado `llama3.2` que «Explica DNS en una frase» y muestre la respuesta en la consola.",
+        "hint": "Envía JSON por POST a `http://localhost:11434/api/generate` con `stream: false`. El texto vuelve en el campo `response`."
+      },
+      "takeaways": [
+        "Los modelos de pesos abiertos se ejecutan en tu propio hardware: privados, sin conexión y sin coste por token.",
+        "Ollama prioriza la línea de comandos y la API. LM Studio es una app de escritorio amigable.",
+        "Ambos ofrecen APIs locales, así que las herramientas existentes pueden apuntar a ellos."
+      ]
+    },
+    "hardware-requirements": {
+      "title": "Hardware: ¿qué puede ejecutar tu máquina?",
+      "concept": {
+        "text": "El límite de los modelos locales es la memoria. Los pesos del modelo deben caber en memoria rápida, idealmente en la **VRAM** de tu tarjeta gráfica. Si no caben, el modelo se desborda a la RAM normal y va muchas veces más lento.\n\nEl tamaño de un modelo se mide en parámetros, como 8B para 8 mil millones. La cuantización reduce un modelo guardando cada peso con menos bits. Una versión de 4 bits, a menudo etiquetada Q4, ocupa más o menos una cuarta parte del tamaño completo con una pérdida de calidad pequeña, y por eso es la opción habitual.",
+        "analogy": "La VRAM es el tamaño de tu banco de trabajo. Un proyecto que cabe en el banco se trabaja rápido. Si no cabe, tienes que ir una y otra vez a por piezas al cobertizo (la RAM del sistema o el disco), y todo se vuelve lentísimo. Cuantizar es comprar una versión más compacta del kit."
+      },
+      "visual": {
+        "caption": "Guía orientativa para modelos de 4 bits (Q4). Deja 1-2 GB libres para la ventana de contexto.",
+        "columns": ["Tamaño del archivo (Q4)", "Memoria recomendada", "Hardware típico"],
+        "rows": [
+          ["1-4B parámetros", "1-3 GB", "4-8 GB", "Casi cualquier portátil, incluso sin GPU"],
+          ["7-9B", "4-6 GB", "8 GB de VRAM", "GPU gaming de gama de entrada, o Apple Silicon con 16 GB"],
+          ["12-14B", "7-9 GB", "12-16 GB de VRAM", "GPU de gama media, o Apple Silicon con 24 GB"],
+          ["27-34B", "17-21 GB", "24 GB de VRAM", "GPU de gama alta, o Apple Silicon con 32-48 GB"],
+          ["70B+", "40 GB o más", "48 GB+", "Varias GPU, o Apple Silicon con 64 GB o más"]
+        ]
+      },
+      "steps": [
+        { "title": "Calcula el tamaño", "text": "Memoria en GB ≈ parámetros en miles de millones × bits por peso ÷ 8, más algo extra. Un modelo de 8B a 4 bits ocupa unos 8 × 4 ÷ 8 = 4 GB, más alrededor de 1 GB extra." },
+        { "title": "Comprueba tu memoria", "text": "En un PC, lo que cuenta es la VRAM de la tarjeta gráfica. Los Mac con Apple Silicon comparten un único bloque de memoria entre CPU y GPU, así que se puede usar la mayor parte de la RAM del sistema." },
+        { "title": "Elige una cuantización", "text": "Q4 es el punto óptimo habitual. Q8 se acerca más a la calidad completa con el doble de tamaño. Por debajo de Q4, la calidad baja de forma notable." },
+        { "title": "Recuerda que el contexto cuesta memoria", "text": "Una ventana de contexto más grande necesita más memoria además de la de los pesos. Si un modelo se ralentiza de repente, seguramente se ha salido de la VRAM." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "Aproximadamente, ¿cuánta memoria necesitan los pesos de un modelo de 12B a 4 bits?",
+            "options": ["Unos 1,5 GB", "Unos 6 GB", "Unos 24 GB", "Unos 48 GB"],
+            "explain": "12 × 4 ÷ 8 = 6 GB, más algo extra."
+          },
+          {
+            "q": "¿Qué sacrifica la cuantización?",
+            "options": ["La privacidad", "Un poco de calidad en la salida, a cambio de usar mucha menos memoria", "El acceso a internet", "La licencia"],
+            "explain": "Menos bits por peso significa menos precisión pero un modelo mucho más pequeño."
+          },
+          {
+            "q": "Un modelo genera 40 tokens por segundo y pasa a 2 por segundo después de que aumentas la longitud del contexto. ¿Causa probable?",
+            "options": ["El modelo se aburrió", "Ya no cabe en la VRAM y se desbordó a la RAM del sistema", "Internet va lento", "El disco está lleno"],
+            "explain": "El contexto también usa memoria. En cuanto se supera la VRAM, la velocidad se desploma."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Tienes un PC de sobremesa con una tarjeta gráfica de 12 GB y 32 GB de RAM. ¿Qué tamaños de modelo puedes ejecutar bien, y qué elegirías para (a) una ayuda rápida tipo autocompletado y (b) la mejor calidad que puedas conseguir?",
+        "hint": "Usa la fórmula con pesos de 4 bits y deja margen para el contexto.",
+        "solution": "Con 12 GB de VRAM puedes ejecutar sin problema modelos de hasta unos **12-14B en Q4** (7-9 GB), con espacio de sobra para el contexto.\n\n(a) Para velocidad, elige un modelo de **3-8B**: cabe con mucha memoria libre y responde rápido.\n\n(b) Para calidad, elige un modelo de **12-14B en Q4**. Un modelo de 30B (unos 18 GB) no cabría y se desbordaría a la RAM del sistema. Funcionaría, porque tienes 32 GB, pero despacio."
+      },
+      "takeaways": [
+        "La memoria, sobre todo la VRAM, decide qué modelos puedes ejecutar.",
+        "Tamaño en GB ≈ miles de millones de parámetros × bits ÷ 8. Q4 es la opción habitual.",
+        "Si el modelo no cabe en la VRAM, sigue funcionando, pero mucho más despacio."
+      ]
+    }
+  }
+}

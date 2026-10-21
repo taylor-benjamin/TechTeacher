@@ -1,0 +1,99 @@
+{
+  "title": "JavaScript",
+  "summary": "El lenguaje del navegador: variables, funciones, arrays, objetos y código asíncrono.",
+  "lessons": {
+    "syntax-basics": {
+      "title": "JavaScript: sintaxis básica",
+      "concept": {
+        "text": "JavaScript es el lenguaje de programación integrado en todos los navegadores web. Hace que las páginas sean interactivas y, con Node.js, también se ejecuta en servidores.\n\nLos programas guardan valores en una variable, toman decisiones con `if` y repiten trabajo con bucles. `console.log()` imprime un valor para que veas qué está haciendo tu código.",
+        "analogy": "Una variable es un frasco con etiqueta. `let score = 10` mete un 10 en un frasco etiquetado score. Más tarde puedes mirar dentro del frasco o cambiar lo que contiene."
+      },
+      "visual": {
+        "caption": "Los tipos de valores que usarás a diario.",
+        "items": [
+          { "title": "string", "text": "Texto entre comillas: 'hola'" },
+          { "title": "number", "text": "42, 3.14, -7" },
+          { "title": "boolean", "text": "true o false" },
+          { "title": "array", "text": "Una lista ordenada: [1, 2, 3]" },
+          { "title": "object", "text": "Valores con nombre: { name: 'Ava', age: 30 }" },
+          { "title": "null / undefined", "text": "Nada, a propósito / nada todavía" }
+        ]
+      },
+      "steps": [
+        { "title": "Declara variables", "text": "Usa `const` por defecto. Usa `let` solo cuando el valor tenga que cambiar." },
+        { "title": "Toma una decisión", "text": "Usa `===` para comparar. Comprueba el valor y el tipo." },
+        { "title": "Repite con un bucle", "text": "`for...of` recorre cada elemento de un array." }
+      ],
+      "challenge": {
+        "prompt": "FizzBuzz: imprime los números del 1 al 15. Para los múltiplos de 3 imprime `Fizz`, para los múltiplos de 5 imprime `Buzz` y para los múltiplos de ambos imprime `FizzBuzz`.",
+        "hint": "`n % 3 === 0` es verdadero cuando n es divisible entre 3. Comprueba primero el caso de ambos."
+      },
+      "takeaways": [
+        "Usa const por defecto y let cuando un valor tenga que cambiar.",
+        "Compara con === e imprime con console.log().",
+        "Las plantillas de texto con comillas invertidas insertan valores con ${ }."
+      ]
+    },
+    "core-concepts": {
+      "title": "JavaScript: funciones, arrays, objetos y async",
+      "concept": {
+        "text": "Una función es un bloque de código reutilizable con un nombre, unas entradas (parámetros) y una salida (valor de retorno). Los arrays y los objetos guardan colecciones de datos, y los métodos de array como `map` y `filter` los transforman sin bucles manuales.\n\nAlgunas tareas tardan, como pedir datos a una API. JavaScript no se detiene a esperar. Una operación lenta devuelve una **promesa**, y `await` pausa solo esa función hasta que llega el resultado.",
+        "analogy": "Una promesa es el aparato que vibra en algunos restaurantes. Pides, te dan el aparato al momento y sigues charlando. Cuando vibra, tu comida (el resultado) está lista."
+      },
+      "visual": {
+        "caption": "Encadenar métodos de array: cada paso devuelve un array nuevo.",
+        "nodes": [
+          { "label": "[1, 2, 3, 4, 5, 6]", "detail": "Inicio" },
+          { "label": ".filter(n => n % 2 === 0)", "detail": "[2, 4, 6]" },
+          { "label": ".map(n => n * 10)", "detail": "[20, 40, 60]" },
+          { "label": ".reduce((a, b) => a + b)", "detail": "120" }
+        ]
+      },
+      "steps": [
+        { "title": "Escribe una función", "text": "Las funciones flecha son la forma corta." },
+        { "title": "Transforma arrays", "text": "`filter` conserva los elementos que pasan una prueba. `map` cambia cada elemento. `find` devuelve la primera coincidencia." },
+        { "title": "Desempaqueta objetos", "text": "La desestructuración saca campos por su nombre." },
+        { "title": "Espera lo que es lento", "text": "Marca la función como `async` y luego usa `await` con las promesas dentro de ella. Envuélvelo en try/catch para manejar los fallos." }
+      ],
+      "challenge": {
+        "prompt": "Dado el array `cart`, calcula el precio total de los artículos que están en stock. Usa `filter` y `reduce`.",
+        "hint": "`reduce((sum, item) => sum + item.price, 0)` suma los precios empezando desde 0."
+      },
+      "takeaways": [
+        "Las funciones empaquetan lógica. Las funciones flecha son una forma compacta de escribirlas.",
+        "filter, map y reduce sustituyen a la mayoría de los bucles escritos a mano.",
+        "async/await te permite escribir código que espera trabajo lento sin congelar la página."
+      ]
+    },
+    "mini-project": {
+      "title": "Mini proyecto de JavaScript: el motor de una lista de tareas",
+      "concept": {
+        "text": "Cualquier app de tareas son las mismas cuatro operaciones sobre un array de objetos: añadir, marcar, eliminar y listar. Construye primero ese motor como funciones simples. Una interfaz de usuario no es más que botones que las llaman.",
+        "analogy": "El motor es la cocina y la interfaz es el comedor. Haz que la cocina funcione bien antes de elegir los manteles."
+      },
+      "visual": {
+        "caption": "Entra un estado, sale un estado nuevo.",
+        "nodes": [
+          { "label": "todos (array)", "detail": "La única fuente de verdad" },
+          { "label": "acción", "detail": "añadir / marcar / eliminar" },
+          { "label": "nuevos todos", "detail": "Un array nuevo; el antiguo queda intacto" },
+          { "label": "renderizar", "detail": "Volver a mostrar la lista" }
+        ]
+      },
+      "steps": [
+        { "title": "Modela los datos", "text": "Cada tarea es un objeto con un `id`, un `text` y un indicador `done`." },
+        { "title": "Escribe funciones puras", "text": "Cada función recibe la lista actual y devuelve una lista nueva en lugar de modificar la antigua. Así es mucho más fácil encontrar errores." },
+        { "title": "Renderiza", "text": "Convierte el array en líneas de texto con `map` y `join`. En una app de navegador, aquí crearías elementos del DOM." }
+      ],
+      "challenge": {
+        "prompt": "Añade una función `stats(todos)` que devuelva un objeto como `{ total: 2, done: 1, remaining: 1 }`, y una función `clearDone(todos)` que elimine todas las tareas terminadas.",
+        "hint": "`todos.filter((t) => t.done).length` cuenta las tareas terminadas."
+      },
+      "takeaways": [
+        "El estado de una app suele ser simplemente un array de objetos.",
+        "Las funciones que devuelven datos nuevos en vez de modificarlos son más fáciles de probar y depurar.",
+        "Construye y prueba primero la lógica, y luego conecta una interfaz de usuario."
+      ]
+    }
+  }
+}

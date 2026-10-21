@@ -1,0 +1,163 @@
+{
+  "title": "Criptografía",
+  "summary": "Hashing, cifrado simétrico y asimétrico, y los certificados que hacen que la web sea de confianza.",
+  "lessons": {
+    "hashing": {
+      "title": "Hashing",
+      "concept": {
+        "text": "Una función hash toma cualquier entrada, desde una letra hasta una película entera, y produce una huella de tamaño fijo llamada hash o resumen (digest). La misma entrada siempre da el mismo hash. Cambia un solo carácter y el hash cambia por completo. Y es **de un solo sentido**: no puedes ir hacia atrás desde el hash hasta la entrada.\n\nEl hashing no es cifrado, porque no hay clave ni forma de revertirlo. Se usa para comprobar que unos datos no han cambiado (**integridad**), para guardar contraseñas de forma segura y dentro de las firmas digitales.",
+        "analogy": "Un hash es una huella dactilar. Una huella identifica exactamente a una persona, pero no puedes reconstruir a la persona a partir de ella. Y dos personas casi idénticas siguen teniendo huellas completamente distintas."
+      },
+      "visual": {
+        "caption": "Algoritmos de hash comunes y si conviene usarlos.",
+        "columns": ["Tamaño de salida", "Estado", "Uso"],
+        "rows": [
+          ["MD5", "128 bits", "Roto: es fácil crear colisiones", "Nunca para seguridad"],
+          ["SHA-1", "160 bits", "Roto: existen colisiones prácticas", "Solo sistemas heredados"],
+          ["SHA-256", "256 bits", "Seguro", "Integridad de archivos, firmas, TLS, Bitcoin"],
+          ["SHA-3", "224-512 bits", "Seguro", "Una alternativa moderna a SHA-2"],
+          ["bcrypt / Argon2", "Variable", "Seguro, y lento a propósito", "Guardar contraseñas"]
+        ]
+      },
+      "steps": [
+        { "title": "Tres propiedades obligatorias", "text": "**Determinista**: la misma entrada siempre da la misma salida. **De un solo sentido**: no se puede recuperar la entrada. **Resistente a colisiones**: es inviable encontrar dos entradas con el mismo hash." },
+        { "title": "Verifica una descarga", "text": "El editor publica el SHA-256 de un archivo. Calcula el hash de tu copia y compáralo. Si difiere un solo bit, los hashes no coincidirán." },
+        { "title": "Guarda las contraseñas como hashes con salt", "text": "Un sitio debe guardar un hash de tu contraseña, nunca la contraseña. Antes se añade un salt aleatorio y único, para que dos usuarios con la misma contraseña obtengan hashes distintos y las **tablas arcoíris** precalculadas no sirvan." },
+        { "title": "Usa un algoritmo lento para las contraseñas", "text": "SHA-256 está diseñado para ser rápido, lo que ayuda a los atacantes a probar miles de millones de contraseñas por segundo. bcrypt, scrypt y Argon2 son lentos a propósito y son la opción correcta para las contraseñas." }
+      ],
+      "challenge": {
+        "prompt": "Con el generador de hashes: (1) haz que la Entrada A y la Entrada B sean idénticas y confirma que los hashes coinciden. (2) Cambia una letra de mayúscula a minúscula en B. ¿Qué porcentaje aproximado de bits de SHA-256 cambia? (3) Pega un párrafo entero en A. ¿Se alarga el hash SHA-256?",
+        "hint": "Lee la línea resaltada bajo las dos entradas y compara la longitud del hash con una entrada corta y una larga.",
+        "solution": "1. Entradas idénticas dan hashes idénticos, siempre. Eso es el determinismo, y es lo que hace útiles los hashes para comprobar la integridad.\n\n2. Un cambio de un carácter invierte más o menos **la mitad de los bits** (cerca del 50 %): el **efecto avalancha**. El nuevo hash no parece tener relación con el anterior, así que un hash no revela nada sobre lo parecidas que son dos entradas.\n\n3. No. La salida de SHA-256 siempre tiene **256 bits (64 caracteres hexadecimales)**, sea cual sea el tamaño de la entrada."
+      },
+      "takeaways": [
+        "Un hash es una huella de los datos, de tamaño fijo y de un solo sentido.",
+        "Usa SHA-256 o SHA-3 para la integridad. MD5 y SHA-1 están rotos.",
+        "Guarda las contraseñas con un salt y un algoritmo lento como bcrypt o Argon2."
+      ]
+    },
+    "symmetric-encryption": {
+      "title": "Cifrado simétrico",
+      "concept": {
+        "text": "El cifrado convierte datos legibles (**texto plano**) en datos ilegibles (**texto cifrado**) usando una clave. Solo quien tenga la clave correcta puede revertirlo. Esto proporciona **confidencialidad**.\n\nEn el cifrado simétrico, la misma clave cifra y descifra. Es muy rápido, así que protege casi todos los datos en volumen: tu disco, tu tráfico Wi-Fi y el contenido de cada conexión HTTPS. Su punto débil es el **problema de la distribución de claves**: ¿cómo acuerdan dos partes una clave secreta sin que un espía la descubra?",
+        "analogy": "El cifrado simétrico es un candado del que las dos personas tienen una copia de la misma llave. Es rápido y fuerte, pero primero tienes que hacerle llegar una copia de la llave a la otra persona sin que nadie la copie por el camino."
+      },
+      "visual": {
+        "caption": "Una única clave compartida, usada en ambos sentidos.",
+        "nodes": [
+          { "label": "Texto plano", "detail": "«Nos vemos a mediodía»" },
+          { "label": "Cifrar + clave", "detail": "AES-256" },
+          { "label": "Texto cifrado", "detail": "9f3a…c27b (se puede enviar sin riesgo)" },
+          { "label": "Descifrar + la misma clave", "detail": "AES-256" },
+          { "label": "Texto plano", "detail": "«Nos vemos a mediodía»" }
+        ]
+      },
+      "steps": [
+        { "title": "Conoce el estándar: AES", "text": "El **Advanced Encryption Standard** se usa en todas partes. Los tamaños de clave son de 128, 192 o 256 bits. AES-256 tiene más claves posibles que átomos hay en el universo. **ChaCha20** es una alternativa moderna. DES y 3DES están obsoletos." },
+        { "title": "Elige un modo", "text": "AES cifra bloques fijos de 16 bytes, y un **modo** indica cómo tratar mensajes más largos. **GCM** es la opción moderna porque además detecta manipulaciones. Nunca uses **ECB**, que deja ver patrones." },
+        { "title": "Usa un IV nuevo cada vez", "text": "Un **vector de inicialización** (o nonce) es un valor aleatorio que hace que el mismo mensaje se cifre de forma distinta cada vez. No es secreto, pero nunca debe repetirse con la misma clave." },
+        { "title": "Convierte bien las contraseñas en claves", "text": "Una contraseña no es una clave. Una **función de derivación de claves** como PBKDF2 o Argon2 la estira hasta convertirla en una, despacio y con un salt. La demo de abajo usa PBKDF2 y AES-256-GCM." }
+      ],
+      "challenge": {
+        "prompt": "En la demo: (1) cifra un mensaje y luego pulsa Cifrar otra vez con el mismo mensaje y la misma contraseña. ¿El texto cifrado es igual? (2) Cambia un carácter en mitad del texto cifrado y descifra. (3) Descifra con la contraseña equivocada. Explica cada resultado.",
+        "hint": "El texto cifrado tiene tres partes separadas por puntos: salt, IV y datos.",
+        "solution": "1. **Distinto cada vez.** Se genera un salt y un IV aleatorios nuevos en cada cifrado, así que mensajes idénticos nunca producen el mismo texto cifrado. Un espía ni siquiera puede saber que enviaste lo mismo dos veces.\n\n2. **El descifrado falla.** AES-GCM es cifrado *autenticado*: incluye una etiqueta que detecta cualquier cambio en el texto cifrado. Esto da integridad además de confidencialidad.\n\n3. **El descifrado falla.** La contraseña equivocada deriva una clave distinta y la comprobación de autenticación no pasa. No se revela nada parcial ni a medias."
+      },
+      "takeaways": [
+        "El cifrado simétrico usa una única clave compartida y es rápido. AES es el estándar.",
+        "Usa un modo autenticado como GCM, con un IV único para cada mensaje.",
+        "Su problema difícil es compartir la clave de forma segura, y eso lo resuelve el cifrado asimétrico."
+      ]
+    },
+    "asymmetric-encryption": {
+      "title": "Cifrado asimétrico",
+      "concept": {
+        "text": "El cifrado asimétrico usa un **par de claves** vinculadas matemáticamente. La clave pública se puede compartir con todo el mundo. La clave privada nunca sale de manos de su dueño. Lo que cierra una clave, solo la otra lo puede abrir.\n\nEsto resuelve el problema de la distribución de claves: cualquiera puede cifrarte un mensaje con tu clave pública, y solo tu clave privada puede leerlo. Usado al revés, crea **firmas digitales**: firmas con tu clave privada y cualquiera puede comprobar con tu clave pública que el mensaje es tuyo y no se ha alterado.",
+        "analogy": "Una clave pública es un buzón con tu dirección. Cualquiera puede echar una carta por la ranura, pero solo tú tienes la llave que abre el buzón. Una firma digital es lo contrario: un sello de lacre que solo tú puedes estampar y que cualquiera puede reconocer."
+      },
+      "visual": {
+        "columns": ["Simétrico", "Asimétrico"],
+        "rows": [
+          ["Claves", "Una clave secreta compartida", "Un par de claves pública y privada"],
+          ["Velocidad", "Muy rápido", "Cientos de veces más lento"],
+          ["Algoritmos", "AES, ChaCha20", "RSA, ECC (ECDSA, Ed25519), Diffie-Hellman"],
+          ["Bueno para", "Cifrar grandes cantidades de datos", "Intercambio de claves, firmas, identidad"],
+          ["Problema principal", "Compartir la clave de forma segura", "Lento, con límites en el tamaño del mensaje"],
+          ["Tamaño típico de clave", "256 bits", "RSA 2048-4096 bits, ECC 256 bits"]
+        ]
+      },
+      "steps": [
+        { "title": "Cifra para alguien", "text": "Usa la **clave pública del destinatario**. Solo su clave privada puede descifrar. Confidencialidad." },
+        { "title": "Firma algo", "text": "Calcula el hash del mensaje y cifra el hash con **tu clave privada**. Cualquiera puede comprobarlo con tu clave pública. Esto da **autenticidad**, **integridad** y **no repudio**." },
+        { "title": "Combina ambos: cifrado híbrido", "text": "El cifrado asimétrico es demasiado lento para grandes volúmenes de datos. Los sistemas reales solo lo usan para acordar una clave simétrica aleatoria y luego pasan a AES. TLS, SSH y PGP funcionan así." },
+        { "title": "Conoce los algoritmos", "text": "**RSA** se basa en lo difícil que es factorizar números grandes. La criptografía de **curva elíptica** da la misma fuerza con claves mucho más pequeñas. **Diffie-Hellman** permite que dos partes deriven un secreto compartido por un canal público. Los ordenadores cuánticos grandes romperían los tres, y por eso se están desplegando algoritmos poscuánticos." }
+      ],
+      "challenge": {
+        "prompt": "Alicia quiere enviarle a Bruno un contrato confidencial y demostrar que viene de ella. ¿Qué clave usa para cada objetivo, y qué claves usa Bruno?",
+        "hint": "Dos objetivos, dos pares de claves distintos. La confidencialidad usa las claves del destinatario. La prueba de origen usa las del remitente.",
+        "solution": "**Confidencialidad**: Alicia cifra con la **clave pública de Bruno**. Bruno descifra con la **clave privada de Bruno**.\n\n**Prueba de origen**: Alicia firma con la **clave privada de Alicia**. Bruno lo comprueba con la **clave pública de Alicia**.\n\nEn la práctica, Alicia firma el contrato, luego cifra el contrato firmado con una clave AES aleatoria y cifra esa clave AES con la clave pública de Bruno (cifrado híbrido)."
+      },
+      "takeaways": [
+        "Un par de claves: la clave pública se comparte y la clave privada se mantiene en secreto.",
+        "Cifra con la clave pública del destinatario. Firma con tu propia clave privada.",
+        "Los sistemas reales son híbridos: asimétrico para intercambiar una clave, simétrico para los datos."
+      ]
+    },
+    "pki-certificates": {
+      "title": "PKI y certificados",
+      "concept": {
+        "text": "El cifrado asimétrico deja una pregunta abierta: ¿cómo sabes que una clave pública pertenece de verdad a `yourbank.com` y no a un impostor? La **Infraestructura de Clave Pública** (PKI) la responde.\n\nUn certificado es un documento digital que vincula una clave pública con una identidad, como un nombre de dominio. Lo firma una organización de confianza llamada autoridad de certificación. Tu navegador y tu sistema operativo incluyen una lista de **CA raíz** de confianza. Si el certificado de un sitio lleva en cadena hasta una de ellas, aparece el candado.",
+        "analogy": "Un certificado es un pasaporte. Vincula tu foto (la clave pública) con tu nombre (el dominio). No te fías de él porque lo diga el viajero, sino porque lo ha sellado un gobierno (la autoridad de certificación) en el que ya confías."
+      },
+      "visual": {
+        "caption": "Una cadena de confianza. Cada certificado está firmado por el de arriba.",
+        "layers": [
+          { "name": "CA raíz", "detail": "Autofirmada. Preinstalada en tu sistema operativo y tu navegador. Su clave privada se guarda sin conexión." },
+          { "name": "CA intermedia", "detail": "Firmada por la raíz. Emite los certificados del día a día." },
+          { "name": "Certificado final (hoja)", "detail": "Emitido para www.example.com. Contiene la clave pública del sitio." },
+          { "name": "Tu navegador", "detail": "Comprueba cada firma hasta una raíz de confianza, además del nombre, las fechas y si está revocado." }
+        ]
+      },
+      "steps": [
+        { "title": "Qué contiene un certificado", "text": "El **sujeto** (para quién es), la **clave pública**, el **emisor** (qué CA lo firmó), un **periodo de validez**, los nombres de dominio permitidos (Subject Alternative Names) y la **firma de la CA**. El formato es X.509." },
+        { "title": "Cómo consigue uno un sitio", "text": "El sitio crea un par de claves y una **Solicitud de Firma de Certificado** (CSR). La CA verifica el control del dominio, lo firma y devuelve el certificado. Let's Encrypt lo automatiza gratis con el protocolo ACME." },
+        { "title": "Cómo lo valida un navegador", "text": "¿Coincide el nombre con el sitio? ¿Está la fecha de hoy dentro del periodo de validez? ¿Lleva la cadena de firmas hasta una raíz de confianza? ¿Se ha revocado (se comprueba con CRL u OCSP)? Cualquier fallo muestra una página de aviso." },
+        { "title": "Inspecciona uno tú mismo", "text": "Haz clic en el candado del navegador y mira el certificado, o usa la línea de comandos." }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "¿Qué demuestra la firma de una autoridad de certificación en un certificado?",
+            "options": ["Que es seguro comprar en el sitio", "Que la CA verificó que la clave pública pertenece a esa identidad", "Que el sitio no tiene malware", "Que el sitio es rápido"],
+            "explain": "Un certificado demuestra identidad y permite el cifrado. No dice nada de si el sitio es honrado."
+          },
+          {
+            "q": "¿Por qué las claves privadas de las CA raíz se guardan sin conexión y las intermedias hacen la firma diaria?",
+            "options": ["Para ahorrar electricidad", "Una clave raíz robada socavaría todo lo que ha firmado", "Las raíces son más lentas", "Es una tradición"],
+            "explain": "Una intermedia comprometida se puede revocar. Una raíz comprometida es un desastre."
+          },
+          {
+            "q": "Tu navegador avisa de que un certificado ha caducado. ¿Cuál es la conclusión correcta?",
+            "options": ["El sitio es malicioso seguro", "El periodo de validez del certificado terminó y no se puede confirmar la confianza", "Tu Wi-Fi no funciona", "Ignorarlo siempre"],
+            "explain": "Normalmente es un descuido administrativo, pero el navegador ya no puede responder por la conexión."
+          },
+          {
+            "q": "¿Qué es una CSR?",
+            "options": ["Una solicitud enviada a una CA con tu clave pública y tus datos de identidad", "Un tipo de firewall", "Un certificado revocado", "Una copia de seguridad de la clave privada"],
+            "explain": "La Solicitud de Firma de Certificado es lo que firma la CA para producir tu certificado."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Un sitio de phishing en `paypa1-secure.com` muestra un candado válido. Un compañero dice «tiene el candado, así que es seguro». Explica lo que el candado garantiza y lo que no.",
+        "hint": "Pregúntate qué verificó realmente la CA antes de emitir el certificado.",
+        "solution": "El candado garantiza dos cosas: la conexión está **cifrada**, y de verdad estás hablando con el servidor que controla `paypa1-secure.com`. En la mayoría de los certificados, la CA solo verifica el **control del dominio** (validación de dominio).\n\n**No** garantiza que el dueño sea honrado, ni que el dominio sea el que querías. Un atacante puede registrar un dominio parecido y conseguir un certificado válido para él en minutos. Lee siempre el nombre de dominio."
+      },
+      "takeaways": [
+        "Un certificado vincula una clave pública con una identidad y lo firma una CA.",
+        "La confianza baja por una cadena: raíz, intermedia, hoja.",
+        "Un candado significa cifrado e identificado por dominio, no de confianza."
+      ]
+    }
+  }
+}
