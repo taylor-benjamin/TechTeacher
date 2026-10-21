@@ -21,7 +21,7 @@
 /* Theme: an "operations console" on indigo-tinted black. Near-black surfaces, luminous lime and
    green accents, thin type, pill controls and a dot-grid backdrop.
    Palette: #92b602 #16a34a #a3e635 #581c87 #1e1b4b (OKLCH ramp; light-mode accents darkened in OKLCH to pass AA).
-   All text/background pairs meet WCAG AA (4.5:1) in both modes.
+   All text pairs meet WCAG 2.2 AA (4.5:1) and UI parts 3:1 in both modes: npm run check:contrast.
    --accent carries --on-accent text; --accent-ink is accent-coloured text on the page. */
 :root {
   --surface: #f6f6fd;
@@ -30,13 +30,14 @@
   --edge: #717191;
   --ink: #1e1b4b;
   --muted: #575277;
-  --ok: #008100;
+  --ok: #007200;
   --bad: #b91c1c;
   --on-accent: #ffffff;
   --dot: rgb(30 27 75 / 0.09);
   --accent: #427d00;
-  --accent-ink: #427d00;
+  --accent-ink: #3c7200;
   --accent-soft: #e7f7d7;
+  --glow: 12%;
 }
 .dark {
   --surface: #07060f;
@@ -52,20 +53,21 @@
   --accent: #a3e635;
   --accent-ink: #a3e635;
   --accent-soft: #581c87;
+  --glow: 22%;
 }
 
 /* One colour per tab, drawn from the palette ramp: green, teal, olive, blue, purple. */
-[data-tab="software"]   { --accent: #00822a; --accent-ink: #00822a; --accent-soft: #dcf9e0; }
-[data-tab="ai"]         { --accent: #007d72; --accent-ink: #007d72; --accent-soft: #cffbf5; }
-[data-tab="networking"] { --accent: #5a7900; --accent-ink: #5a7900; --accent-soft: #eaf6d5; }
-[data-tab="webdesign"]  { --accent: #0075b6; --accent-ink: #0075b6; --accent-soft: #d6f5ff; }
+[data-tab="software"]   { --accent: #00822a; --accent-ink: #007526; --accent-soft: #dcf9e0; }
+[data-tab="ai"]         { --accent: #007d72; --accent-ink: #007067; --accent-soft: #cffbf5; }
+[data-tab="networking"] { --accent: #5a7900; --accent-ink: #536f00; --accent-soft: #eaf6d5; }
+[data-tab="webdesign"]  { --accent: #0075b6; --accent-ink: #006aa6; --accent-soft: #d6f5ff; }
 [data-tab="security"]   { --accent: #581c87; --accent-ink: #581c87; --accent-soft: #f7e9ff; }
-[data-tab="home"]       { --accent: #427d00; --accent-ink: #427d00; --accent-soft: #e7f7d7; }
-.dark [data-tab="software"]   { --accent: #1aa54c; --accent-ink: #1aa54c; --accent-soft: #0f401d; }
+[data-tab="home"]       { --accent: #427d00; --accent-ink: #3c7200; --accent-soft: #e7f7d7; }
+.dark [data-tab="software"]   { --accent: #1aa54c; --accent-ink: #1aa54c; --accent-soft: #0c2d19; }
 .dark [data-tab="ai"]         { --accent: #00bfb2; --accent-ink: #00bfb2; --accent-soft: #00423c; }
 .dark [data-tab="networking"] { --accent: #92b602; --accent-ink: #92b602; --accent-soft: #2e3b01; }
-.dark [data-tab="webdesign"]  { --accent: #1e99dc; --accent-ink: #1e99dc; --accent-soft: #003a5a; }
-.dark [data-tab="security"]   { --accent: #ae77e6; --accent-ink: #ae77e6; --accent-soft: #3f2956; }
+.dark [data-tab="webdesign"]  { --accent: #1e99dc; --accent-ink: #1e99dc; --accent-soft: #022b45; }
+.dark [data-tab="security"]   { --accent: #ae77e6; --accent-ink: #ae77e6; --accent-soft: #312044; }
 .dark [data-tab="home"]       { --accent: #a3e635; --accent-ink: #a3e635; --accent-soft: #581c87; }
 
 html { scroll-padding-top: 7rem; }
@@ -75,7 +77,7 @@ body { background: var(--surface); color: var(--ink); font-family: var(--font-sa
 .app-bg {
   background-color: var(--surface);
   background-image:
-    radial-gradient(ellipse 70% 420px at 50% -80px, color-mix(in srgb, var(--accent) 22%, transparent), transparent),
+    radial-gradient(ellipse 70% 420px at 50% -80px, color-mix(in srgb, var(--accent) var(--glow), transparent), transparent),
     radial-gradient(var(--dot) 1px, transparent 1.5px);
   background-size: auto, 22px 22px;
   background-repeat: no-repeat, repeat;

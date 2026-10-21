@@ -52,7 +52,7 @@ function Flow({ nodes }) {
               aria-current={i === s.active ? 'step' : undefined}
             >
               <div className="font-semibold">{n.label}</div>
-              {n.detail && <div className="mt-0.5 text-xs opacity-90">{n.detail}</div>}
+              {n.detail && <div className="mt-0.5 text-xs">{n.detail}</div>}
             </div>
             {i < items.length - 1 && <span aria-hidden="true" className="px-2 text-lg text-muted">→</span>}
           </li>
@@ -112,8 +112,9 @@ function Sequence({ actors, messages }) {
             const y = 74 + i * 46
             const on = i === s.active
             return (
-              <g key={i} opacity={on ? 1 : 0.55}>
-                <text x={(col(m.from) + col(m.to)) / 2} y={y - 8} textAnchor="middle" fontSize="12.5" fontWeight={on ? 700 : 400} fill="var(--ink)">
+              // Inactive steps use the muted colour, not transparency, so the text keeps AA contrast.
+              <g key={i}>
+                <text x={(col(m.from) + col(m.to)) / 2} y={y - 8} textAnchor="middle" fontSize="12.5" fontWeight={on ? 700 : 400} fill={on ? 'var(--ink)' : 'var(--muted)'}>
                   {i + 1}. {m.label}
                 </text>
                 <line

@@ -6,6 +6,8 @@ import { LEVELS, btn, btnPrimary, card, href } from './lib/ui'
 import Lesson from './components/Lesson'
 import Home, { Glossary, ProgressBar } from './components/Home'
 import Search from './components/Search'
+import logoLight from './assets/brand/techteacher-logo-light.svg'
+import logoDark from './assets/brand/techteacher-logo-dark.svg'
 
 function ErrorMessage({ error }) {
   const { t } = useTranslation()
@@ -224,9 +226,10 @@ export default function App() {
 
       <header className="glass sticky top-0 z-40 border-b border-line">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-3 gap-y-2 px-4 py-2.5">
-          <a href="#/" className="flex items-center gap-2 text-xl font-medium tracking-tight">
-            <span aria-hidden="true" className="grid h-8 w-8 place-items-center rounded-lg bg-accent text-on-accent">T</span>
-            TechTeacher
+          {/* Each logo is drawn for its theme: dark wordmark on light, light wordmark on dark. */}
+          <a href="#/" className="flex shrink-0 items-center">
+            <img src={logoLight} alt="TechTeacher" width="157" height="32" className="h-8 w-auto dark:hidden" />
+            <img src={logoDark} alt="TechTeacher" width="157" height="32" className="hidden h-8 w-auto dark:block" />
           </a>
           <nav aria-label={t('app.subjects')} className="order-last w-full overflow-x-auto [scrollbar-width:thin]">
             <ul className="flex gap-1.5 p-0.5">

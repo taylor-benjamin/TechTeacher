@@ -73,7 +73,7 @@ export default function NeuralNet() {
   // Thickness = strength. Solid = positive, dashed = negative (so colour is not the only cue).
   const edge = (w, x1, y1, x2, y2, key) => (
     <line key={key} x1={x1} y1={y1} x2={x2} y2={y2} stroke={w >= 0 ? 'var(--accent-ink)' : 'var(--bad)'}
-      strokeWidth={Math.min(7, 0.6 + Math.abs(w) * 1.4)} strokeDasharray={w >= 0 ? undefined : '6 4'} opacity="0.8" />
+      strokeWidth={Math.min(7, 0.6 + Math.abs(w) * 1.4)} strokeDasharray={w >= 0 ? undefined : '6 4'} />
   )
   const node = (x, yy, value, label) => (
     <g key={label}>

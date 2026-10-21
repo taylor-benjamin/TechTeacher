@@ -70,6 +70,7 @@ The EN/ES switch in the header translates the whole site. Spanish-language brows
 ```bash
 npm run validate      # lesson format and learning-path links
 npm run check:es      # Spanish translations are complete
+npm run check:contrast  # every theme colour pairing meets WCAG 2.2 AA (also runs on deploy)
 npm run test:bash     # runs the Bash lesson snippets through the simulated shell
 
 # With `npm run build` done and `npm run preview` running in another terminal:

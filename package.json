@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "validate": "node scripts/validate-content.mjs",
     "check:es": "node scripts/i18n-content.mjs check",
+    "check:contrast": "node scripts/check-contrast.mjs",
     "test:bash": "node scripts/test-bash.mjs",
     "test:e2e": "node scripts/e2e.mjs"
   },
