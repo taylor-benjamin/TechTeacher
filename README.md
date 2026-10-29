@@ -1,5 +1,5 @@
 # TechTeacher
-Link to live site: https://taylor-benjamin.github.io/TechTeacher/****
+Link to live site: https://techteacher.page
 
 A single-page learning platform covering Software Development, AI/ML, Networking, Web Design and Cybersecurity. Built with React, Tailwind CSS and Vite. All lesson content lives in JSON.
 
@@ -83,8 +83,8 @@ powershell -ExecutionPolicy Bypass -File scripts/smoke.ps1 -Quiet   # renders ev
 The build is fully static and uses relative paths, so `dist/` works on any host.
 
 - **Netlify / Vercel**: import the repository. Build command `npm run build`, output directory `dist`.
-- **GitHub Pages**: `.github/workflows/deploy.yml` validates the content, builds and publishes `dist/` on every push to `main`. In the repository's Settings → Pages, set the source to **GitHub Actions** once.
-- **Cloudflare Workers** (the only host with accounts): Workers Builds runs `npx wrangler deploy` on every push to `main`. `wrangler.jsonc` builds the site, serves `dist/`, and routes `/api/*` to `worker/index.js`. The D1 database `techteacher-db` is created on the first deploy and its tables on the first API request.
+- **GitHub Pages**: `.github/workflows/deploy.yml` validates the content and builds on every push to `main`, then publishes only `pages-redirect/`, which sends old `github.io` links to techteacher.page.
+- **Cloudflare Workers** (the only host with accounts): Workers Builds runs `npx wrangler deploy` on every push to `main`. The public address is `techteacher.page`; `www.techteacher.page` and the `workers.dev` address redirect there. `wrangler.jsonc` builds the site, serves `dist/`, and routes `/api/*` to `worker/index.js`. The D1 database `techteacher-db` is created on the first deploy and its tables on the first API request.
 
 ## Accounts
 

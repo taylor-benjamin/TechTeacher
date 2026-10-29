@@ -1,5 +1,8 @@
 name: Deploy to GitHub Pages
 
+# The site lives at https://techteacher.page (Cloudflare). This still validates the content on
+# every push, but GitHub Pages now only serves a page that redirects old links there.
+
 on:
   push:
     branches: [main]
@@ -28,9 +31,10 @@ jobs:
       - run: npm run validate
       - run: npm run check:contrast
       - run: npm run build
+      - run: cp pages-redirect/index.html pages-redirect/404.html
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: pages-redirect
 
   deploy:
     needs: build

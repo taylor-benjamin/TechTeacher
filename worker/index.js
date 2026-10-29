@@ -5,6 +5,7 @@ import { ensureSchema } from './schema'
 const LESSON_KEY = /^[a-z0-9-]{1,40}(\/[a-z0-9-]{1,60}){2}$/
 const EVENTS = new Set(['lesson_open', 'lesson_complete', 'lesson_uncomplete'])
 const MAX_SYNC = 500
+const REDIRECT_HOSTS = new Set(['www.techteacher.page', 'techteacher.ssbentaylorr.workers.dev'])
 
 const json = (data, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } })
@@ -66,9 +67,11 @@ async function api(request, env, userId, path) {
 
 export default {
   async fetch(request, env) {
+    // techteacher.page is the one public address. Preview builds (*-techteacher...workers.dev) are left alone.
     const url = new URL(request.url)
-    if (url.hostname === 'www.techteacher.page') {
+    if (REDIRECT_HOSTS.has(url.hostname)) {
       url.hostname = 'techteacher.page'
+      url.protocol = 'https:'
       return Response.redirect(url.toString(), 301)
     }
     const path = url.pathname
