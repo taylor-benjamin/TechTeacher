@@ -14,7 +14,8 @@
     "showMenu": "Mostrar módulos y lecciones",
     "hideMenu": "Ocultar módulos y lecciones",
     "footerSaved": "tu progreso se guarda en este navegador",
-    "learningPaths": "Rutas de aprendizaje"
+    "learningPaths": "Rutas de aprendizaje",
+    "footerSavedAccount": "tu progreso se guarda en tu cuenta"
   },
   "levels": {
     "label": "Nivel",
@@ -290,7 +291,14 @@
     "placeholder": "p. ej. dns o tcp.port==443",
     "clear": "Borrar",
     "showing": "Mostrando {{shown}} de {{total}} paquetes",
-    "columns": ["N.º", "Tiempo", "Origen", "Destino", "Protocolo", "Info"],
+    "columns": [
+      "N.º",
+      "Tiempo",
+      "Origen",
+      "Destino",
+      "Protocolo",
+      "Info"
+    ],
     "inspect": "Inspeccionar el paquete {{n}}",
     "details": "Detalles del paquete {{n}}"
   },
@@ -302,5 +310,46 @@
     "tokens": "Tokens",
     "perToken": "Caracteres por token",
     "note": "El punto (·) marca un espacio que pertenece al token. Esta demo imita la tokenización por subpalabras para que veas la idea; los tokenizadores reales (como BPE) aprenden sus piezas a partir de datos, así que las divisiones exactas y los ID cambian según el modelo."
+  },
+  "account": {
+    "short": "Cuenta",
+    "signIn": "Iniciar sesión",
+    "signOut": "Cerrar sesión",
+    "create": "Crear cuenta",
+    "signInTitle": "Iniciar sesión",
+    "createTitle": "Crea tu cuenta",
+    "why": "Guarda tu progreso y tu actividad para tenerlos en cualquier dispositivo.",
+    "name": "Nombre",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "passwordHint": "Al menos 10 caracteres. Una frase corta es más fácil de recordar que símbolos al azar.",
+    "haveAccount": "¿Ya tienes una cuenta?",
+    "noAccount": "¿Eres nuevo?",
+    "title": "Tu cuenta",
+    "completed": "{{count}} de {{total}} lecciones completadas",
+    "activity": "Actividad reciente",
+    "noActivity": "Todavía nada. Abre una lección para empezar.",
+    "events": {
+      "lesson_open": "Abriste",
+      "lesson_complete": "Completaste",
+      "lesson_uncomplete": "Marcaste como pendiente"
+    },
+    "deleteTitle": "Eliminar cuenta",
+    "deleteText": "Elimina para siempre tu cuenta, tu progreso y tu actividad. Escribe tu contraseña para confirmar.",
+    "delete": "Eliminar cuenta",
+    "deleteConfirm": "¿Eliminar tu cuenta y todo tu progreso guardado? No se puede deshacer.",
+    "unavailable": "Las cuentas no están disponibles en esta copia del sitio.",
+    "errors": {
+      "generic": "Algo salió mal. Inténtalo de nuevo.",
+      "tooMany": "Demasiados intentos. Espera un minuto y vuelve a intentarlo.",
+      "INVALID_EMAIL_OR_PASSWORD": "El correo y la contraseña no coinciden.",
+      "INVALID_PASSWORD": "La contraseña no es correcta.",
+      "INVALID_EMAIL": "Escribe un correo electrónico válido.",
+      "PASSWORD_TOO_SHORT": "Usa al menos 10 caracteres.",
+      "PASSWORD_TOO_LONG": "Usa 128 caracteres o menos.",
+      "USER_ALREADY_EXISTS": "Ya existe una cuenta con ese correo. Prueba a iniciar sesión.",
+      "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL": "Ya existe una cuenta con ese correo. Prueba a iniciar sesión.",
+      "SESSION_EXPIRED": "Tu sesión caducó. Vuelve a iniciar sesión."
+    }
   }
 }

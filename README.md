@@ -84,6 +84,16 @@ The build is fully static and uses relative paths, so `dist/` works on any host.
 
 - **Netlify / Vercel**: import the repository. Build command `npm run build`, output directory `dist`.
 - **GitHub Pages**: `.github/workflows/deploy.yml` validates the content, builds and publishes `dist/` on every push to `main`. In the repository's Settings → Pages, set the source to **GitHub Actions** once.
+- **Cloudflare Workers** (the only host with accounts): Workers Builds runs `npx wrangler deploy` on every push to `main`. `wrangler.jsonc` builds the site, serves `dist/`, and routes `/api/*` to `worker/index.js`. The D1 database `techteacher-db` is created on the first deploy and its tables on the first API request.
+
+## Accounts
+
+Signed-in users' lesson progress and activity are stored in D1, so they follow them between devices. Signed-out visitors keep using `localStorage`, and their progress is merged into the account when they sign in. On hosts without the Worker the account button is hidden.
+
+- Auth is [Better Auth](https://better-auth.com) with email and password (`worker/auth.js`). Passwords are hashed with PBKDF2-SHA256 through Web Crypto, and sign-in, sign-up and delete are rate-limited per IP.
+- The Worker needs one secret, `BETTER_AUTH_SECRET` (a long random string), set in the Cloudflare dashboard under the Worker's **Settings → Variables and Secrets**. Without it, `/api/*` answers 503 and the site still works without accounts.
+- API: `GET /api/progress`, `POST /api/progress/sync`, `PUT`/`DELETE /api/progress/<lesson key>`, `GET`/`POST /api/activity`.
+- Run it locally: put `BETTER_AUTH_SECRET=<anything>` in `.dev.vars`, then `npm run build` and `npx wrangler dev` (uses a local D1 copy).
 
 ## Project layout
 
@@ -97,6 +107,7 @@ src/
   content/es/           Spanish strings for the same files
   locales/              interface text in English and Spanish
   lib/                  content loading and search, localStorage hooks, shared styles
+worker/                 Cloudflare Worker: API routes, Better Auth setup, D1 schema
 scripts/                validation and test scripts
 ```
 

@@ -14,7 +14,8 @@
     "showMenu": "Show modules and lessons",
     "hideMenu": "Hide modules and lessons",
     "footerSaved": "progress is saved in this browser",
-    "learningPaths": "Learning paths"
+    "learningPaths": "Learning paths",
+    "footerSavedAccount": "progress is saved to your account"
   },
   "levels": {
     "label": "Level",
@@ -290,7 +291,14 @@
     "placeholder": "e.g. dns or tcp.port==443",
     "clear": "Clear",
     "showing": "Showing {{shown}} of {{total}} packets",
-    "columns": ["No.", "Time", "Source", "Destination", "Protocol", "Info"],
+    "columns": [
+      "No.",
+      "Time",
+      "Source",
+      "Destination",
+      "Protocol",
+      "Info"
+    ],
     "inspect": "Inspect packet {{n}}",
     "details": "Packet {{n}} details"
   },
@@ -302,5 +310,46 @@
     "tokens": "Tokens",
     "perToken": "Characters per token",
     "note": "The dot (·) marks a space that belongs to the token. This demo imitates subword tokenization so you can see the idea; real tokenizers (such as BPE) learn their pieces from data, so exact splits and IDs differ per model."
+  },
+  "account": {
+    "short": "Account",
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "create": "Create account",
+    "signInTitle": "Sign in",
+    "createTitle": "Create your account",
+    "why": "Save your progress and activity so they follow you to any device.",
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "passwordHint": "At least 10 characters. A short phrase is easier to remember than random symbols.",
+    "haveAccount": "Already have an account?",
+    "noAccount": "New here?",
+    "title": "Your account",
+    "completed": "{{count}} of {{total}} lessons completed",
+    "activity": "Recent activity",
+    "noActivity": "Nothing yet. Open a lesson to get started.",
+    "events": {
+      "lesson_open": "Opened",
+      "lesson_complete": "Completed",
+      "lesson_uncomplete": "Marked not done"
+    },
+    "deleteTitle": "Delete account",
+    "deleteText": "Permanently removes your account, progress and activity. Enter your password to confirm.",
+    "delete": "Delete account",
+    "deleteConfirm": "Delete your account and all saved progress? This cannot be undone.",
+    "unavailable": "Accounts are not available on this copy of the site.",
+    "errors": {
+      "generic": "Something went wrong. Please try again.",
+      "tooMany": "Too many attempts. Wait a minute and try again.",
+      "INVALID_EMAIL_OR_PASSWORD": "That email and password do not match.",
+      "INVALID_PASSWORD": "That password is not correct.",
+      "INVALID_EMAIL": "Enter a valid email address.",
+      "PASSWORD_TOO_SHORT": "Use at least 10 characters.",
+      "PASSWORD_TOO_LONG": "Use 128 characters or fewer.",
+      "USER_ALREADY_EXISTS": "An account with that email already exists. Try signing in.",
+      "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL": "An account with that email already exists. Try signing in.",
+      "SESSION_EXPIRED": "Your session expired. Sign in again."
+    }
   }
 }

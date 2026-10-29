@@ -6,6 +6,8 @@ import { LEVELS, btn, btnPrimary, card, href } from './lib/ui'
 import Lesson from './components/Lesson'
 import Home, { Glossary, ProgressBar } from './components/Home'
 import Search from './components/Search'
+import Account from './components/Account'
+import { logActivity, setLessonDone, syncProgress, useAccount } from './lib/account'
 import logoLight from './assets/brand/techteacher-logo-light.svg'
 import logoDark from './assets/brand/techteacher-logo-dark.svg'
 
@@ -188,6 +190,8 @@ export default function App() {
   const [done, setDone] = useStored('tt.progress', {})
   const [menuOpen, setMenuOpen] = useState(false)
   const mainRef = useRef(null)
+  const account = useAccount()
+  const signedIn = account.status === 'signedIn'
 
   const tab = tabById[tabId]
   const module = tab?.modules.find((m) => m.id === moduleId)
@@ -210,7 +214,29 @@ export default function App() {
     mainRef.current?.focus({ preventScroll: true })
   }, [routeKey])
 
-  const toggleDone = (key) => setDone((d) => ({ ...d, [key]: !d[key] }))
+  // On sign-in, lessons finished while signed out are merged into the account and the
+  // account's progress replaces the browser copy. On sign-out the browser copy is cleared,
+  // so the next person on a shared computer starts fresh.
+  const wasSignedIn = useRef(false)
+  useEffect(() => {
+    if (signedIn) {
+      syncProgress(Object.keys(done).filter((k) => done[k]))
+        .then(({ progress }) => setDone(Object.fromEntries(Object.keys(progress).map((k) => [k, true]))))
+        .catch(() => {})
+    } else if (wasSignedIn.current) {
+      setDone({})
+    }
+    wasSignedIn.current = signedIn
+  }, [signedIn]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (signedIn && lesson) logActivity('lesson_open', lesson.key).catch(() => {})
+  }, [signedIn, lesson?.key]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const toggleDone = (key) => {
+    setDone((d) => ({ ...d, [key]: !d[key] }))
+    if (signedIn) setLessonDone(key, !done[key]).catch(() => {})
+  }
   const idx = lesson ? allLessons.indexOf(lesson) : -1
   const inTab = (l) => (l?.tabId === tab?.id ? l : null)
 
@@ -261,6 +287,11 @@ export default function App() {
             <Search />
             <a href="#/paths" className={`${btn} max-sm:hidden`}>{t('app.paths')}</a>
             <a href="#/glossary" className={`${btn} max-sm:hidden`}>{t('app.glossary')}</a>
+            {(signedIn || account.status === 'signedOut') && (
+              <a href="#/account" aria-current={tabId === 'account' ? 'page' : undefined} className={btn}>
+                {signedIn ? t('account.short') : t('account.signIn')}
+              </a>
+            )}
             <LanguageSwitch />
             <button
               type="button"
@@ -308,6 +339,8 @@ export default function App() {
               <TabOverview tab={tab} done={done} />
             ) : tabId === 'glossary' ? (
               <Glossary />
+            ) : tabId === 'account' ? (
+              <Account account={account} done={done} />
             ) : (
               <Home done={done} pathsOnly={tabId === 'paths'} />
             )}
@@ -316,7 +349,7 @@ export default function App() {
       </div>
 
       <footer className="border-t border-line px-4 py-6 text-center text-sm text-muted">
-        TechTeacher · {t('app.footerSaved')} ·{' '}
+        TechTeacher · {signedIn ? t('app.footerSavedAccount') : t('app.footerSaved')} ·{' '}
         <a className="underline" href="#/paths">{t('app.learningPaths')}</a> · <a className="underline" href="#/glossary">{t('app.glossary')}</a>
       </footer>
     </div>
