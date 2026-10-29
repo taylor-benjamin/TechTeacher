@@ -410,7 +410,7 @@
       {
         "heading": "Services that help run the site",
         "items": [
-          "Cloudflare hosts the site and database, and its Turnstile check on the sign-in forms looks at browser signals to tell people from bots.",
+          "Cloudflare hosts the site and database. Its Turnstile check on the sign-in forms looks at browser signals to tell people from bots, and its Web Analytics counts page visits without cookies or tracking individuals.",
           "Resend delivers account emails (confirmation and password reset), so it receives your email address.",
           "Google Fonts serves the typeface, so your browser contacts Google when the page loads."
         ]

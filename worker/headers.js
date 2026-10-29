@@ -9,6 +9,9 @@ const policy = (directives) =>
 const PYODIDE = 'https://cdn.jsdelivr.net/pyodide/'
 const SQLJS = 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/'
 const TURNSTILE = 'https://challenges.cloudflare.com'
+// Cloudflare Web Analytics (cookie-free visit counts), injected by Cloudflare at the edge.
+const ANALYTICS_SCRIPT = 'https://static.cloudflareinsights.com'
+const ANALYTICS_BEACON = 'https://cloudflareinsights.com'
 // Hosts the API tester and lesson code are allowed to call.
 const LESSON_APIS = ['https://jsonplaceholder.typicode.com', 'https://api.github.com']
 
@@ -16,12 +19,12 @@ const LESSON_APIS = ['https://jsonplaceholder.typicode.com', 'https://api.github
 const APP = policy({
   'default-src': ["'self'"],
   // wasm-unsafe-eval lets the Python and SQL runners compile WebAssembly; it does not allow JS eval.
-  'script-src': ["'self'", "'wasm-unsafe-eval'", TURNSTILE, PYODIDE, SQLJS],
+  'script-src': ["'self'", "'wasm-unsafe-eval'", TURNSTILE, PYODIDE, SQLJS, ANALYTICS_SCRIPT],
   // CodeMirror and Turnstile insert <style> tags, so inline styles are allowed (styles cannot run code).
   'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
   'font-src': ["'self'", 'https://fonts.gstatic.com'],
   'img-src': ["'self'", 'data:'],
-  'connect-src': ["'self'", PYODIDE, SQLJS, ...LESSON_APIS],
+  'connect-src': ["'self'", PYODIDE, SQLJS, ANALYTICS_BEACON, ...LESSON_APIS],
   'frame-src': ["'self'", TURNSTILE],
   'worker-src': ["'self'"],
   'manifest-src': ["'self'"],

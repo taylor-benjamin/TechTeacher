@@ -410,7 +410,7 @@
       {
         "heading": "Servicios que ayudan a mantener el sitio",
         "items": [
-          "Cloudflare aloja el sitio y la base de datos, y su verificación Turnstile en los formularios de acceso analiza señales del navegador para distinguir personas de bots.",
+          "Cloudflare aloja el sitio y la base de datos. Su verificación Turnstile en los formularios de acceso analiza señales del navegador para distinguir personas de bots, y su servicio Web Analytics cuenta las visitas sin cookies ni seguimiento de personas.",
           "Resend entrega los correos de la cuenta (confirmación y restablecimiento de contraseña), así que recibe tu correo electrónico.",
           "Google Fonts sirve la tipografía, así que tu navegador se conecta con Google al cargar la página."
         ]
