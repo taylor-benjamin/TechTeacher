@@ -1,17 +1,18 @@
 ﻿// End-to-end checks of the interactive widgets, driven through headless Edge (no dependencies).
 // Usage: npm run build; npm run preview (in another terminal); node scripts/e2e.mjs [screenshot-dir]
+// To include the Worker's security headers: npx wrangler dev --port 4173, then run the same command.
 import { spawn } from 'node:child_process'
 import { existsSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-const BASE = 'http://localhost:4173/#/'
+const BASE = (process.env.E2E_BASE ?? 'http://localhost:4173') + '/#/'
 const PORT = 9333
 const shotDir = process.argv[2]
 const edge = ['C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe', 'C:/Program Files/Microsoft/Edge/Application/msedge.exe'].find(existsSync)
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 
-const browser = spawn(edge, ['--headless=new', '--disable-gpu', '--no-first-run', `--remote-debugging-port=${PORT}`, `--user-data-dir=${join(tmpdir(), 'tt-e2e-profile')}`, 'about:blank'])
+const browser = spawn(edge, ['--headless=new', '--disable-gpu', '--no-first-run', '--disable-features=IsolateSandboxedIframes', '--disable-site-isolation-trials', `--remote-debugging-port=${PORT}`, `--user-data-dir=${join(tmpdir(), 'tt-e2e-profile')}`, 'about:blank'])
 
 let target
 for (let i = 0; i < 50 && !target; i++) {
@@ -22,10 +23,14 @@ const ws = new WebSocket(target.webSocketDebuggerUrl)
 await new Promise((r) => (ws.onopen = r))
 const pending = new Map()
 const pageErrors = []
+const contexts = new Set()
 let nextId = 1
 ws.onmessage = ({ data }) => {
   const msg = JSON.parse(data)
   if (msg.id) return pending.get(msg.id)?.(msg)
+  if (msg.method === 'Runtime.executionContextCreated') contexts.add(msg.params.context.id)
+  if (msg.method === 'Runtime.executionContextDestroyed') contexts.delete(msg.params.executionContextId)
+  if (msg.method === 'Runtime.executionContextsCleared') contexts.clear()
   if (msg.method === 'Runtime.exceptionThrown') pageErrors.push(msg.params.exceptionDetails.exception?.description ?? msg.params.exceptionDetails.text)
   if (msg.method === 'Runtime.consoleAPICalled' && msg.params.type === 'error') pageErrors.push(msg.params.args.map((a) => a.value ?? a.description).join(' '))
 }
@@ -69,6 +74,10 @@ const shot = async (name) => {
 
 await send('Page.enable')
 await send('Runtime.enable')
+// Any blocked load or script under the Content-Security-Policy is reported as a page error.
+await send('Page.addScriptToEvaluateOnNewDocument', {
+  source: `addEventListener('securitypolicyviolation', (e) => console.error('CSP blocked ' + e.violatedDirective + ': ' + e.blockedURI))`,
+})
 await send('Emulation.setDeviceMetricsOverride', { width: 1280, height: 900, deviceScaleFactor: 1, mobile: false })
 
 const results = []
@@ -109,7 +118,16 @@ await check('Bash simulator', runner('software/bash/core-concepts', 'Run', 'logs
 await check('Java expected output', runner('software/java/syntax-basics', 'Show expected output', 'Ava has 12 points'))
 await check('HTML live preview', async () => {
   await goto('software/html-css/syntax-basics')
-  return waitFor(`document.querySelector('iframe[title="Live preview"]')?.srcdoc.includes('Hello, web!')`)
+  // The preview renders inside a sandboxed frame, so look for the text in every frame's context.
+  const end = Date.now() + 8000
+  while (Date.now() < end) {
+    for (const contextId of contexts) {
+      const { result } = await send('Runtime.evaluate', { expression: `document.body?.innerText ?? ''`, contextId, returnByValue: true })
+      if (String(result?.result?.value ?? '').includes('Hello, web!')) return true
+    }
+    await sleep(200)
+  }
+  return false
 })
 await check('API tester: GET returns 200', async () => {
   await goto('software/apis/live-api-tester')

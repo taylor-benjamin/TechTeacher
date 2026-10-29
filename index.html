@@ -28,12 +28,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
-    <script>
-      // Dark is the default look. Apply the saved theme before first paint to avoid a flash.
-      var t = null
-      try { t = JSON.parse(localStorage.getItem('tt.theme')) } catch (e) {}
-      if (t !== 'light') document.documentElement.classList.add('dark')
-    </script>
+    <!-- Blocking on purpose: applies the saved theme before first paint. A file, not inline, so the security policy can forbid inline scripts. -->
+    <script src="/theme.js"></script>
   </head>
   <body>
     <div id="root"></div>

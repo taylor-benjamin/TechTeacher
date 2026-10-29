@@ -28,7 +28,9 @@ export function useAccount() {
   useEffect(() => {
     call('api/auth/get-session')
       .then((s) => setState(s?.user ? { status: 'signedIn', user: s.user } : { status: 'signedOut', user: null }))
-      .catch(() => setState({ status: 'unavailable', user: null }))
+      // 404 (no Worker, e.g. a static host) or 503 (not configured) means no accounts here.
+      // Anything else is temporary, so still offer sign-in.
+      .catch((e) => setState({ status: [404, 503, undefined].includes(e.status) ? 'unavailable' : 'signedOut', user: null }))
     call('api/features').then(setFeatures).catch(() => {})
   }, [])
 

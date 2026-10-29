@@ -1,4 +1,5 @@
 import { createAuth } from './auth'
+import { withSecurityHeaders } from './headers'
 import { ensureSchema } from './schema'
 
 // Lesson keys look like "web/html-basics/intro"; anything else is rejected.
@@ -65,28 +66,32 @@ async function api(request, env, userId, path) {
   return json({ error: 'not_found' }, 404)
 }
 
+async function handle(request, env) {
+  // techteacher.page is the one public address. Preview builds (*-techteacher...workers.dev) are left alone.
+  const url = new URL(request.url)
+  if (REDIRECT_HOSTS.has(url.hostname)) {
+    url.hostname = 'techteacher.page'
+    url.protocol = 'https:'
+    return Response.redirect(url.toString(), 301)
+  }
+  const path = url.pathname
+  if (!path.startsWith('/api/')) return env.ASSETS.fetch(request)
+
+  if (!env.BETTER_AUTH_SECRET) return json({ error: 'accounts_not_configured' }, 503)
+  if (path === '/api/features') return json({ email: !!env.RESEND_API_KEY })
+  await ensureSchema(env.DB)
+  const auth = createAuth(env, request)
+
+  if (path.startsWith('/api/auth/')) return auth.handler(request)
+
+  if (request.method !== 'GET' && !sameOrigin(request)) return json({ error: 'forbidden' }, 403)
+  const session = await auth.api.getSession({ headers: request.headers })
+  if (!session) return json({ error: 'unauthorized' }, 401)
+  return api(request, env, session.user.id, path)
+}
+
 export default {
   async fetch(request, env) {
-    // techteacher.page is the one public address. Preview builds (*-techteacher...workers.dev) are left alone.
-    const url = new URL(request.url)
-    if (REDIRECT_HOSTS.has(url.hostname)) {
-      url.hostname = 'techteacher.page'
-      url.protocol = 'https:'
-      return Response.redirect(url.toString(), 301)
-    }
-    const path = url.pathname
-    if (!path.startsWith('/api/')) return env.ASSETS.fetch(request)
-
-    if (!env.BETTER_AUTH_SECRET) return json({ error: 'accounts_not_configured' }, 503)
-    if (path === '/api/features') return json({ email: !!env.RESEND_API_KEY })
-    await ensureSchema(env.DB)
-    const auth = createAuth(env, request)
-
-    if (path.startsWith('/api/auth/')) return auth.handler(request)
-
-    if (request.method !== 'GET' && !sameOrigin(request)) return json({ error: 'forbidden' }, 403)
-    const session = await auth.api.getSession({ headers: request.headers })
-    if (!session) return json({ error: 'unauthorized' }, 401)
-    return api(request, env, session.user.id, path)
+    return withSecurityHeaders(await handle(request, env), new URL(request.url).pathname)
   },
 }

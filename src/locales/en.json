@@ -353,7 +353,8 @@
       "VERIFICATION_FAILED": "The bot check failed. Please try again.",
       "MISSING_RESPONSE": "Please wait for the bot check to finish.",
       "INVALID_TOKEN": "This link has expired or was already used.",
-      "CREDENTIAL_ACCOUNT_NOT_FOUND": "That password is not correct."
+      "CREDENTIAL_ACCOUNT_NOT_FOUND": "That password is not correct.",
+      "PASSWORD_COMPROMISED": "That password has appeared in a data breach, so it is easy for attackers to guess. Please choose a different one."
     },
     "forgotLink": "Forgot password?",
     "forgotTitle": "Reset your password",

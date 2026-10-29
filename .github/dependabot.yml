@@ -1,0 +1,15 @@
+# Opens pull requests when dependencies publish updates, including security fixes.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      # One PR for routine updates; security updates still arrive on their own right away.
+      minor-and-patch:
+        update-types: [minor, patch]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

@@ -42,23 +42,12 @@ const loadScript = (src) =>
     document.head.appendChild(s)
   }))
 
-const WORKER = `
-const fmt = (v) => { if (typeof v === 'string') return v; try { return JSON.stringify(v, null, 2) ?? String(v) } catch { return String(v) } };
-const send = (kind, args) => postMessage({ kind, text: args.map(fmt).join(' ') });
-console.log = console.info = console.debug = (...a) => send('out', a);
-console.warn = console.error = (...a) => send('err', a);
-console.table = (v) => send('out', [v]);
-onmessage = async (e) => {
-  try { await new (Object.getPrototypeOf(async function () {}).constructor)(e.data)() }
-  catch (err) { send('err', [String(err)]) }
-  postMessage({ kind: 'done' })
-};`
-
 let worker
 function runJs(code, push) {
   worker?.terminate()
   return new Promise((resolve) => {
-    const w = (worker = new Worker(URL.createObjectURL(new Blob([WORKER], { type: 'text/javascript' }))))
+    // Served from its own file so it gets its own, narrower security policy (see worker/headers.js).
+    const w = (worker = new Worker('/js-runner.js'))
     // Kill runaway loops. Timers scheduled by the code may keep logging until then.
     const timer = setTimeout(() => {
       w.terminate()
@@ -129,6 +118,23 @@ async function runRemote(lang, code, push, expected) {
   if (run?.stderr) push({ kind: 'err', text: run.stderr })
 }
 
+// The learner's HTML runs in /html-preview.html, a sandboxed page with its own relaxed security policy,
+// so their inline scripts work without loosening the policy for the rest of the site.
+function HtmlPreview({ code, title }) {
+  const frame = useRef(null)
+  const [ready, setReady] = useState(false)
+  useEffect(() => {
+    const onMessage = (e) => e.source === frame.current?.contentWindow && e.data === 'preview-ready' && setReady(true)
+    addEventListener('message', onMessage)
+    return () => removeEventListener('message', onMessage)
+  }, [])
+  useEffect(() => {
+    // The sandboxed page has an opaque origin, so '*' is the only target that reaches it.
+    if (ready) frame.current?.contentWindow?.postMessage(code, '*')
+  }, [ready, code])
+  return <iframe ref={frame} title={title} sandbox="allow-scripts" src="/html-preview.html" className="h-72 w-full border-t border-line bg-white" />
+}
+
 export default function CodeRunner({ language = 'javascript', starter = '', expected, seed, theme }) {
   const { t } = useTranslation()
   const lang = LANGS[language] ?? LANGS.javascript
@@ -185,7 +191,7 @@ export default function CodeRunner({ language = 'javascript', starter = '', expe
           : t(`code.where.${language in LANGS ? language : 'javascript'}`)}
       </p>
       {isHtml ? (
-        <iframe title={t('code.preview')} sandbox="allow-scripts" srcDoc={code} className="h-72 w-full border-t border-line bg-white" />
+        <HtmlPreview code={code} title={t('code.preview')} />
       ) : (
         <div className="max-h-80 min-h-16 overflow-auto border-t border-line bg-panel p-3 font-mono text-sm" role="log" aria-label={t('code.output')} aria-live="polite">
           {!output.length && <span className="text-muted">{running ? '' : t('code.placeholder')}</span>}

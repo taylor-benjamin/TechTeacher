@@ -97,6 +97,13 @@ Signed-in users' lesson progress and activity are stored in D1, so they follow t
 - API: `GET /api/features`, `GET /api/progress`, `POST /api/progress/sync`, `PUT`/`DELETE /api/progress/<lesson key>`, `GET`/`POST /api/activity`.
 - Run it locally: put `BETTER_AUTH_SECRET=<anything>` in `.dev.vars`, then `npm run build` and `npx wrangler dev` (uses a local D1 copy).
 
+## Security
+
+- **Headers** (`worker/headers.js`, added to every response): a strict Content-Security-Policy (no inline scripts or `eval` on the app, only listed hosts), HSTS, `X-Frame-Options: DENY`, `nosniff`, a strict referrer policy, a locked-down Permissions-Policy and `Cross-Origin-Opener-Policy`. If a lesson needs a new external host, add it there; `scripts/e2e.mjs` fails on any policy violation.
+- **Code runners** keep their own policies: learner JavaScript runs in `public/js-runner.js`, which may compile code but cannot call this site; learner HTML renders in the sandboxed `public/html-preview.html`.
+- **Accounts**: PBKDF2 password hashes, breached-password check (Have I Been Pwned, k-anonymity) on sign-up/reset/change, Turnstile on sign-in/sign-up/reset, per-IP rate limits, session revocation on password reset and change, same-origin checks on writes.
+- **Dependencies**: Dependabot (`.github/dependabot.yml`) opens update PRs weekly; security updates arrive immediately.
+
 ## Project layout
 
 ```

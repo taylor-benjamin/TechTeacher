@@ -1,5 +1,6 @@
 import { betterAuth } from 'better-auth'
 import { captcha } from 'better-auth/plugins/captcha'
+import { haveIBeenPwned } from 'better-auth/plugins/haveibeenpwned'
 import { sendEmail } from './email'
 
 // Better Auth's default scrypt hash runs in pure JS and can exceed the Workers CPU limit,
@@ -66,6 +67,9 @@ export function createAuth(env, request) {
       window: 60,
       max: 60,
       customRules: {
+        // Every page load checks the session. It is read-only, and limiting it would hide accounts
+        // for everyone behind one shared IP (a classroom or office) after a burst of visits.
+        '/get-session': false,
         '/sign-in/email': { window: 60, max: 5 },
         '/sign-up/email': { window: 600, max: 5 },
         '/delete-user': { window: 600, max: 5 },
@@ -77,16 +81,21 @@ export function createAuth(env, request) {
     },
     advanced: { ipAddress: { ipAddressHeaders: ['cf-connecting-ip'] } },
     telemetry: { enabled: false },
-    // Turnstile is enforced once the TECH_TEACHER_TURNSTILE secret is set (local dev runs without it).
-    plugins: env.TECH_TEACHER_TURNSTILE
-      ? [
-          captcha({
-            provider: 'cloudflare-turnstile',
-            secretKey: env.TECH_TEACHER_TURNSTILE,
-            endpoints: ['/sign-up/email', '/sign-in/email', '/request-password-reset'],
-            allowedHostnames: [new URL(origin).hostname],
-          }),
-        ]
-      : [],
+    plugins: [
+      // Refuse passwords found in known data breaches. Only the first 5 characters of the
+      // password's SHA-1 hash leave the Worker (Have I Been Pwned's k-anonymity range API).
+      haveIBeenPwned({ paths: ['/sign-up/email', '/change-password', '/reset-password'] }),
+      // Turnstile is enforced once the TECH_TEACHER_TURNSTILE secret is set (local dev runs without it).
+      ...(env.TECH_TEACHER_TURNSTILE
+        ? [
+            captcha({
+              provider: 'cloudflare-turnstile',
+              secretKey: env.TECH_TEACHER_TURNSTILE,
+              endpoints: ['/sign-up/email', '/sign-in/email', '/request-password-reset'],
+              allowedHostnames: [new URL(origin).hostname],
+            }),
+          ]
+        : []),
+    ],
   })
 }

@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Preview</title>
+    <style>html, body, iframe { margin: 0; width: 100%; height: 100%; border: 0; display: block; background: #fff; }</style>
+  </head>
+  <body>
+    <!-- Learner HTML from the code editor renders in this inner frame. This page is loaded in a
+         sandbox (opaque origin, no cookies) and has its own relaxed security policy, which the
+         inner frame inherits. -->
+    <iframe id="out" sandbox="allow-scripts" title="Preview"></iframe>
+    <script>
+      const out = document.getElementById('out')
+      addEventListener('message', (e) => {
+        if (e.source === parent && typeof e.data === 'string') out.srcdoc = e.data
+      })
+      parent.postMessage('preview-ready', '*')
+    </script>
+  </body>
+</html>

@@ -353,7 +353,8 @@
       "VERIFICATION_FAILED": "La verificación antibots falló. Inténtalo de nuevo.",
       "MISSING_RESPONSE": "Espera a que termine la verificación antibots.",
       "INVALID_TOKEN": "Este enlace caducó o ya se usó.",
-      "CREDENTIAL_ACCOUNT_NOT_FOUND": "La contraseña no es correcta."
+      "CREDENTIAL_ACCOUNT_NOT_FOUND": "La contraseña no es correcta.",
+      "PASSWORD_COMPROMISED": "Esa contraseña apareció en una filtración de datos, así que es fácil de adivinar para un atacante. Elige otra."
     },
     "forgotLink": "¿Olvidaste tu contraseña?",
     "forgotTitle": "Restablece tu contraseña",
