@@ -59,12 +59,12 @@ export function createAuth(env, request) {
     },
     advanced: { ipAddress: { ipAddressHeaders: ['cf-connecting-ip'] } },
     telemetry: { enabled: false },
-    // Turnstile is enforced once the TURNSTILE_SECRET_KEY secret is set (local dev runs without it).
-    plugins: env.TURNSTILE_SECRET_KEY
+    // Turnstile is enforced once the TECH_TEACHER_TURNSTILE secret is set (local dev runs without it).
+    plugins: env.TECH_TEACHER_TURNSTILE
       ? [
           captcha({
             provider: 'cloudflare-turnstile',
-            secretKey: env.TURNSTILE_SECRET_KEY,
+            secretKey: env.TECH_TEACHER_TURNSTILE,
             endpoints: ['/sign-up/email', '/sign-in/email'],
             allowedHostnames: [new URL(origin).hostname],
           }),

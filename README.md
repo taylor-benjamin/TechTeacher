@@ -92,7 +92,7 @@ Signed-in users' lesson progress and activity are stored in D1, so they follow t
 
 - Auth is [Better Auth](https://better-auth.com) with email and password (`worker/auth.js`). Passwords are hashed with PBKDF2-SHA256 through Web Crypto, and sign-in, sign-up and delete are rate-limited per IP.
 - The Worker needs one secret, `BETTER_AUTH_SECRET` (a long random string), set in the Cloudflare dashboard under the Worker's **Settings → Variables and Secrets**. Without it, `/api/*` answers 503 and the site still works without accounts.
-- Sign-in and sign-up are protected by Cloudflare Turnstile (`src/components/Turnstile.jsx`). The site key is in that file; the secret key goes in a second Worker secret, `TURNSTILE_SECRET_KEY`. The server only enforces the check once that secret exists. On localhost the widget uses Cloudflare's always-pass test key.
+- Sign-in and sign-up are protected by Cloudflare Turnstile (`src/components/Turnstile.jsx`). The site key is in that file; the secret key goes in a second Worker secret, `TECH_TEACHER_TURNSTILE`. The server only enforces the check once that secret exists. On localhost the widget uses Cloudflare's always-pass test key.
 - API: `GET /api/progress`, `POST /api/progress/sync`, `PUT`/`DELETE /api/progress/<lesson key>`, `GET`/`POST /api/activity`.
 - Run it locally: put `BETTER_AUTH_SECRET=<anything>` in `.dev.vars`, then `npm run build` and `npx wrangler dev` (uses a local D1 copy).
 
