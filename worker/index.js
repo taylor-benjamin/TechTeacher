@@ -66,7 +66,12 @@ async function api(request, env, userId, path) {
 
 export default {
   async fetch(request, env) {
-    const path = new URL(request.url).pathname
+    const url = new URL(request.url)
+    if (url.hostname === 'www.techteacher.page') {
+      url.hostname = 'techteacher.page'
+      return Response.redirect(url.toString(), 301)
+    }
+    const path = url.pathname
     if (!path.startsWith('/api/')) return env.ASSETS.fetch(request)
 
     if (!env.BETTER_AUTH_SECRET) return json({ error: 'accounts_not_configured' }, 503)

@@ -11,9 +11,17 @@
     "directory": "./dist",
     "binding": "ASSETS",
     "not_found_handling": "single-page-application",
-    // Without this, the SPA fallback would answer /api requests with index.html.
-    "run_worker_first": ["/api/*"]
+    // Every request reaches the Worker first so it can redirect www and route /api
+    // (otherwise the SPA fallback would answer /api requests with index.html).
+    "run_worker_first": true
   },
+  // Wrangler creates the DNS records and certificates for these on deploy.
+  "routes": [
+    { "pattern": "techteacher.page", "custom_domain": true },
+    { "pattern": "www.techteacher.page", "custom_domain": true }
+  ],
+  "workers_dev": true,
+  "preview_urls": true,
   // No database_id: wrangler creates the database on the first deploy and reuses it (by name) after that.
   "d1_databases": [{ "binding": "DB", "database_name": "techteacher-db" }],
   "observability": { "enabled": true }
