@@ -86,6 +86,11 @@ function SignInForm({ account }) {
           />
         )}
         {signingUp && <p id="password-hint" className="text-xs text-muted">{t('account.passwordHint')}</p>}
+        {signingUp && (
+          <p className="text-xs text-muted">
+            {t('privacy.signUpNote')} <a className="underline" href="#/privacy">{t('privacy.link')}</a>
+          </p>
+        )}
         {mode === 'signIn' && account.features.email && (
           <button type="button" className="text-sm underline" onClick={() => switchMode('forgot')}>{t('account.forgotLink')}</button>
         )}

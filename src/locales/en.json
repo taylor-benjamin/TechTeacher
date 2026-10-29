@@ -376,5 +376,52 @@
     "newPassword": "New password",
     "changeButton": "Change password",
     "passwordChanged": "Password changed."
+  },
+  "privacy": {
+    "link": "Privacy",
+    "signUpNote": "How we handle your data:",
+    "title": "Privacy",
+    "updated": "Last updated October 29, 2026",
+    "intro": "TechTeacher is free to use without an account. This page explains what is stored if you make one, and who helps run the site.",
+    "sections": [
+      {
+        "heading": "Without an account",
+        "items": [
+          "Your progress, theme, language and level filter are saved only in your own browser. Nothing about them is sent to us."
+        ]
+      },
+      {
+        "heading": "With an account, we store",
+        "items": [
+          "Your name and email address.",
+          "Your password, scrambled with a one-way hash. We never see or store the password itself.",
+          "Which lessons you have completed, and an activity log of lessons you opened or marked done, with the time.",
+          "For each signed-in device: the IP address and browser type, used to keep you signed in and to spot misuse."
+        ]
+      },
+      {
+        "heading": "What we never do",
+        "items": [
+          "No ads, no tracking or analytics cookies, and we never sell or share your data.",
+          "The only cookie is the one that keeps you signed in."
+        ]
+      },
+      {
+        "heading": "Services that help run the site",
+        "items": [
+          "Cloudflare hosts the site and database, and its Turnstile check on the sign-in forms looks at browser signals to tell people from bots.",
+          "Resend delivers account emails (confirmation and password reset), so it receives your email address.",
+          "Google Fonts serves the typeface, so your browser contacts Google when the page loads."
+        ]
+      },
+      {
+        "heading": "How long we keep it",
+        "items": [
+          "Until you delete your account. Deleting it from the Account page removes your account, progress and activity at once.",
+          "Copies may remain in short-term database backups and Cloudflare request logs for up to 30 days before they expire.",
+          "Sign-ins expire after 30 days without a visit."
+        ]
+      }
+    ]
   }
 }

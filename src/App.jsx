@@ -7,6 +7,7 @@ import Lesson from './components/Lesson'
 import Home, { Glossary, ProgressBar } from './components/Home'
 import Search from './components/Search'
 import Account, { ResetPassword } from './components/Account'
+import Privacy from './components/Privacy'
 import { logActivity, setLessonDone, syncProgress, useAccount } from './lib/account'
 import logoLight from './assets/brand/techteacher-logo-light.svg'
 import logoDark from './assets/brand/techteacher-logo-dark.svg'
@@ -343,6 +344,8 @@ export default function App() {
               <Account account={account} done={done} />
             ) : tabId === 'reset' ? (
               <ResetPassword />
+            ) : tabId === 'privacy' ? (
+              <Privacy />
             ) : (
               <Home done={done} pathsOnly={tabId === 'paths'} />
             )}
@@ -352,7 +355,8 @@ export default function App() {
 
       <footer className="border-t border-line px-4 py-6 text-center text-sm text-muted">
         TechTeacher · {signedIn ? t('app.footerSavedAccount') : t('app.footerSaved')} ·{' '}
-        <a className="underline" href="#/paths">{t('app.learningPaths')}</a> · <a className="underline" href="#/glossary">{t('app.glossary')}</a>
+        <a className="underline" href="#/paths">{t('app.learningPaths')}</a> · <a className="underline" href="#/glossary">{t('app.glossary')}</a> ·{' '}
+        <a className="underline" href="#/privacy">{t('privacy.link')}</a>
       </footer>
     </div>
   )

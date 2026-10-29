@@ -376,5 +376,52 @@
     "newPassword": "Contraseña nueva",
     "changeButton": "Cambiar contraseña",
     "passwordChanged": "Contraseña cambiada."
+  },
+  "privacy": {
+    "link": "Privacidad",
+    "signUpNote": "Cómo tratamos tus datos:",
+    "title": "Privacidad",
+    "updated": "Última actualización: 29 de octubre de 2026",
+    "intro": "TechTeacher se puede usar gratis sin cuenta. Esta página explica qué se guarda si creas una y quién ayuda a mantener el sitio.",
+    "sections": [
+      {
+        "heading": "Sin cuenta",
+        "items": [
+          "Tu progreso, tema, idioma y filtro de nivel se guardan solo en tu propio navegador. No se nos envía nada de eso."
+        ]
+      },
+      {
+        "heading": "Con cuenta, guardamos",
+        "items": [
+          "Tu nombre y tu correo electrónico.",
+          "Tu contraseña, cifrada con un hash de un solo sentido. Nunca vemos ni guardamos la contraseña en sí.",
+          "Qué lecciones completaste y un registro de las lecciones que abriste o marcaste, con la hora.",
+          "Por cada dispositivo con sesión iniciada: la dirección IP y el tipo de navegador, para mantener tu sesión y detectar abusos."
+        ]
+      },
+      {
+        "heading": "Lo que nunca hacemos",
+        "items": [
+          "Sin anuncios ni cookies de seguimiento o analítica, y nunca vendemos ni compartimos tus datos.",
+          "La única cookie es la que mantiene tu sesión iniciada."
+        ]
+      },
+      {
+        "heading": "Servicios que ayudan a mantener el sitio",
+        "items": [
+          "Cloudflare aloja el sitio y la base de datos, y su verificación Turnstile en los formularios de acceso analiza señales del navegador para distinguir personas de bots.",
+          "Resend entrega los correos de la cuenta (confirmación y restablecimiento de contraseña), así que recibe tu correo electrónico.",
+          "Google Fonts sirve la tipografía, así que tu navegador se conecta con Google al cargar la página."
+        ]
+      },
+      {
+        "heading": "Cuánto tiempo lo guardamos",
+        "items": [
+          "Hasta que elimines tu cuenta. Al eliminarla desde la página Cuenta se borran al instante tu cuenta, tu progreso y tu actividad.",
+          "Pueden quedar copias en las copias de seguridad de la base de datos y en los registros de Cloudflare durante un máximo de 30 días antes de caducar.",
+          "Las sesiones caducan tras 30 días sin visitar el sitio."
+        ]
+      }
+    ]
   }
 }
