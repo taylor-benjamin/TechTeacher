@@ -349,7 +349,9 @@
       "PASSWORD_TOO_LONG": "Usa 128 caracteres o menos.",
       "USER_ALREADY_EXISTS": "Ya existe una cuenta con ese correo. Prueba a iniciar sesión.",
       "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL": "Ya existe una cuenta con ese correo. Prueba a iniciar sesión.",
-      "SESSION_EXPIRED": "Tu sesión caducó. Vuelve a iniciar sesión."
+      "SESSION_EXPIRED": "Tu sesión caducó. Vuelve a iniciar sesión.",
+      "VERIFICATION_FAILED": "La verificación antibots falló. Inténtalo de nuevo.",
+      "MISSING_RESPONSE": "Espera a que termine la verificación antibots."
     }
   }
 }

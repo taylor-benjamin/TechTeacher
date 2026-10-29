@@ -349,7 +349,9 @@
       "PASSWORD_TOO_LONG": "Use 128 characters or fewer.",
       "USER_ALREADY_EXISTS": "An account with that email already exists. Try signing in.",
       "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL": "An account with that email already exists. Try signing in.",
-      "SESSION_EXPIRED": "Your session expired. Sign in again."
+      "SESSION_EXPIRED": "Your session expired. Sign in again.",
+      "VERIFICATION_FAILED": "The bot check failed. Please try again.",
+      "MISSING_RESPONSE": "Please wait for the bot check to finish."
     }
   }
 }

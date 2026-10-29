@@ -2,11 +2,14 @@ import { useCallback, useEffect, useState } from 'react'
 
 // Relative URLs, so the API is found next to the page. Hosts without the Worker
 // (GitHub Pages) answer with a 404 page, and accounts stay hidden there.
-async function call(path, { method = 'GET', body } = {}) {
+async function call(path, { method = 'GET', body, captcha } = {}) {
   const res = await fetch(path, {
     method,
     credentials: 'same-origin',
-    headers: body ? { 'content-type': 'application/json' } : undefined,
+    headers: {
+      ...(body && { 'content-type': 'application/json' }),
+      ...(captcha && { 'x-captcha-response': captcha }),
+    },
     body: body ? JSON.stringify(body) : undefined,
   })
   const data = res.headers.get('content-type')?.includes('application/json') ? await res.json() : null
@@ -24,13 +27,13 @@ export function useAccount() {
       .catch(() => setState({ status: 'unavailable', user: null }))
   }, [])
 
-  const signIn = useCallback(async (email, password) => {
-    const { user } = await call('api/auth/sign-in/email', { method: 'POST', body: { email, password } })
+  const signIn = useCallback(async (email, password, captcha) => {
+    const { user } = await call('api/auth/sign-in/email', { method: 'POST', body: { email, password }, captcha })
     setState({ status: 'signedIn', user })
   }, [])
 
-  const signUp = useCallback(async (name, email, password) => {
-    const { user } = await call('api/auth/sign-up/email', { method: 'POST', body: { name, email, password } })
+  const signUp = useCallback(async (name, email, password, captcha) => {
+    const { user } = await call('api/auth/sign-up/email', { method: 'POST', body: { name, email, password }, captcha })
     setState({ status: 'signedIn', user })
   }, [])
 

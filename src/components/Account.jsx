@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { getActivity } from '../lib/account'
 import { useContent } from '../lib/content'
 import { btn, btnPrimary, card, href, input } from '../lib/ui'
+import Turnstile from './Turnstile'
 
 // Maps an API error to a translated message; unknown codes fall back to a generic one.
 function useErrorText() {
@@ -29,6 +30,8 @@ function SignInForm({ account }) {
   const [mode, setMode] = useState('signIn')
   const [error, setError] = useState(null)
   const [busy, setBusy] = useState(false)
+  const [captcha, setCaptcha] = useState(null)
+  const turnstile = useRef(null)
   const signingUp = mode === 'signUp'
 
   async function onSubmit(e) {
@@ -37,10 +40,11 @@ function SignInForm({ account }) {
     setBusy(true)
     setError(null)
     try {
-      if (signingUp) await account.signUp(f.get('name').trim(), f.get('email').trim(), f.get('password'))
-      else await account.signIn(f.get('email').trim(), f.get('password'))
+      if (signingUp) await account.signUp(f.get('name').trim(), f.get('email').trim(), f.get('password'), captcha)
+      else await account.signIn(f.get('email').trim(), f.get('password'), captcha)
     } catch (err) {
       setError(errorText(err))
+      turnstile.current?.reset() // each token works once
     } finally {
       setBusy(false)
     }
@@ -63,8 +67,9 @@ function SignInForm({ account }) {
           aria-describedby={signingUp ? 'password-hint' : undefined}
         />
         {signingUp && <p id="password-hint" className="text-xs text-muted">{t('account.passwordHint')}</p>}
+        <Turnstile ref={turnstile} onToken={setCaptcha} />
         {error && <p role="alert" className="text-sm text-bad">{error}</p>}
-        <button type="submit" className={`${btnPrimary} w-full`} disabled={busy}>
+        <button type="submit" className={`${btnPrimary} w-full`} disabled={busy || !captcha}>
           {signingUp ? t('account.create') : t('account.signIn')}
         </button>
       </form>

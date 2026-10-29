@@ -1,4 +1,5 @@
 import { betterAuth } from 'better-auth'
+import { captcha } from 'better-auth/plugins/captcha'
 
 // Better Auth's default scrypt hash runs in pure JS and can exceed the Workers CPU limit,
 // so passwords use the runtime's native PBKDF2-SHA256 instead (100k is the Workers maximum).
@@ -58,5 +59,16 @@ export function createAuth(env, request) {
     },
     advanced: { ipAddress: { ipAddressHeaders: ['cf-connecting-ip'] } },
     telemetry: { enabled: false },
+    // Turnstile is enforced once the TURNSTILE_SECRET_KEY secret is set (local dev runs without it).
+    plugins: env.TURNSTILE_SECRET_KEY
+      ? [
+          captcha({
+            provider: 'cloudflare-turnstile',
+            secretKey: env.TURNSTILE_SECRET_KEY,
+            endpoints: ['/sign-up/email', '/sign-in/email'],
+            allowedHostnames: [new URL(origin).hostname],
+          }),
+        ]
+      : [],
   })
 }
