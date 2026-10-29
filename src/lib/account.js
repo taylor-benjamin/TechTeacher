@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import i18n from '../i18n'
 
 // Relative URLs, so the API is found next to the page. Hosts without the Worker
 // (GitHub Pages) answer with a 404 page, and accounts stay hidden there.
@@ -7,6 +8,7 @@ async function call(path, { method = 'GET', body, captcha } = {}) {
     method,
     credentials: 'same-origin',
     headers: {
+      'x-lang': i18n.resolvedLanguage, // emails are written in this language
       ...(body && { 'content-type': 'application/json' }),
       ...(captcha && { 'x-captcha-response': captcha }),
     },
@@ -20,11 +22,14 @@ async function call(path, { method = 'GET', body, captcha } = {}) {
 // status: 'loading' | 'unavailable' | 'signedOut' | 'signedIn'
 export function useAccount() {
   const [state, setState] = useState({ status: 'loading', user: null })
+  // email: whether password reset and verification emails are switched on for this deployment.
+  const [features, setFeatures] = useState({ email: false })
 
   useEffect(() => {
     call('api/auth/get-session')
       .then((s) => setState(s?.user ? { status: 'signedIn', user: s.user } : { status: 'signedOut', user: null }))
       .catch(() => setState({ status: 'unavailable', user: null }))
+    call('api/features').then(setFeatures).catch(() => {})
   }, [])
 
   const signIn = useCallback(async (email, password, captcha) => {
@@ -33,7 +38,7 @@ export function useAccount() {
   }, [])
 
   const signUp = useCallback(async (name, email, password, captcha) => {
-    const { user } = await call('api/auth/sign-up/email', { method: 'POST', body: { name, email, password }, captcha })
+    const { user } = await call('api/auth/sign-up/email', { method: 'POST', body: { name, email, password, callbackURL: '/?verified=1#/account' }, captcha })
     setState({ status: 'signedIn', user })
   }, [])
 
@@ -47,8 +52,17 @@ export function useAccount() {
     setState({ status: 'signedOut', user: null })
   }, [])
 
-  return { ...state, signIn, signUp, signOut, deleteAccount }
+  return { ...state, features, signIn, signUp, signOut, deleteAccount }
 }
+
+// The emailed links bring people back to the site with ?token=… (reset) or ?verified=1 (verification).
+export const requestPasswordReset = (email, captcha) =>
+  call('api/auth/request-password-reset', { method: 'POST', body: { email, redirectTo: '/#/reset' }, captcha })
+export const resetPassword = (token, newPassword) => call('api/auth/reset-password', { method: 'POST', body: { token, newPassword } })
+export const sendVerificationEmail = (email) =>
+  call('api/auth/send-verification-email', { method: 'POST', body: { email, callbackURL: '/?verified=1#/account' } })
+export const changePassword = (currentPassword, newPassword) =>
+  call('api/auth/change-password', { method: 'POST', body: { currentPassword, newPassword, revokeOtherSessions: true } })
 
 const lessonPath = (key) => 'api/progress/' + key.split('/').map(encodeURIComponent).join('/')
 

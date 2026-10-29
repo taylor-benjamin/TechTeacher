@@ -6,7 +6,7 @@ import { LEVELS, btn, btnPrimary, card, href } from './lib/ui'
 import Lesson from './components/Lesson'
 import Home, { Glossary, ProgressBar } from './components/Home'
 import Search from './components/Search'
-import Account from './components/Account'
+import Account, { ResetPassword } from './components/Account'
 import { logActivity, setLessonDone, syncProgress, useAccount } from './lib/account'
 import logoLight from './assets/brand/techteacher-logo-light.svg'
 import logoDark from './assets/brand/techteacher-logo-dark.svg'
@@ -341,6 +341,8 @@ export default function App() {
               <Glossary />
             ) : tabId === 'account' ? (
               <Account account={account} done={done} />
+            ) : tabId === 'reset' ? (
+              <ResetPassword />
             ) : (
               <Home done={done} pathsOnly={tabId === 'paths'} />
             )}

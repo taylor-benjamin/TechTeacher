@@ -75,6 +75,7 @@ export default {
     if (!path.startsWith('/api/')) return env.ASSETS.fetch(request)
 
     if (!env.BETTER_AUTH_SECRET) return json({ error: 'accounts_not_configured' }, 503)
+    if (path === '/api/features') return json({ email: !!env.RESEND_API_KEY })
     await ensureSchema(env.DB)
     const auth = createAuth(env, request)
 
