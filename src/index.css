@@ -70,7 +70,14 @@
 .dark [data-tab="security"]   { --accent: #ae77e6; --accent-ink: #ae77e6; --accent-soft: #312044; }
 .dark [data-tab="home"]       { --accent: #a3e635; --accent-ink: #a3e635; --accent-soft: #581c87; }
 
-html { scroll-padding-top: 7rem; }
+/* Native UI (scrollbars, form controls) follows the site theme, not the OS theme.
+   scrollbar-color is inherited, so inner scroll areas match too. */
+html {
+  scroll-padding-top: 7rem;
+  color-scheme: light;
+  scrollbar-color: color-mix(in srgb, var(--edge) 60%, var(--surface)) var(--surface);
+}
+html.dark { color-scheme: dark; }
 body { background: var(--surface); color: var(--ink); font-family: var(--font-sans); }
 
 /* Page backdrop: a glow in the current tab's colour over a dot grid. */
