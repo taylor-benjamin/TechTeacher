@@ -8,6 +8,7 @@ import Home, { Glossary, ProgressBar } from './components/Home'
 import Search from './components/Search'
 import Account, { Activity, ResetPassword } from './components/Account'
 import Privacy from './components/Privacy'
+import SignupNudge from './components/SignupNudge'
 import { logActivity, setLessonDone, syncProgress, useAccount } from './lib/account'
 import logoLight from './assets/brand/techteacher-logo-light.svg'
 import logoDark from './assets/brand/techteacher-logo-dark.svg'
@@ -234,9 +235,16 @@ export default function App() {
     if (signedIn && lesson) logActivity('lesson_open', lesson.key).catch(() => {})
   }, [signedIn, lesson?.key]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // After a signed-out learner completes a lesson, invite them (once, until dismissed) to save progress.
+  const [nudge, setNudge] = useState(false)
+  const [nudgeDismissed, setNudgeDismissed] = useStored('tt.signupNudge', false)
+  const dismissNudge = () => (setNudge(false), setNudgeDismissed(true))
+
   const toggleDone = (key) => {
     setDone((d) => ({ ...d, [key]: !d[key] }))
     if (signedIn) setLessonDone(key, !done[key]).catch(() => {})
+    // Also while the session check is still loading; the nudge hides itself if it turns out signed in.
+    else if (!done[key] && account.status !== 'unavailable' && !nudgeDismissed) setNudge(true)
   }
   const idx = lesson ? allLessons.indexOf(lesson) : -1
   const inTab = (l) => (l?.tabId === tab?.id ? l : null)
@@ -289,8 +297,8 @@ export default function App() {
             <a href="#/paths" className={`${btn} max-sm:hidden`}>{t('app.paths')}</a>
             <a href="#/glossary" className={`${btn} max-sm:hidden`}>{t('app.glossary')}</a>
             {(signedIn || account.status === 'signedOut') && (
-              <a href="#/account" aria-current={tabId === 'account' ? 'page' : undefined} className={btn}>
-                {signedIn ? t('account.short') : t('account.signIn')}
+              <a href="#/account" aria-current={tabId === 'account' ? 'page' : undefined} className={`${btn} whitespace-nowrap`}>
+                {signedIn ? t('account.short') : t('account.signInShort')}
               </a>
             )}
             <LanguageSwitch />
@@ -341,7 +349,7 @@ export default function App() {
             ) : tabId === 'glossary' ? (
               <Glossary />
             ) : tabId === 'account' ? (
-              <Account account={account} done={done} />
+              <Account account={account} done={done} startMode={moduleId === 'create' ? 'signUp' : undefined} />
             ) : tabId === 'activity' ? (
               <Activity account={account} />
             ) : tabId === 'reset' ? (
@@ -354,6 +362,10 @@ export default function App() {
           </ErrorBoundary>
         </main>
       </div>
+
+      {nudge && !signedIn && account.status !== 'unavailable' && (
+        <SignupNudge count={Object.values(done).filter(Boolean).length} onCreate={() => setNudge(false)} onDismiss={dismissNudge} />
+      )}
 
       <footer className="border-t border-line px-4 py-6 text-center text-sm text-muted">
         TechTeacher · {signedIn ? t('app.footerSavedAccount') : t('app.footerSaved')} ·{' '}

@@ -2,17 +2,19 @@
 // Usage: npm run build; npm run preview (in another terminal); node scripts/e2e.mjs [screenshot-dir]
 // To include the Worker's security headers: npx wrangler dev --port 4173, then run the same command.
 import { spawn } from 'node:child_process'
-import { existsSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
 const BASE = (process.env.E2E_BASE ?? 'http://localhost:4173') + '/#/'
-const PORT = 9333
+// A random port and a fresh profile every run: on Windows, headless browsers from an earlier
+// run can linger, and reusing their port would attach this run to a stale browser.
+const PORT = 20000 + Math.floor(Math.random() * 20000)
 const shotDir = process.argv[2]
 const edge = ['C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe', 'C:/Program Files/Microsoft/Edge/Application/msedge.exe'].find(existsSync)
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 
-const browser = spawn(edge, ['--headless=new', '--disable-gpu', '--no-first-run', '--disable-features=IsolateSandboxedIframes', '--disable-site-isolation-trials', `--remote-debugging-port=${PORT}`, `--user-data-dir=${join(tmpdir(), 'tt-e2e-profile')}`, 'about:blank'])
+const browser = spawn(edge, ['--headless=new', '--disable-gpu', '--no-first-run', '--disable-features=IsolateSandboxedIframes', '--disable-site-isolation-trials', `--remote-debugging-port=${PORT}`, `--user-data-dir=${mkdtempSync(join(tmpdir(), 'tt-e2e-'))}`, 'about:blank'])
 
 let target
 for (let i = 0; i < 50 && !target; i++) {
@@ -307,7 +309,7 @@ await js(`localStorage.setItem('tt.lang', '"en"')`)
 
 // Layout: no page may scroll sideways on a phone.
 await send('Emulation.setDeviceMetricsOverride', { width: 375, height: 800, deviceScaleFactor: 2, mobile: true })
-for (const route of ['', 'software', 'software/apis/live-api-tester', 'software/python/syntax-basics', 'ai/how-ai-works/neural-networks', 'networking/fundamentals/subnetting', 'networking/home-lab/pfsense-topology', 'security/wireshark/packet-analysis', 'security/cryptography/hashing', 'software/engineering/performance-big-o', 'ai/ml-practice/evaluation-metrics', 'ai/llms/evaluating-llm-apps', 'paths', 'glossary']) {
+for (const route of ['', 'software', 'software/apis/live-api-tester', 'software/python/syntax-basics', 'ai/how-ai-works/neural-networks', 'networking/fundamentals/subnetting', 'networking/home-lab/pfsense-topology', 'security/wireshark/packet-analysis', 'security/cryptography/hashing', 'software/apis/what-is-an-api', 'software/engineering/performance-big-o', 'ai/ml-practice/evaluation-metrics', 'ai/llms/evaluating-llm-apps', 'paths', 'glossary']) {
   await check(`No horizontal scroll at 375px: /${route}`, async () => {
     await goto(route)
     await sleep(600)

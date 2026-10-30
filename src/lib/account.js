@@ -14,8 +14,12 @@ async function call(path, { method = 'GET', body, captcha } = {}) {
     },
     body: body ? JSON.stringify(body) : undefined,
   })
-  const data = res.headers.get('content-type')?.includes('application/json') ? await res.json() : null
+  const isJson = res.headers.get('content-type')?.includes('application/json')
+  const data = isJson ? await res.json() : null
   if (!res.ok) throw Object.assign(new Error(data?.code ?? data?.error ?? `HTTP ${res.status}`), { status: res.status, data })
+  // A static host answers unknown paths with the HTML page, not an API reply. Treat that like
+  // "no API here" (status undefined → accounts unavailable) instead of trusting a null body.
+  if (!isJson) throw new Error('not_an_api_response')
   return data
 }
 

@@ -380,7 +380,8 @@
     "activityButton": "Actividad de la cuenta",
     "backToAccount": "Volver a la cuenta",
     "activityIntro": "Cada lección que abriste, completaste o marcaste como pendiente, de la más reciente a la más antigua.",
-    "loadMore": "Mostrar actividad anterior"
+    "loadMore": "Mostrar actividad anterior",
+    "signInShort": "Entrar"
   },
   "privacy": {
     "link": "Privacidad",
@@ -428,5 +429,11 @@
         ]
       }
     ]
+  },
+  "nudge": {
+    "title_one": "¡Bien hecho, {{count}} lección completada!",
+    "title_other": "¡Bien hecho, {{count}} lecciones completadas!",
+    "text": "Crea una cuenta gratis para tener tu progreso en cualquier dispositivo. Las lecciones que has terminado aquí se vienen contigo.",
+    "notNow": "Ahora no"
   }
 }

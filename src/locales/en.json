@@ -380,7 +380,8 @@
     "activityButton": "Account activity",
     "backToAccount": "Back to account",
     "activityIntro": "Every lesson you opened, completed or marked not done, newest first.",
-    "loadMore": "Show older activity"
+    "loadMore": "Show older activity",
+    "signInShort": "Sign in"
   },
   "privacy": {
     "link": "Privacy",
@@ -428,5 +429,11 @@
         ]
       }
     ]
+  },
+  "nudge": {
+    "title_one": "Nice work, {{count}} lesson done!",
+    "title_other": "Nice work, {{count}} lessons done!",
+    "text": "Create a free account to keep your progress on any device. The lessons you finished here come with you.",
+    "notNow": "Not now"
   }
 }

@@ -109,6 +109,8 @@ body { background: var(--surface); color: var(--ink); font-family: var(--font-sa
   background: var(--accent-soft);
   padding: 0.1em 0.35em;
   border-radius: 4px;
+  /* Long URLs and identifiers wrap instead of widening the page on phones. */
+  overflow-wrap: anywhere;
 }
 .term {
   text-decoration: underline dotted;

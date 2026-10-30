@@ -32,10 +32,10 @@ function Field({ id, label, ...props }) {
   )
 }
 
-function SignInForm({ account }) {
+function SignInForm({ account, startMode = 'signIn' }) {
   const { t } = useTranslation()
   const errorText = useErrorText()
-  const [mode, setMode] = useState('signIn')
+  const [mode, setMode] = useState(startMode)
   const [error, setError] = useState(null)
   const [busy, setBusy] = useState(false)
   const [captcha, setCaptcha] = useState(null)
@@ -328,9 +328,10 @@ export function ResetPassword() {
   )
 }
 
-export default function Account({ account, done }) {
+// startMode 'signUp' (from #/account/create) opens straight on the create-account form.
+export default function Account({ account, done, startMode }) {
   const { t } = useTranslation()
   if (account.status === 'loading') return null
   if (account.status === 'unavailable') return <p className={`${card} p-6`}>{t('account.unavailable')}</p>
-  return account.status === 'signedIn' ? <Profile account={account} done={done} /> : <SignInForm account={account} />
+  return account.status === 'signedIn' ? <Profile account={account} done={done} /> : <SignInForm account={account} startMode={startMode} />
 }
