@@ -376,7 +376,11 @@
     "currentPassword": "Contraseña actual",
     "newPassword": "Contraseña nueva",
     "changeButton": "Cambiar contraseña",
-    "passwordChanged": "Contraseña cambiada."
+    "passwordChanged": "Contraseña cambiada.",
+    "activityButton": "Actividad de la cuenta",
+    "backToAccount": "Volver a la cuenta",
+    "activityIntro": "Cada lección que abriste, completaste o marcaste como pendiente, de la más reciente a la más antigua.",
+    "loadMore": "Mostrar actividad anterior"
   },
   "privacy": {
     "link": "Privacidad",

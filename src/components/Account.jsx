@@ -118,10 +118,9 @@ function SignInForm({ account }) {
 }
 
 function Profile({ account, done }) {
-  const { t, i18n } = useTranslation()
-  const { allLessons, lessonByKey } = useContent()
+  const { t } = useTranslation()
+  const { allLessons } = useContent()
   const errorText = useErrorText()
-  const [activity, setActivity] = useState(null)
   const [error, setError] = useState(null)
   const [notice, setNotice] = useState(null)
   const [pwMessage, setPwMessage] = useState(null)
@@ -155,10 +154,6 @@ function Profile({ account, done }) {
     }
   }
 
-  useEffect(() => {
-    getActivity().then((r) => setActivity(r.activity)).catch(() => setActivity([]))
-  }, [done])
-
   async function onDelete(e) {
     e.preventDefault()
     if (!confirm(t('account.deleteConfirm'))) return
@@ -168,8 +163,6 @@ function Profile({ account, done }) {
       setError(errorText(err))
     }
   }
-
-  const when = new Intl.DateTimeFormat(i18n.resolvedLanguage, { dateStyle: 'medium', timeStyle: 'short' })
 
   return (
     <div className="mx-auto max-w-2xl space-y-4">
@@ -184,29 +177,10 @@ function Profile({ account, done }) {
           </div>
         )}
         {notice && <p role="status" className={`mt-3 text-sm ${notice.ok ? 'text-ok' : 'text-bad'}`}>{notice.text}</p>}
-        <button type="button" className={`${btn} mt-4`} onClick={account.signOut}>{t('account.signOut')}</button>
-      </section>
-
-      <section aria-labelledby="activity-h" className={`${card} p-6`}>
-        <h2 id="activity-h" className="text-lg font-medium">{t('account.activity')}</h2>
-        {activity == null ? null : activity.length === 0 ? (
-          <p className="mt-2 text-sm text-muted">{t('account.noActivity')}</p>
-        ) : (
-          <ul className="mt-3 space-y-2 text-sm">
-            {activity.map((a, i) => {
-              const lesson = lessonByKey[a.lessonKey]
-              return (
-                <li key={i} className="flex flex-wrap justify-between gap-x-4">
-                  <span>
-                    {t(`account.events.${a.event}`)}
-                    {lesson && <> · <a className="underline" href={href(lesson.key)}>{lesson.title}</a></>}
-                  </span>
-                  <time className="text-muted" dateTime={new Date(a.at).toISOString()}>{when.format(a.at)}</time>
-                </li>
-              )
-            })}
-          </ul>
-        )}
+        <div className="mt-4 flex flex-wrap gap-2">
+          <a href="#/activity" className={btn}>{t('account.activityButton')}</a>
+          <button type="button" className={btn} onClick={account.signOut}>{t('account.signOut')}</button>
+        </div>
       </section>
 
       <section aria-labelledby="password-h" className={`${card} p-6`}>
@@ -233,6 +207,85 @@ function Profile({ account, done }) {
       </section>
     </div>
   )
+}
+
+function ActivityPage() {
+  const { t, i18n } = useTranslation()
+  const { lessonByKey } = useContent()
+  const [items, setItems] = useState(null)
+  const [more, setMore] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [failed, setFailed] = useState(false)
+
+  async function load(before) {
+    setLoading(true)
+    try {
+      const r = await getActivity(before)
+      setItems((prev) => [...(before ? prev : []), ...r.activity])
+      setMore(r.more)
+      setFailed(false)
+    } catch {
+      setFailed(true)
+      setItems((prev) => prev ?? [])
+    } finally {
+      setLoading(false)
+    }
+  }
+  useEffect(() => void load(), []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const lang = i18n.resolvedLanguage
+  const day = new Intl.DateTimeFormat(lang, { dateStyle: 'full' })
+  const time = new Intl.DateTimeFormat(lang, { timeStyle: 'short' })
+  const groups = []
+  for (const a of items ?? []) {
+    const label = day.format(a.at)
+    if (groups.at(-1)?.label !== label) groups.push({ label, entries: [] })
+    groups.at(-1).entries.push(a)
+  }
+
+  return (
+    <div className="mx-auto max-w-2xl space-y-4">
+      <a href="#/account" className="text-sm underline">← {t('account.backToAccount')}</a>
+      <section aria-labelledby="activity-h" className={`${card} p-6`}>
+        <h1 id="activity-h" className="text-2xl font-normal tracking-tight">{t('account.activityButton')}</h1>
+        <p className="mt-1 text-sm text-muted">{t('account.activityIntro')}</p>
+        {failed && <p role="alert" className="mt-4 text-sm text-bad">{t('account.errors.generic')}</p>}
+        {items?.length === 0 && !failed && <p className="mt-4 text-sm text-muted">{t('account.noActivity')}</p>}
+        {groups.map((g) => (
+          <section key={g.label} className="mt-6" aria-label={g.label}>
+            <h2 className="text-sm font-semibold text-muted">{g.label}</h2>
+            <ul className="mt-2 divide-y divide-line text-sm">
+              {g.entries.map((a) => {
+                const lesson = lessonByKey[a.lessonKey]
+                return (
+                  <li key={a.id} className="flex flex-wrap justify-between gap-x-4 py-2">
+                    <span>
+                      {t(`account.events.${a.event}`)}
+                      {lesson && <> · <a className="underline" href={href(lesson.key)}>{lesson.title}</a></>}
+                    </span>
+                    <time className="text-muted" dateTime={new Date(a.at).toISOString()}>{time.format(a.at)}</time>
+                  </li>
+                )
+              })}
+            </ul>
+          </section>
+        ))}
+        {more && (
+          <button type="button" className={`${btn} mt-6`} disabled={loading} onClick={() => load(items.at(-1).id)}>
+            {t('account.loadMore')}
+          </button>
+        )}
+      </section>
+    </div>
+  )
+}
+
+// The full activity history. Signed-out visitors see the sign-in form instead.
+export function Activity({ account }) {
+  const { t } = useTranslation()
+  if (account.status === 'loading') return null
+  if (account.status === 'unavailable') return <p className={`${card} p-6`}>{t('account.unavailable')}</p>
+  return account.status === 'signedIn' ? <ActivityPage /> : <SignInForm account={account} />
 }
 
 // Reached from the reset email: /?token=…#/reset (or ?error=INVALID_TOKEN if the link expired).

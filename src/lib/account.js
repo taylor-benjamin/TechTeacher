@@ -71,4 +71,4 @@ const lessonPath = (key) => 'api/progress/' + key.split('/').map(encodeURICompon
 export const syncProgress = (keys) => call('api/progress/sync', { method: 'POST', body: { keys } })
 export const setLessonDone = (key, done) => call(lessonPath(key), { method: done ? 'PUT' : 'DELETE' })
 export const logActivity = (event, lessonKey) => call('api/activity', { method: 'POST', body: { event, lessonKey } })
-export const getActivity = () => call('api/activity')
+export const getActivity = (before) => call('api/activity' + (before ? `?before=${before}` : ''))

@@ -55,12 +55,15 @@ async function api(request, env, userId, path) {
     return json({ ok: true })
   }
 
+  // Newest first, 50 per page. ?before=<id> continues from the last entry of the previous page.
   if (path === '/api/activity' && method === 'GET') {
+    const before = Number(new URL(request.url).searchParams.get('before'))
+    const cursor = Number.isSafeInteger(before) && before > 0 ? before : Number.MAX_SAFE_INTEGER
     const { results } = await db
-      .prepare('select "event", "lessonKey", "at" from "activity" where "userId" = ? order by "at" desc limit 50')
-      .bind(userId)
+      .prepare('select "id", "event", "lessonKey", "at" from "activity" where "userId" = ? and "id" < ? order by "id" desc limit 51')
+      .bind(userId, cursor)
       .all()
-    return json({ activity: results })
+    return json({ activity: results.slice(0, 50), more: results.length > 50 })
   }
 
   return json({ error: 'not_found' }, 404)
