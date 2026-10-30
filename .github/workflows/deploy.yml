@@ -2,9 +2,13 @@ name: Deploy to GitHub Pages
 
 # The site lives at https://techteacher.page (Cloudflare). This still validates the content on
 # every push, but GitHub Pages now only serves a page that redirects old links there.
+# Pull requests run the same checks (the "build" job is a required status check on main)
+# without deploying.
 
 on:
   push:
+    branches: [main]
+  pull_request:
     branches: [main]
   workflow_dispatch:
 
@@ -13,9 +17,9 @@ permissions:
   pages: write
   id-token: write
 
-# Let a running deployment finish, but skip queued ones in between.
+# Let a running deployment finish, but skip queued ones in between. Pull requests get their own group.
 concurrency:
-  group: pages
+  group: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.ref) || 'pages' }}
   cancel-in-progress: false
 
 jobs:
@@ -29,14 +33,18 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run validate
+      - run: npm run check:es
       - run: npm run check:contrast
       - run: npm run build
-      - run: cp pages-redirect/index.html pages-redirect/404.html
-      - uses: actions/upload-pages-artifact@v3
+      - if: github.event_name != 'pull_request'
+        run: cp pages-redirect/index.html pages-redirect/404.html
+      - if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
         with:
           path: pages-redirect
 
   deploy:
+    if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     environment:
