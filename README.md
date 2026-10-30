@@ -103,6 +103,7 @@ Signed-in users' lesson progress and activity are stored in D1, so they follow t
 - **Code runners** keep their own policies: learner JavaScript runs in `public/js-runner.js`, which may compile code but cannot call this site; learner HTML renders in the sandboxed `public/html-preview.html`.
 - **Accounts**: PBKDF2 password hashes, breached-password check (Have I Been Pwned, k-anonymity) on sign-up/reset/change, Turnstile on sign-in/sign-up/reset, per-IP rate limits, session revocation on password reset and change, same-origin checks on writes.
 - **Dependencies**: Dependabot (`.github/dependabot.yml`) opens update PRs weekly; security updates arrive immediately.
+- **Branch protection** (GitHub rulesets on `main`): force pushes and deleting `main` are blocked for everyone. Changes otherwise go through a pull request that must pass the `build` check (content validation, Spanish check, contrast check, build); repository admins may push directly.
 
 ## Project layout
 
