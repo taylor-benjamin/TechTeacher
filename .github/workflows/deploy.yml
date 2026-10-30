@@ -39,7 +39,7 @@ jobs:
       - if: github.event_name != 'pull_request'
         run: cp pages-redirect/index.html pages-redirect/404.html
       - if: github.event_name != 'pull_request'
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: pages-redirect
 
