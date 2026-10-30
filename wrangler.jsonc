@@ -24,5 +24,8 @@
   "preview_urls": true,
   // No database_id: wrangler creates the database on the first deploy and reuses it (by name) after that.
   "d1_databases": [{ "binding": "DB", "database_name": "techteacher-db" }],
-  "observability": { "enabled": true }
+  "observability": { "enabled": true },
+  // Preview builds (pull requests, `npx wrangler preview`) need this block. Left empty on purpose:
+  // previews get the site but no database binding, so they can never touch real user data.
+  "previews": {}
 }
