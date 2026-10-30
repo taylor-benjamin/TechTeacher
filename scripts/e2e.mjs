@@ -45,10 +45,14 @@ const js = async (expression) => {
   if (result.exceptionDetails) throw new Error(result.exceptionDetails.exception?.description ?? 'evaluate failed')
   return result.result.value
 }
+// A navigation occasionally never answers (seen after long Python runs), so give each one
+// a deadline and retry once rather than hanging the whole suite.
+const within = (promise, ms) => Promise.race([promise.then(() => true), sleep(ms).then(() => false)])
 const goto = async (route) => {
-  await send('Page.navigate', { url: 'about:blank' })
-  await send('Page.navigate', { url: BASE + route })
-  await waitFor(`!!document.querySelector('h1')`, 10000)
+  for (let attempt = 0; attempt < 2; attempt++) {
+    await within(send('Page.navigate', { url: 'about:blank' }), 10000)
+    if ((await within(send('Page.navigate', { url: BASE + route }), 15000)) && (await waitFor(`!!document.querySelector('h1')`, 10000))) return
+  }
 }
 async function waitFor(expression, timeout = 8000) {
   const end = Date.now() + timeout
@@ -115,6 +119,24 @@ await check('Python mini project', runner('software/python/mini-project', 'Run',
 await check('SQL runner (sql.js)', runner('software/sql/core-concepts', 'Run', 'Robotics', 30000))
 await check('SQL mini project', runner('software/sql/mini-project', 'Run', 'spent', 30000))
 await check('Bash simulator', runner('software/bash/core-concepts', 'Run', 'logs/app.log has 5 lines'))
+// Engineering Practices and Machine Learning in Practice: each lesson's own runner and expected output.
+// '▶ Run' rather than 'Run', which would also match the AI sidebar's "Running Models Locally".
+await check('Testing lesson: one test fails until fixed', runner('software/engineering/automated-testing', '▶ Run', 'FAIL test_punctuation', 90000))
+await check('Big-O lesson: set beats list', runner('software/engineering/performance-big-o', '▶ Run', 'faster', 60000))
+await check('Async lesson: Promise.all overlaps requests', runner('software/engineering/async-concurrency', '▶ Run', 'all at once'))
+await check('Secure coding: injected query returns every user', runner('software/engineering/secure-coding', '▶ Run', 'admin', 30000))
+await check('System design quiz', async () => {
+  await goto('software/engineering/system-design')
+  return has('Sessions are stored')
+})
+await check('k-NN lesson', runner('ai/ml-practice/supervised-learning', '▶ Run', 'accuracy on unseen data: 6/6', 90000))
+await check('Metrics lesson: precision and recall', runner('ai/ml-practice/evaluation-metrics', '▶ Run', 'precision 57%', 60000))
+await check('Gradient descent converges', runner('ai/ml-practice/gradient-descent', '▶ Run', 'w = 2.003', 60000))
+await check('LLM evals harness', runner('ai/llms/evaluating-llm-apps', '▶ Run', '2/5 passed', 60000))
+await check('Prompt injection quiz', async () => {
+  await goto('ai/llms/prompt-injection')
+  return has('Indirect prompt injection')
+})
 await check('Java expected output', runner('software/java/syntax-basics', 'Show expected output', 'Ava has 12 points'))
 await check('HTML live preview', async () => {
   await goto('software/html-css/syntax-basics')
@@ -245,7 +267,7 @@ await check('Global search', async () => {
 })
 await check('Learning path progress', async () => {
   await goto('paths')
-  return (await has('SOC Analyst')) && has('1 of 19 lessons')
+  return (await has('SOC Analyst')) && has('1 of 24 lessons')
 })
 await check('Theme toggle', async () => {
   const before = await js(`document.documentElement.classList.contains('dark')`)
@@ -285,7 +307,7 @@ await js(`localStorage.setItem('tt.lang', '"en"')`)
 
 // Layout: no page may scroll sideways on a phone.
 await send('Emulation.setDeviceMetricsOverride', { width: 375, height: 800, deviceScaleFactor: 2, mobile: true })
-for (const route of ['', 'software', 'software/apis/live-api-tester', 'software/python/syntax-basics', 'ai/how-ai-works/neural-networks', 'networking/fundamentals/subnetting', 'networking/home-lab/pfsense-topology', 'security/wireshark/packet-analysis', 'security/cryptography/hashing', 'paths', 'glossary']) {
+for (const route of ['', 'software', 'software/apis/live-api-tester', 'software/python/syntax-basics', 'ai/how-ai-works/neural-networks', 'networking/fundamentals/subnetting', 'networking/home-lab/pfsense-topology', 'security/wireshark/packet-analysis', 'security/cryptography/hashing', 'software/engineering/performance-big-o', 'ai/ml-practice/evaluation-metrics', 'ai/llms/evaluating-llm-apps', 'paths', 'glossary']) {
   await check(`No horizontal scroll at 375px: /${route}`, async () => {
     await goto(route)
     await sleep(600)

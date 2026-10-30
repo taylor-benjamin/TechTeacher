@@ -1,0 +1,228 @@
+{
+  "tab": "ai",
+  "id": "ml-practice",
+  "order": 1.5,
+  "title": "Machine Learning in Practice",
+  "summary": "Classic machine learning by hand: train a model, measure it honestly, and see the maths that makes learning work.",
+  "lessons": [
+    {
+      "id": "supervised-learning",
+      "title": "Supervised learning: train, test, predict",
+      "level": "intermediate",
+      "minutes": 14,
+      "concept": {
+        "text": "Most practical machine learning is **supervised learning**: you show a model examples where you already know the answer, and it learns to predict the answer for new cases. Each example has **features** (the inputs, like hours studied) and a **label** (the answer, like pass or fail).\n\nThe golden rule: judge a model only on data it has never seen. So you split your data into a **training set** to learn from and a **test set** kept locked away until the end. A model that scores well on training data but badly on test data has memorised instead of learning, which is overfitting.\n\nAlways compare against a **baseline**, such as \"always guess the most common answer\". A model is only useful if it beats that.",
+        "analogy": "Studying from past exam papers is training. The real exam, with questions you have never seen, is the test set. Memorising past answers word for word gets you full marks on the practice papers and very few on the real thing."
+      },
+      "visual": {
+        "type": "flow",
+        "caption": "The supervised learning workflow.",
+        "nodes": [
+          {
+            "label": "Labelled data",
+            "detail": "Examples with known answers"
+          },
+          {
+            "label": "Split",
+            "detail": "For example 80% train, 20% test"
+          },
+          {
+            "label": "Train",
+            "detail": "The model learns patterns from the training set only"
+          },
+          {
+            "label": "Predict",
+            "detail": "Run the model on the unseen test set"
+          },
+          {
+            "label": "Score",
+            "detail": "Compare predictions with the real labels, and with a baseline"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "title": "Choose features and a label",
+          "text": "Decide what the model predicts (the label) and which measurable inputs might help (the features). Features that would not be known at prediction time must be left out, or the model will cheat."
+        },
+        {
+          "title": "Split before you look",
+          "text": "Set the test data aside first. If you tune anything while looking at test results, the test stops being a fair exam. Larger projects add a third **validation** set for tuning."
+        },
+        {
+          "title": "Start simple",
+          "text": "**k-nearest neighbours (k-NN)** is the simplest learner: to classify a new point, find the k most similar training examples and take a vote. No maths beyond measuring distance.",
+          "code": "nearest = sorted(train, key=lambda ex: math.dist(ex[0], point))[:k]"
+        },
+        {
+          "title": "Beat a baseline",
+          "text": "If 90% of emails are not spam, a \"model\" that always says \"not spam\" scores 90%. Your model has to do better than that to be worth anything."
+        }
+      ],
+      "interactive": {
+        "type": "code",
+        "language": "python",
+        "starter": "import math\n\n# Each example: (hours studied, hours slept) -> did the student pass?\ntrain = [\n    ((1, 4), \"fail\"), ((2, 8), \"fail\"), ((3, 5), \"fail\"), ((2, 6), \"fail\"), ((5, 4), \"fail\"),\n    ((4, 7), \"pass\"), ((6, 8), \"pass\"), ((7, 6), \"pass\"), ((8, 7), \"pass\"), ((6, 5), \"pass\"),\n    ((3, 4), \"pass\"),  # an outlier: passed with little study\n]\n# Held back: the model never sees these while \"training\".\ntest = [((1, 7), \"fail\"), ((7, 8), \"pass\"), ((4, 4), \"fail\"), ((5, 7), \"pass\"), ((3, 8), \"fail\"), ((3, 3), \"fail\")]\n\ndef predict(point, k=3):\n    # k-nearest neighbours: find the k most similar training examples and take a vote.\n    nearest = sorted(train, key=lambda example: math.dist(example[0], point))[:k]\n    votes = [label for _, label in nearest]\n    return max(set(votes), key=votes.count)\n\ncorrect = 0\nfor features, actual in test:\n    guess = predict(features)\n    correct += guess == actual\n    print(f\"{features} -> {guess:4}  (actual: {actual})\")\nprint(f\"accuracy on unseen data: {correct}/{len(test)}\")\n"
+      },
+      "challenge": {
+        "prompt": "Add a baseline that always predicts the most common label in the training set, and measure its accuracy. Then compare k = 1, 3 and 5. Why does k = 1 do worse here?",
+        "hint": "`labels.count` with `max(set(labels), key=labels.count)` finds the most common label. Look at the training point marked as an outlier, and which test point sits right next to it.",
+        "language": "python",
+        "starter": "import math\n\n# Each example: (hours studied, hours slept) -> did the student pass?\ntrain = [\n    ((1, 4), \"fail\"), ((2, 8), \"fail\"), ((3, 5), \"fail\"), ((2, 6), \"fail\"), ((5, 4), \"fail\"),\n    ((4, 7), \"pass\"), ((6, 8), \"pass\"), ((7, 6), \"pass\"), ((8, 7), \"pass\"), ((6, 5), \"pass\"),\n    ((3, 4), \"pass\"),  # an outlier: passed with little study\n]\n# Held back: the model never sees these while \"training\".\ntest = [((1, 7), \"fail\"), ((7, 8), \"pass\"), ((4, 4), \"fail\"), ((5, 7), \"pass\"), ((3, 8), \"fail\"), ((3, 3), \"fail\")]\n\ndef predict(point, k=3):\n    # k-nearest neighbours: find the k most similar training examples and take a vote.\n    nearest = sorted(train, key=lambda example: math.dist(example[0], point))[:k]\n    votes = [label for _, label in nearest]\n    return max(set(votes), key=votes.count)\n\ndef accuracy(guess_fn):\n    return sum(guess_fn(features) == actual for features, actual in test) / len(test)\n\n# 1. Baseline: always guess the most common label in train. What accuracy does it get?\n# 2. Compare k = 1, 3 and 5.\nprint(f\"k=3: {accuracy(lambda f: predict(f, 3)):.0%}\")\n",
+        "solution": "import math\n\ntrain = [\n    ((1, 4), \"fail\"), ((2, 8), \"fail\"), ((3, 5), \"fail\"), ((2, 6), \"fail\"), ((5, 4), \"fail\"),\n    ((4, 7), \"pass\"), ((6, 8), \"pass\"), ((7, 6), \"pass\"), ((8, 7), \"pass\"), ((6, 5), \"pass\"),\n    ((3, 4), \"pass\"),  # an outlier: passed with little study\n]\ntest = [((1, 7), \"fail\"), ((7, 8), \"pass\"), ((4, 4), \"fail\"), ((5, 7), \"pass\"), ((3, 8), \"fail\"), ((3, 3), \"fail\")]\n\ndef predict(point, k=3):\n    nearest = sorted(train, key=lambda example: math.dist(example[0], point))[:k]\n    votes = [label for _, label in nearest]\n    return max(set(votes), key=votes.count)\n\ndef accuracy(guess_fn):\n    return sum(guess_fn(features) == actual for features, actual in test) / len(test)\n\nlabels = [label for _, label in train]\nmost_common = max(set(labels), key=labels.count)\nprint(f\"baseline (always '{most_common}'): {accuracy(lambda f: most_common):.0%}\")\nfor k in (1, 3, 5):\n    print(f\"k={k}: {accuracy(lambda f: predict(f, k)):.0%}\")\n\n# baseline (always 'pass'): 33%   k=1: 83%   k=3: 100%   k=5: 100%\n# With k = 1, the test point (3, 3) copies its single nearest neighbour: the outlier\n# who passed with little study. Voting over more neighbours outvotes that one odd example.\n"
+      },
+      "takeaways": [
+        "Supervised learning learns from labelled examples to predict labels for new cases.",
+        "Judge a model only on test data it never saw during training.",
+        "Always compare with a simple baseline.",
+        "Small choices like k change how sensitive a model is to noisy examples."
+      ]
+    },
+    {
+      "id": "evaluation-metrics",
+      "title": "Measuring models: precision, recall and the confusion matrix",
+      "level": "intermediate",
+      "minutes": 14,
+      "concept": {
+        "text": "Accuracy is the share of predictions that were right. It sounds like enough, but it falls apart when one outcome is rare. If 1 payment in 100 is fraud, a model that never flags anything is 99% accurate and completely useless.\n\nThe **confusion matrix** splits results into four boxes: true positives, false positives, false negatives and true negatives. From those come two better questions. **Precision**: of everything the model flagged, how much was really positive? **Recall**: of all the real positives, how many did the model catch?\n\nThe two pull against each other. Flag more cases and recall rises while precision falls. Which one matters more depends on the cost of each mistake.",
+        "analogy": "A spam filter with high precision rarely puts real mail in the spam folder. One with high recall lets very little spam into your inbox. Pushing hard for one usually costs some of the other."
+      },
+      "visual": {
+        "type": "compare",
+        "caption": "The confusion matrix. Precision = TP / (TP + FP). Recall = TP / (TP + FN).",
+        "columns": [
+          "Model says positive",
+          "Model says negative"
+        ],
+        "rows": [
+          [
+            "Actually positive",
+            "True positive (TP): caught it",
+            "False negative (FN): missed it"
+          ],
+          [
+            "Actually negative",
+            "False positive (FP): false alarm",
+            "True negative (TN): correctly ignored"
+          ]
+        ]
+      },
+      "steps": [
+        {
+          "title": "Count the four outcomes",
+          "text": "Compare every prediction with the real label and tally TP, FP, FN and TN."
+        },
+        {
+          "title": "Compute precision and recall",
+          "text": "Precision asks how trustworthy a positive prediction is. Recall asks how many real positives were found.",
+          "code": "precision = tp / (tp + fp)\nrecall = tp / (tp + fn)\nf1 = 2 * precision * recall / (precision + recall)"
+        },
+        {
+          "title": "Choose the threshold",
+          "text": "Most models output a score, such as 0.83 suspicious. You pick the threshold that turns scores into yes or no. A lower threshold catches more (higher recall) but raises more false alarms (lower precision)."
+        },
+        {
+          "title": "Match the metric to the cost of mistakes",
+          "text": "Cancer screening favours recall, because missing a case is far worse than a follow-up test. A spam filter favours precision, because losing a real email is worse than seeing one spam. **F1** balances the two when both matter."
+        }
+      ],
+      "interactive": {
+        "type": "code",
+        "language": "python",
+        "starter": "def confusion(actual, predicted):\n    pairs = list(zip(actual, predicted))\n    tp = sum(a == 1 and p == 1 for a, p in pairs)\n    fp = sum(a == 0 and p == 1 for a, p in pairs)\n    fn = sum(a == 1 and p == 0 for a, p in pairs)\n    tn = sum(a == 0 and p == 0 for a, p in pairs)\n    return tp, fp, fn, tn\n\ndef report(name, actual, predicted):\n    tp, fp, fn, tn = confusion(actual, predicted)\n    accuracy = (tp + tn) / len(actual)\n    precision = tp / (tp + fp) if tp + fp else 0\n    recall = tp / (tp + fn) if tp + fn else 0\n    print(f\"{name}\")\n    print(f\"  TP={tp}  FP={fp}  FN={fn}  TN={tn}\")\n    print(f\"  accuracy {accuracy:.0%}   precision {precision:.0%}   recall {recall:.0%}\")\n\n# 200 card payments. 1 = fraud. Only 10 are fraud.\nactual = [1] * 10 + [0] * 190\n\nlazy = [0] * 200                                     # always says \"not fraud\"\nmodel = [1] * 8 + [0] * 2 + [1] * 6 + [0] * 184      # catches 8 frauds, raises 6 false alarms\n\nreport(\"Lazy model (never flags anything)\", actual, lazy)\nreport(\"Real model\", actual, model)\n"
+      },
+      "challenge": {
+        "prompt": "The model actually outputs a suspicion score for each payment. For thresholds 0.3, 0.5 and 0.7, print precision, recall and F1. Which threshold would you choose for a bank, and why?",
+        "hint": "Inside the loop, use the counts from `confusion` with the formulas from the steps. Guard against dividing by zero when nothing is flagged.",
+        "language": "python",
+        "starter": "def confusion(actual, predicted):\n    pairs = list(zip(actual, predicted))\n    tp = sum(a == 1 and p == 1 for a, p in pairs)\n    fp = sum(a == 0 and p == 1 for a, p in pairs)\n    fn = sum(a == 1 and p == 0 for a, p in pairs)\n    tn = sum(a == 0 and p == 0 for a, p in pairs)\n    return tp, fp, fn, tn\n\nactual = [1] * 10 + [0] * 190\n# How suspicious the model thinks each payment is, from 0 to 1.\nscores = [0.95, 0.9, 0.85, 0.8, 0.7, 0.65, 0.6, 0.45, 0.35, 0.2] + [0.75, 0.6, 0.55, 0.5, 0.4, 0.35, 0.3, 0.3] + [0.1] * 172\n\nfor threshold in (0.3, 0.5, 0.7):\n    predicted = [1 if s >= threshold else 0 for s in scores]\n    tp, fp, fn, tn = confusion(actual, predicted)\n    # your code: precision, recall and F1 for this threshold\n",
+        "solution": "def confusion(actual, predicted):\n    pairs = list(zip(actual, predicted))\n    tp = sum(a == 1 and p == 1 for a, p in pairs)\n    fp = sum(a == 0 and p == 1 for a, p in pairs)\n    fn = sum(a == 1 and p == 0 for a, p in pairs)\n    tn = sum(a == 0 and p == 0 for a, p in pairs)\n    return tp, fp, fn, tn\n\nactual = [1] * 10 + [0] * 190\n# How suspicious the model thinks each payment is, from 0 to 1.\nscores = [0.95, 0.9, 0.85, 0.8, 0.7, 0.65, 0.6, 0.45, 0.35, 0.2] + [0.75, 0.6, 0.55, 0.5, 0.4, 0.35, 0.3, 0.3] + [0.1] * 172\n\nfor threshold in (0.3, 0.5, 0.7):\n    predicted = [1 if s >= threshold else 0 for s in scores]\n    tp, fp, fn, tn = confusion(actual, predicted)\n    precision = tp / (tp + fp) if tp + fp else 0\n    recall = tp / (tp + fn) if tp + fn else 0\n    f1 = 2 * precision * recall / (precision + recall) if precision + recall else 0\n    print(f\"threshold {threshold}: precision {precision:.0%}  recall {recall:.0%}  F1 {f1:.2f}\")\n\n# threshold 0.3: precision 53%  recall 90%  F1 0.67\n# threshold 0.5: precision 64%  recall 70%  F1 0.67\n# threshold 0.7: precision 83%  recall 50%  F1 0.62\n# A bank usually picks a low threshold like 0.3: missing fraud costs real money,\n# while a false alarm only costs a quick confirmation text to the customer.\n"
+      },
+      "takeaways": [
+        "Accuracy misleads when one outcome is rare.",
+        "Precision: how many flagged cases were real. Recall: how many real cases were flagged.",
+        "Moving the threshold trades precision against recall.",
+        "Pick the metric that matches the real cost of each kind of mistake."
+      ]
+    },
+    {
+      "id": "gradient-descent",
+      "title": "Gradient descent: how models actually learn",
+      "level": "advanced",
+      "minutes": 16,
+      "concept": {
+        "text": "Training a model means finding the weights that make its predictions least wrong. First you need a number for \"how wrong\": the **loss**. For predicting numbers, a common choice is **mean squared error**, the average of the squared differences between predictions and real values.\n\n**Gradient descent** then improves the weights step by step. The **gradient** says, for each weight, which direction makes the loss go up and how steeply. Nudge every weight a little the other way, recompute, repeat. The size of each nudge is the **learning rate**: too small and training crawls, too large and the weights overshoot and fly off to infinity.\n\nThis same loop, scaled up to billions of weights and run on GPUs, is how large language models are trained.",
+        "analogy": "Adjusting an unfamiliar shower: too cold, so you turn the handle a little towards hot, wait, and check again. Small turns get you to the right temperature slowly. Huge turns swing you from freezing to scalding and back, and you never settle. How far you turn each time is the learning rate."
+      },
+      "visual": {
+        "type": "flow",
+        "caption": "One training step. Repeat it hundreds or millions of times.",
+        "nodes": [
+          {
+            "label": "Weights",
+            "detail": "Start with a guess, for example w = 0, b = 0"
+          },
+          {
+            "label": "Predict",
+            "detail": "prediction = w × x + b for every example"
+          },
+          {
+            "label": "Loss",
+            "detail": "Mean squared error: how wrong, on average"
+          },
+          {
+            "label": "Gradient",
+            "detail": "Slope of the loss for each weight"
+          },
+          {
+            "label": "Update",
+            "detail": "weight -= learning rate × gradient"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "title": "Define the model and the loss",
+          "text": "A straight line, `prediction = w * x + b`, has two weights. The loss is the average squared error over all examples.",
+          "code": "errors = [w * x + b - y for x, y in zip(xs, ys)]\nloss = sum(e ** 2 for e in errors) / len(xs)"
+        },
+        {
+          "title": "Compute the gradient",
+          "text": "Calculus gives the slope of the loss for each weight. For this model they are simple averages. Libraries such as PyTorch work them out automatically for any model, which is called **backpropagation**.",
+          "code": "dw = sum(2 * e * x for e, x in zip(errors, xs)) / len(xs)\ndb = sum(2 * e for e in errors) / len(xs)"
+        },
+        {
+          "title": "Step downhill",
+          "text": "Subtract a small multiple of each gradient. The loss should drop on every step.",
+          "code": "w -= learning_rate * dw\nb -= learning_rate * db"
+        },
+        {
+          "title": "Tune the learning rate",
+          "text": "If the loss shrinks slowly, raise the learning rate. If it grows or turns into huge numbers, lower it. Real training uses smarter optimisers such as **Adam**, but the idea is the same."
+        },
+        {
+          "title": "Know when to stop",
+          "text": "Stop when the loss stops improving meaningfully, or when the loss on validation data starts rising, which is overfitting."
+        }
+      ],
+      "interactive": {
+        "type": "code",
+        "language": "python",
+        "starter": "# Points that roughly follow y = 2x + 1. The model has to discover the 2 and the 1.\nxs = [0, 1, 2, 3, 4, 5]\nys = [1.1, 2.9, 5.2, 7.1, 8.8, 11.2]\n\nw, b = 0.0, 0.0          # start with a bad guess\nlearning_rate = 0.02     # try 0.001 (slow) and 0.12 (explodes)\n\nfor step in range(1, 1001):\n    predictions = [w * x + b for x in xs]\n    errors = [p - y for p, y in zip(predictions, ys)]\n    loss = sum(e ** 2 for e in errors) / len(xs)            # mean squared error\n\n    # Gradient: which way, and how steeply, the loss rises for w and for b.\n    dw = sum(2 * e * x for e, x in zip(errors, xs)) / len(xs)\n    db = sum(2 * e for e in errors) / len(xs)\n\n    # Step downhill.\n    w -= learning_rate * dw\n    b -= learning_rate * db\n\n    if step in (1, 10, 50, 100, 500, 1000):\n        print(f\"step {step:4}: loss {loss:8.3f}   w = {w:.3f}   b = {b:.3f}\")\n"
+      },
+      "challenge": {
+        "prompt": "Run the example with learning rates 0.001 and 0.12 and describe what happens. Then add **early stopping**: end training as soon as the loss improves by less than 0.000000001 in one step, print the step it stopped at, and use the trained model to predict y for x = 10.",
+        "hint": "Keep the previous loss in a variable that starts at `float(\"inf\")`. Compare it with the new loss before updating the weights, and `break` out of the loop when the improvement is tiny.",
+        "language": "python",
+        "starter": "xs = [0, 1, 2, 3, 4, 5]\nys = [1.1, 2.9, 5.2, 7.1, 8.8, 11.2]\n\nw, b = 0.0, 0.0\nlearning_rate = 0.02\n\nfor step in range(1, 5001):\n    errors = [w * x + b - y for x, y in zip(xs, ys)]\n    loss = sum(e ** 2 for e in errors) / len(xs)\n    # your code: stop once the loss improves by less than 0.000000001\n    w -= learning_rate * sum(2 * e * x for e, x in zip(errors, xs)) / len(xs)\n    b -= learning_rate * sum(2 * e for e in errors) / len(xs)\n\nprint(f\"w = {w:.3f}, b = {b:.3f}\")\n",
+        "solution": "xs = [0, 1, 2, 3, 4, 5]\nys = [1.1, 2.9, 5.2, 7.1, 8.8, 11.2]\n\nw, b = 0.0, 0.0\nlearning_rate = 0.02\nprevious_loss = float(\"inf\")\n\nfor step in range(1, 5001):\n    errors = [w * x + b - y for x, y in zip(xs, ys)]\n    loss = sum(e ** 2 for e in errors) / len(xs)\n    if previous_loss - loss < 1e-9:\n        print(f\"stopped at step {step}: loss {loss:.4f}, w = {w:.3f}, b = {b:.3f}\")\n        break\n    previous_loss = loss\n    w -= learning_rate * sum(2 * e * x for e, x in zip(errors, xs)) / len(xs)\n    b -= learning_rate * sum(2 * e for e in errors) / len(xs)\n\nprint(f\"prediction for x = 10: {w * 10 + b:.2f}\")\n\n# stopped at step 600: loss 0.0225, w = 2.003, b = 1.042\n# prediction for x = 10: 21.07\n# learning rate 0.001: still improving after 1,000 steps (too slow).\n# learning rate 0.12: every step overshoots, and the weights explode to around 1e136.\n"
+      },
+      "takeaways": [
+        "The loss measures how wrong the model is. Training tries to make it small.",
+        "The gradient points uphill. Gradient descent steps the other way, a little at a time.",
+        "The learning rate sets the step size: too small is slow, too large diverges.",
+        "The same loop, with automatic gradients, trains every modern neural network."
+      ]
+    }
+  ]
+}

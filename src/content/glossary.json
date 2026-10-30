@@ -75,5 +75,14 @@
   { "term": "phishing", "def": "Tricking someone into revealing secrets or running malware, usually through a fake message." },
   { "term": "IDS", "def": "Intrusion Detection System: watches traffic and raises alerts on suspicious activity." },
   { "term": "IPS", "def": "Intrusion Prevention System: like an IDS, but sits inline and can block traffic." },
-  { "term": "SIEM", "def": "Security Information and Event Management: collects logs from everywhere and correlates them into alerts." }
+  { "term": "SIEM", "def": "Security Information and Event Management: collects logs from everywhere and correlates them into alerts." },
+  { "term": "unit test", "aliases": ["unit tests"], "def": "An automated test that checks one small piece of code, such as a single function, in isolation." },
+  { "term": "Big-O", "aliases": ["Big-O notation"], "def": "A way to describe how the work an algorithm does grows as its input grows, for example O(n) or O(n²)." },
+  { "term": "race condition", "aliases": ["race conditions"], "def": "A bug where the result depends on the timing of tasks running at the same time, such as two updates overwriting each other." },
+  { "term": "SQL injection", "def": "An attack where input pasted into an SQL query changes what the query does. Prevented with parameterised queries." },
+  { "term": "XSS", "aliases": ["cross-site scripting"], "def": "Cross-site scripting: an attack where untrusted input is shown on a page as HTML and runs as a script in other users' browsers." },
+  { "term": "cache", "aliases": ["caches", "caching"], "def": "A fast store that keeps copies of data that is read often, so later requests skip the slower original source." },
+  { "term": "overfitting", "aliases": ["overfit"], "def": "When a model memorises its training data, including the noise, and performs badly on data it has not seen." },
+  { "term": "learning rate", "def": "How big a step gradient descent takes each time it updates the weights. Too small is slow, too large diverges." },
+  { "term": "prompt injection", "def": "An attack that hides instructions in text an LLM will read, such as a web page or email, to make it ignore its real instructions." }
 ]

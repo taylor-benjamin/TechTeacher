@@ -1,0 +1,467 @@
+{
+  "tab": "software",
+  "id": "engineering",
+  "order": 11,
+  "title": "Engineering Practices",
+  "summary": "Testing, performance, async code, secure coding and system design: the habits that turn working code into production code.",
+  "lessons": [
+    {
+      "id": "automated-testing",
+      "title": "Automated testing and TDD",
+      "level": "intermediate",
+      "minutes": 14,
+      "concept": {
+        "text": "A test is a small piece of code that runs your code and checks the result. Once written, it runs in seconds, every time, so you find out the moment a change breaks something instead of hearing it from a user.\n\nMost tests follow **arrange, act, assert**: set up the input, call the code, check the output. Good test suites are shaped like a pyramid: many fast **unit tests** for single functions, fewer **integration tests** for parts working together, and a handful of slow **end-to-end tests** that drive the real app.\n\n**Test-driven development (TDD)** flips the order: write a failing test first, write just enough code to pass it, then tidy up. The failing test proves the test can actually catch the bug.",
+        "analogy": "Tests are a smoke detector for your code. You install it once, and from then on it watches every change you make, so a small fire gets noticed before it spreads."
+      },
+      "visual": {
+        "type": "layers",
+        "caption": "The testing pyramid: lots of fast tests at the bottom, a few slow ones at the top.",
+        "layers": [
+          {
+            "name": "End-to-end tests",
+            "detail": "Drive the real app like a user. Slow and fragile, so keep them few.",
+            "tag": "few"
+          },
+          {
+            "name": "Integration tests",
+            "detail": "Check that parts work together: your code plus a real database or API."
+          },
+          {
+            "name": "Unit tests",
+            "detail": "One function at a time, in milliseconds. Most of your tests live here.",
+            "tag": "many"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "title": "Arrange, act, assert",
+          "text": "Every test sets up an input, calls the code, and asserts what should come back. `assert` stops with an error if the condition is false.",
+          "code": "def test_total():\n    cart = [10, 5, 5]          # arrange\n    result = sum(cart)         # act\n    assert result == 20        # assert"
+        },
+        {
+          "title": "Test the edges, not just the happy path",
+          "text": "Bugs hide at the boundaries: empty input, one item, huge numbers, odd characters, missing values. Write a test for each edge you can think of."
+        },
+        {
+          "title": "Red, green, refactor",
+          "text": "In TDD you write the test first and watch it fail (red), write the simplest code that passes (green), then clean the code up while the test keeps you safe (refactor)."
+        },
+        {
+          "title": "Run them automatically",
+          "text": "Real projects use a test runner such as `pytest` (Python) or `vitest` (JavaScript), and a CI service runs every test on every push. A red build blocks the merge.",
+          "code": "# Python, from the terminal\npip install pytest\npytest          # finds and runs every test_*.py file"
+        }
+      ],
+      "interactive": {
+        "type": "code",
+        "language": "python",
+        "starter": "def slugify(title):\n    return \"-\".join(title.lower().split())\n\ndef test_basic():\n    assert slugify(\"Hello World\") == \"hello-world\"\n\ndef test_extra_spaces():\n    assert slugify(\"  Many   spaces here \") == \"many-spaces-here\"\n\ndef test_punctuation():\n    assert slugify(\"What's new?\") == \"whats-new\"\n\nfor test in [test_basic, test_extra_spaces, test_punctuation]:\n    try:\n        test()\n        print(\"PASS\", test.__name__)\n    except AssertionError:\n        print(\"FAIL\", test.__name__)\n"
+      },
+      "challenge": {
+        "prompt": "One test fails because `slugify` keeps punctuation. Fix the function so all three tests pass, then add a fourth test proving an empty title gives an empty slug.",
+        "hint": "`re.findall(r\"[a-z0-9]+\", text)` returns only the runs of letters and digits. Remove apostrophes first so \"What's\" becomes \"whats\".",
+        "language": "python",
+        "starter": "def slugify(title):\n    return \"-\".join(title.lower().split())\n\ndef test_basic():\n    assert slugify(\"Hello World\") == \"hello-world\"\n\ndef test_extra_spaces():\n    assert slugify(\"  Many   spaces here \") == \"many-spaces-here\"\n\ndef test_punctuation():\n    assert slugify(\"What's new?\") == \"whats-new\"\n\nfor test in [test_basic, test_extra_spaces, test_punctuation]:\n    try:\n        test()\n        print(\"PASS\", test.__name__)\n    except AssertionError:\n        print(\"FAIL\", test.__name__)\n",
+        "solution": "import re\n\ndef slugify(title):\n    cleaned = title.lower().replace(\"'\", \"\")\n    return \"-\".join(re.findall(r\"[a-z0-9]+\", cleaned))\n\ndef test_basic():\n    assert slugify(\"Hello World\") == \"hello-world\"\n\ndef test_extra_spaces():\n    assert slugify(\"  Many   spaces here \") == \"many-spaces-here\"\n\ndef test_punctuation():\n    assert slugify(\"What's new?\") == \"whats-new\"\n\ndef test_empty():\n    assert slugify(\"\") == \"\"\n\nfor test in [test_basic, test_extra_spaces, test_punctuation, test_empty]:\n    try:\n        test()\n        print(\"PASS\", test.__name__)\n    except AssertionError:\n        print(\"FAIL\", test.__name__)\n"
+      },
+      "takeaways": [
+        "A test runs your code and checks the result automatically, in seconds.",
+        "Write many fast unit tests, fewer integration tests and only a few end-to-end tests.",
+        "Test the edges: empty, single, huge and unusual inputs.",
+        "In TDD, a test that fails first proves it can catch the bug."
+      ]
+    },
+    {
+      "id": "performance-big-o",
+      "title": "Performance and Big-O",
+      "level": "intermediate",
+      "minutes": 14,
+      "concept": {
+        "text": "Code that is instant on 100 items can freeze on a million. **Big-O notation** describes how the work grows as the input grows, ignoring the details that do not matter at scale.\n\n**O(1)** stays flat no matter the size. **O(n)** grows in step with the input. **O(n²)** squares it: double the input, four times the work. That last one usually comes from a loop inside a loop.\n\nThe biggest speed-ups rarely come from clever tricks. They come from choosing the right data structure, like a set or dictionary instead of a list when you need to look things up.",
+        "analogy": "Finding a friend at a concert: walking past every seat is O(n). Calling their phone is O(1), no matter how big the crowd. Asking every person to compare tickets with every other person is O(n²), and the concert ends before you finish."
+      },
+      "visual": {
+        "type": "compare",
+        "caption": "Roughly how many steps each growth rate needs.",
+        "columns": [
+          "Typical example",
+          "1,000 items",
+          "1,000,000 items"
+        ],
+        "rows": [
+          [
+            "O(1)",
+            "Look up a key in a dictionary or set",
+            "1",
+            "1"
+          ],
+          [
+            "O(log n)",
+            "Binary search in sorted data",
+            "~10",
+            "~20"
+          ],
+          [
+            "O(n)",
+            "One loop over a list",
+            "1,000",
+            "1,000,000"
+          ],
+          [
+            "O(n log n)",
+            "A good sort",
+            "~10,000",
+            "~20,000,000"
+          ],
+          [
+            "O(n²)",
+            "A loop inside a loop",
+            "1,000,000",
+            "1,000,000,000,000"
+          ]
+        ]
+      },
+      "steps": [
+        {
+          "title": "Count how the work grows",
+          "text": "Ask: if the input doubles, what happens to the work? One loop over the data doubles it, O(n). A loop inside a loop over the same data quadruples it, O(n²)."
+        },
+        {
+          "title": "Know your data structures",
+          "text": "`x in my_list` checks items one by one, O(n). `x in my_set` and `my_dict[key]` jump straight to the answer using a hash, O(1) on average.",
+          "code": "emails = [\"a@x.com\", \"b@x.com\"]        # in: O(n)\nemail_set = set(emails)                # in: O(1)\nprint(\"b@x.com\" in email_set)"
+        },
+        {
+          "title": "Trade memory for speed",
+          "text": "Building a set or a lookup dictionary costs extra memory once, then makes every later lookup instant. That is usually a great deal."
+        },
+        {
+          "title": "Measure before you optimise",
+          "text": "Guesses about speed are often wrong. Time the real code (`time.perf_counter()`, or a profiler) and fix the slowest part first. A clear O(n) solution beats a clever one nobody can read."
+        }
+      ],
+      "interactive": {
+        "type": "code",
+        "language": "python",
+        "starter": "import time\n\nn = 20000\nitems = list(range(n))\nlookups = list(range(0, n, 7))\n\nstart = time.perf_counter()\nfound = sum(1 for x in lookups if x in items)   # list: checks items one by one\nlist_time = time.perf_counter() - start\n\nas_set = set(items)\nstart = time.perf_counter()\nfound = sum(1 for x in lookups if x in as_set)  # set: jumps straight to the answer\nset_time = max(time.perf_counter() - start, 1e-6)\n\nprint(f\"{len(lookups)} lookups in {n} items\")\nprint(f\"list: {list_time * 1000:.1f} ms\")\nprint(f\"set:  {set_time * 1000:.2f} ms\")\nprint(f\"the set was about {list_time / set_time:.0f}x faster\")\n"
+      },
+      "challenge": {
+        "prompt": "`has_duplicates` compares every pair of items, which is O(n²). Rewrite it to be O(n) and compare the timing.",
+        "hint": "Walk through the list once, remembering what you have already seen in a set. If an item is already in the set, you found a duplicate.",
+        "language": "python",
+        "starter": "import time\n\ndef has_duplicates(items):\n    for i in range(len(items)):\n        for j in range(i + 1, len(items)):\n            if items[i] == items[j]:\n                return True\n    return False\n\nprint(has_duplicates([3, 1, 4, 1, 5]))     # True\nstart = time.perf_counter()\nprint(has_duplicates(list(range(3000))))  # False, after about 4.5 million comparisons\nprint(f\"{(time.perf_counter() - start) * 1000:.1f} ms\")\n",
+        "solution": "import time\n\ndef has_duplicates(items):\n    seen = set()\n    for item in items:\n        if item in seen:\n            return True\n        seen.add(item)\n    return False\n\nprint(has_duplicates([3, 1, 4, 1, 5]))\nstart = time.perf_counter()\nprint(has_duplicates(list(range(3000))))\nprint(f\"{(time.perf_counter() - start) * 1000:.1f} ms\")\n"
+      },
+      "takeaways": [
+        "Big-O describes how work grows with input size, not exact speed.",
+        "A loop inside a loop over the same data is O(n²) and gets slow fast.",
+        "Sets and dictionaries look things up in O(1) on average. Lists take O(n).",
+        "Measure first, then fix the slowest part."
+      ]
+    },
+    {
+      "id": "async-concurrency",
+      "title": "Async code: promises and concurrency",
+      "level": "advanced",
+      "minutes": 15,
+      "concept": {
+        "text": "Most of the time a program spends \"working\" it is actually waiting: for a network response, a database or a file. **Asynchronous** code lets it start a slow task, do other things while it waits, and pick the result up when it is ready.\n\nIn JavaScript a slow operation returns a **promise**: a placeholder for a value that will arrive later. `await` pauses the current function until the promise settles, without freezing the rest of the program.\n\nThe common mistake is awaiting independent tasks one after another. If three requests do not depend on each other, start them together with `Promise.all` and the total wait becomes the longest one, not the sum. That is **concurrency**: many tasks in progress at once, even on a single thread.",
+        "analogy": "A cook making dinner does not stand and watch the pasta boil. They put the water on, chop vegetables while it heats, and start the sauce meanwhile. One cook, several dishes in progress: that is concurrency."
+      },
+      "visual": {
+        "type": "sequence",
+        "caption": "With Promise.all, three requests overlap. The total time is the slowest one, not the sum.",
+        "actors": [
+          "Your code",
+          "User API",
+          "Orders API",
+          "Weather API"
+        ],
+        "messages": [
+          {
+            "from": 0,
+            "to": 1,
+            "label": "Request user"
+          },
+          {
+            "from": 0,
+            "to": 2,
+            "label": "Request orders (no waiting)"
+          },
+          {
+            "from": 0,
+            "to": 3,
+            "label": "Request weather (no waiting)"
+          },
+          {
+            "from": 1,
+            "to": 0,
+            "label": "User, after 300 ms"
+          },
+          {
+            "from": 2,
+            "to": 0,
+            "label": "Orders, after 400 ms"
+          },
+          {
+            "from": 3,
+            "to": 0,
+            "label": "Weather, after 500 ms: all done"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "title": "await pauses one function, not the program",
+          "text": "While a function waits on `await`, the event loop keeps running other code, timers and clicks. Nothing freezes."
+        },
+        {
+          "title": "Start independent work together",
+          "text": "Call the functions first (each returns a promise immediately), then await them all at once.",
+          "code": "const [user, orders] = await Promise.all([getUser(), getOrders()])"
+        },
+        {
+          "title": "Decide what failure means",
+          "text": "`Promise.all` rejects as soon as one task fails. Use `Promise.allSettled` when you want every result, success or failure, and wrap awaits in `try` and `catch`.",
+          "code": "const results = await Promise.allSettled([a(), b(), c()])\nconst failed = results.filter((r) => r.status === \"rejected\")"
+        },
+        {
+          "title": "Limit how much runs at once",
+          "text": "Firing 10,000 requests together can overload a server or hit rate limits. Real code caps concurrency, for example at 5 requests at a time."
+        },
+        {
+          "title": "Watch for race conditions",
+          "text": "When two tasks read and update the same value while waiting, one can overwrite the other. Keep shared state small, and update it in one place."
+        }
+      ],
+      "interactive": {
+        "type": "code",
+        "language": "javascript",
+        "starter": "const wait = (ms, value) => new Promise((resolve) => setTimeout(() => resolve(value), ms))\n\n// Pretend each of these is a network request.\nconst getUser = () => wait(300, { name: 'Ava' })\nconst getOrders = () => wait(400, ['book', 'lamp'])\nconst getWeather = () => wait(500, 'sunny')\n\nlet start = Date.now()\nconst user = await getUser()\nconst orders = await getOrders()\nconst weather = await getWeather()\nconsole.log('one after another:', Date.now() - start, 'ms')\n\nstart = Date.now()\nconst [u, o, w] = await Promise.all([getUser(), getOrders(), getWeather()])\nconsole.log('all at once:', Date.now() - start, 'ms')\nconsole.log(u.name, o, w)\n"
+      },
+      "challenge": {
+        "prompt": "Write `mapWithLimit(items, limit, fn)`: call `fn` on every item, never with more than `limit` calls running at once, and return the results in the original order. The starter runs all seven downloads at once; yours should report `most at once: 3`.",
+        "hint": "Start `limit` \"workers\". Each worker loops: take the next unclaimed index, await `fn` for it, store the result at that index, repeat until no items are left. Await all the workers with `Promise.all`.",
+        "language": "javascript",
+        "starter": "const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))\nlet active = 0\nlet peak = 0\n\nasync function download(id) {\n  active++\n  peak = Math.max(peak, active)\n  await wait(200)\n  active--\n  return `file-${id}`\n}\n\nasync function mapWithLimit(items, limit, fn) {\n  // Your code: call fn on every item, never more than `limit` at once,\n  // and return the results in the original order.\n  return Promise.all(items.map(fn)) // runs all of them at once\n}\n\nconst start = Date.now()\nconst files = await mapWithLimit([1, 2, 3, 4, 5, 6, 7], 3, download)\nconsole.log(files)\nconsole.log('most at once:', peak, '| took', Date.now() - start, 'ms')\n",
+        "solution": "const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))\nlet active = 0\nlet peak = 0\n\nasync function download(id) {\n  active++\n  peak = Math.max(peak, active)\n  await wait(200)\n  active--\n  return `file-${id}`\n}\n\nasync function mapWithLimit(items, limit, fn) {\n  const results = new Array(items.length)\n  let next = 0\n  // Each worker keeps taking the next unclaimed item until none are left.\n  async function worker() {\n    while (next < items.length) {\n      const i = next++\n      results[i] = await fn(items[i])\n    }\n  }\n  const workers = Array.from({ length: Math.min(limit, items.length) }, worker)\n  await Promise.all(workers)\n  return results\n}\n\nconst start = Date.now()\nconst files = await mapWithLimit([1, 2, 3, 4, 5, 6, 7], 3, download)\nconsole.log(files)\nconsole.log('most at once:', peak, '| took', Date.now() - start, 'ms')\n"
+      },
+      "takeaways": [
+        "A promise is a placeholder for a value that arrives later. await waits for it without freezing the program.",
+        "Start independent tasks together with Promise.all. The total time becomes the slowest task, not the sum.",
+        "Use Promise.allSettled when one failure should not discard the other results.",
+        "Cap concurrency for large batches, and keep shared state simple to avoid race conditions."
+      ]
+    },
+    {
+      "id": "secure-coding",
+      "title": "Secure coding: injection and the OWASP Top 10",
+      "level": "advanced",
+      "minutes": 15,
+      "concept": {
+        "text": "Most real-world breaches do not involve genius hackers. They exploit a short list of everyday coding mistakes, which the **OWASP Top 10** tracks and ranks.\n\nThe classic one is **injection**: the program builds a command, such as an SQL query, by pasting user input straight into it. If the input contains SQL syntax, the attacker is now writing part of your query. The same idea drives **cross-site scripting (XSS)**, where input is pasted into a web page and runs as a script.\n\nThe fix is a habit, not a trick: **never mix untrusted data into code**. Use parameterised queries, escape output, check permissions on every request, and keep secrets out of your source code.",
+        "analogy": "Injection is like a bank teller who reads your deposit slip aloud as instructions. Write \"deposit $10. Also, give me the contents of the vault\" on the slip, and the teller just does it. A safe teller only ever reads the slip as an amount."
+      },
+      "visual": {
+        "type": "cards",
+        "caption": "Six of the most common risks on the OWASP Top 10.",
+        "items": [
+          {
+            "title": "Broken access control",
+            "text": "Users can reach data or actions they should not, for example by changing an ID in the URL."
+          },
+          {
+            "title": "Injection",
+            "text": "Untrusted input is treated as code: SQL injection, command injection, XSS."
+          },
+          {
+            "title": "Cryptographic failures",
+            "text": "Sensitive data sent or stored without strong encryption, or passwords hashed weakly."
+          },
+          {
+            "title": "Security misconfiguration",
+            "text": "Default passwords, debug mode in production, missing security headers."
+          },
+          {
+            "title": "Vulnerable components",
+            "text": "Outdated libraries with known flaws. Update dependencies and scan them."
+          },
+          {
+            "title": "Authentication failures",
+            "text": "No rate limiting, weak passwords allowed, sessions that never expire."
+          }
+        ]
+      },
+      "steps": [
+        {
+          "title": "See the vulnerable pattern",
+          "text": "This login code pastes input straight into the query. Whatever the user types becomes part of the SQL.",
+          "code": "# DON'T: string building\nquery = f\"SELECT * FROM users WHERE name = '{name}' AND password_hash = '{pw}'\"\ndb.execute(query)"
+        },
+        {
+          "title": "Use parameterised queries",
+          "text": "Pass input separately with placeholders. The database treats it strictly as data, so quotes and SQL keywords lose their power.",
+          "code": "# DO: placeholders\ndb.execute(\n    \"SELECT * FROM users WHERE name = ? AND password_hash = ?\",\n    (name, pw_hash),\n)"
+        },
+        {
+          "title": "Escape output to stop XSS",
+          "text": "When showing user text in a page, insert it as text, never as HTML. Frameworks like React escape by default; avoid bypasses such as `innerHTML` and `dangerouslySetInnerHTML` with user data. A Content-Security-Policy header is a strong second layer."
+        },
+        {
+          "title": "Check access on the server, every time",
+          "text": "Hiding a button is not security. Before returning or changing data, the server must check that this user owns it or has the right role."
+        },
+        {
+          "title": "Keep secrets and dependencies clean",
+          "text": "API keys and passwords go in environment variables or a secrets manager, never in Git. Update dependencies regularly and let tools like Dependabot flag known vulnerabilities."
+        }
+      ],
+      "interactive": {
+        "type": "code",
+        "language": "sql",
+        "seed": "CREATE TABLE users(id INTEGER PRIMARY KEY, name TEXT, password_hash TEXT, role TEXT); INSERT INTO users(name, password_hash, role) VALUES ('ava','$2b$12$Qx..a1','admin'),('ben','$2b$12$Wm..b2','member'),('cy','$2b$12$Lp..c3','member');",
+        "starter": "-- The login code builds its query by pasting in what the user typed:\n--   \"... WHERE name = '\" + name + \"' AND password_hash = '\" + pw + \"'\"\n-- An attacker types this into the name box:   ' OR '1'='1' --\n-- This is the query the database receives. Run it.\nSELECT id, name, role FROM users\nWHERE name = '' OR '1'='1' --' AND password_hash = 'anything';\n\n-- '1'='1' is always true, and -- turns the password check into a comment.\n-- Now run a normal failed login for comparison:\n-- SELECT id, name, role FROM users WHERE name = 'ben' AND password_hash = 'wrong';\n"
+      },
+      "challenge": {
+        "prompt": "A public endpoint, `GET /invoice?id=42`, runs these three lines. List every security problem you can find, with a fix for each.\n\n`invoice_id = request.args[\"id\"]`\n\n`row = db.execute(f\"SELECT * FROM invoices WHERE id = {invoice_id}\").fetchone()`\n\n`return f\"<h1>Invoice for {row['customer_name']}</h1>\"`",
+        "hint": "Look at three things: how the query is built, whose invoice is returned, and how the customer name gets into the HTML.",
+        "solution": "1. **SQL injection.** `invoice_id` is pasted into the query. An attacker can send `1 OR 1=1` or worse. Fix: `db.execute(\"SELECT * FROM invoices WHERE id = ?\", (invoice_id,))`.\n\n2. **Broken access control.** Any visitor can read any invoice by changing the ID. Fix: require login and add `AND user_id = ?` with the signed-in user's ID, returning 404 if no row matches.\n\n3. **XSS.** `customer_name` goes into HTML unescaped. A name like `<script>...</script>` would run in the viewer's browser. Fix: escape it (`html.escape(...)`) or render through a template engine that escapes by default.\n\n4. **Missing error handling.** If no invoice matches, `row` is `None` and the code crashes, possibly leaking a stack trace. Fix: return a clean 404."
+      },
+      "takeaways": [
+        "Never paste untrusted input into SQL, shell commands or HTML. Keep data and code separate.",
+        "Parameterised queries stop SQL injection. Escaping output stops XSS.",
+        "Check permissions on the server for every request. Hidden buttons are not security.",
+        "Keep secrets out of Git and dependencies up to date."
+      ]
+    },
+    {
+      "id": "system-design",
+      "title": "System design: scaling a web app",
+      "level": "advanced",
+      "minutes": 16,
+      "concept": {
+        "text": "One server and one database can carry a surprising amount of traffic. **System design** is about what to add, and in what order, when they cannot.\n\nThe usual moves: put a **load balancer** in front of several identical app servers; make those servers **stateless** so any of them can handle any request; add a **cache** so repeated reads skip the database; add **read replicas** when reads outgrow one database; push slow work onto a **queue** for background workers; and serve images and scripts from a **CDN** close to the user.\n\nEvery addition solves one bottleneck and brings new problems, such as stale cache data or more moving parts to monitor. Good design starts with measuring where the real bottleneck is.",
+        "analogy": "A food truck grows into a restaurant. You hire more cooks (app servers), a host to seat guests evenly (load balancer), prep popular dishes in advance (cache), and send catering orders to a back kitchen (queue) so walk-in customers are not kept waiting."
+      },
+      "visual": {
+        "type": "flow",
+        "caption": "A common shape for a web app that has outgrown one server.",
+        "nodes": [
+          {
+            "label": "Users",
+            "detail": "Browsers and mobile apps"
+          },
+          {
+            "label": "CDN",
+            "detail": "Serves images, CSS and JS from nearby"
+          },
+          {
+            "label": "Load balancer",
+            "detail": "Spreads requests across servers"
+          },
+          {
+            "label": "App servers",
+            "detail": "Identical and stateless. Add more as needed"
+          },
+          {
+            "label": "Cache",
+            "detail": "Answers repeated reads in microseconds"
+          },
+          {
+            "label": "Database",
+            "detail": "One primary for writes, replicas for reads"
+          },
+          {
+            "label": "Queue + workers",
+            "detail": "Emails, video encoding and reports run in the background"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "title": "Measure the bottleneck",
+          "text": "Is it CPU on the app servers, slow database queries, or one heavy endpoint? Add an index or fix one query before buying more servers."
+        },
+        {
+          "title": "Make app servers stateless",
+          "text": "Store sessions and uploads in a shared database, cache or object storage, not in one server's memory or disk. Then any server can take any request, and you can add or remove servers freely."
+        },
+        {
+          "title": "Cache what is read often",
+          "text": "With **cache-aside**, the app checks the cache first and only queries the database on a miss, then stores the result with an expiry time. The hard part is invalidation: deciding when cached data is out of date.",
+          "code": "value = cache.get(key)\nif value is None:\n    value = db.query(...)\n    cache.set(key, value, ttl=300)  # expires after 5 minutes"
+        },
+        {
+          "title": "Move slow work to a queue",
+          "text": "If a request triggers something slow, like sending email or resizing images, put a job on a queue and respond immediately. Background workers process jobs at their own pace and can retry failures."
+        },
+        {
+          "title": "Scale the database last and carefully",
+          "text": "Read replicas handle more reads but may lag a moment behind the primary. Splitting data across several databases (**sharding**) handles more writes but makes queries and transactions much harder."
+        }
+      ],
+      "interactive": {
+        "type": "quiz",
+        "questions": [
+          {
+            "q": "Users get logged out at random after you add a second app server. What is the most likely cause?",
+            "options": [
+              "The load balancer is too slow",
+              "Sessions are stored in each server's memory",
+              "The database needs an index",
+              "The CDN is caching the login page"
+            ],
+            "answer": 1,
+            "explain": "Requests alternate between servers, and the second server has never seen the session. Store sessions somewhere shared so the servers stay stateless."
+          },
+          {
+            "q": "Your product page is read 10,000 times for every time it changes. What helps most?",
+            "options": [
+              "Sharding the database",
+              "A queue",
+              "A cache with a short expiry",
+              "A bigger app server"
+            ],
+            "answer": 2,
+            "explain": "Read-heavy, rarely changing data is the ideal case for caching. Most requests never touch the database."
+          },
+          {
+            "q": "Sign-up takes 6 seconds because it waits for a welcome email to send. What is the best fix?",
+            "options": [
+              "Add more app servers",
+              "Put the email on a queue and respond right away",
+              "Cache the email",
+              "Use a read replica"
+            ],
+            "answer": 1,
+            "explain": "The user does not need to wait for the email. A background worker sends it, and can retry if the mail service is down."
+          },
+          {
+            "q": "A user updates their profile, refreshes, and briefly sees the old version. Reads come from a replica. Why?",
+            "options": [
+              "Replication lag",
+              "The CDN is down",
+              "Too many app servers",
+              "A missing index"
+            ],
+            "answer": 0,
+            "explain": "Replicas copy changes from the primary with a small delay. Read the user's own recent changes from the primary to avoid this."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "A quiz app runs on one server with one database and has 500 users. A school district will roll it out to 200,000 students next month, all taking a quiz at 9:00 on Monday. Outline what you would change, in order, and why.",
+        "hint": "Think about the shape of the traffic: a huge spike at one moment, mostly reading quiz questions, then a burst of answer submissions.",
+        "solution": "1. **Measure first.** Load-test the current app to find the first bottleneck, and fix slow queries and missing indexes.\n\n2. **Static assets to a CDN**, so the 9:00 spike for JavaScript, CSS and images never reaches the servers.\n\n3. **Stateless app servers behind a load balancer**, with autoscaling scheduled up before 9:00 instead of reacting after the spike hits.\n\n4. **Cache the quiz questions.** Every student reads the same quiz, so it can be served from cache almost entirely.\n\n5. **Queue the answer submissions.** Accept each submission quickly, write it to a queue, and let workers save and grade it at a steady rate, so a write burst cannot overwhelm the database.\n\n6. **Add a read replica** for reports and dashboards, so teachers checking results do not slow down students.\n\nKeep the database as a single primary unless measurements prove writes still cannot keep up. Sharding is a last resort."
+      },
+      "takeaways": [
+        "Measure before scaling. Often one slow query or missing index is the real problem.",
+        "Stateless app servers behind a load balancer can grow and shrink freely.",
+        "Caches absorb repeated reads. Queues absorb slow work and traffic spikes.",
+        "Every new component solves one bottleneck and adds complexity, so add them only when needed."
+      ]
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 [
-  { "id": "software", "title": "Software Development", "icon": "💻", "summary": "APIs, eight programming languages with in-browser runners, and Git/GitHub." },
-  { "id": "ai", "title": "AI / ML", "icon": "🧠", "summary": "How neural networks and LLMs really work, plus prompting, RAG, agents and running models locally." },
+  { "id": "software", "title": "Software Development", "icon": "💻", "summary": "APIs, eight programming languages with in-browser runners, Git/GitHub, and engineering practices from testing to system design." },
+  { "id": "ai", "title": "AI / ML", "icon": "🧠", "summary": "How neural networks and LLMs really work, hands-on machine learning, plus prompting, RAG, evals, agents and running models locally." },
   { "id": "networking", "title": "Networking", "icon": "🌐", "summary": "Network+ fundamentals, the big three clouds, and building your own home lab." },
   { "id": "webdesign", "title": "Web Design", "icon": "🎨", "summary": "Design fundamentals, modern tools, vibe coding with AI, and shipping a site." },
   { "id": "security", "title": "Cybersecurity", "icon": "🛡️", "summary": "Cryptography, identity, secure protocols, packet analysis, defence and career paths." }

@@ -1,0 +1,387 @@
+{
+  "title": "Prácticas de ingeniería",
+  "summary": "Pruebas, rendimiento, código asíncrono, programación segura y diseño de sistemas: los hábitos que convierten el código que funciona en código de producción.",
+  "lessons": {
+    "automated-testing": {
+      "title": "Pruebas automatizadas y TDD",
+      "concept": {
+        "text": "Una prueba es un pequeño trozo de código que ejecuta tu código y comprueba el resultado. Una vez escrita, se ejecuta en segundos, siempre, así que te enteras en el momento en que un cambio rompe algo, y no por un usuario.\n\nLa mayoría de las pruebas siguen el patrón **preparar, actuar, comprobar**: preparas la entrada, llamas al código y verificas la salida. Un buen conjunto de pruebas tiene forma de pirámide: muchas **pruebas unitarias** rápidas para funciones sueltas, menos **pruebas de integración** para piezas que trabajan juntas y unas pocas **pruebas de extremo a extremo** lentas que manejan la aplicación real.\n\nEl **desarrollo guiado por pruebas (TDD)** invierte el orden: primero escribes una prueba que falla, luego el código justo para que pase y después lo ordenas. La prueba que falla al principio demuestra que de verdad puede detectar el error.",
+        "analogy": "Las pruebas son un detector de humo para tu código. Lo instalas una vez y desde entonces vigila cada cambio que haces, así que un fuego pequeño se nota antes de que se extienda."
+      },
+      "visual": {
+        "caption": "La pirámide de pruebas: muchas pruebas rápidas abajo y unas pocas lentas arriba.",
+        "layers": [
+          {
+            "name": "Pruebas de extremo a extremo",
+            "detail": "Usan la aplicación real como un usuario. Lentas y frágiles, así que pocas."
+          },
+          {
+            "name": "Pruebas de integración",
+            "detail": "Comprueban que las piezas funcionan juntas: tu código con una base de datos o API real."
+          },
+          {
+            "name": "Pruebas unitarias",
+            "detail": "Una función cada vez, en milisegundos. Aquí vive la mayoría de tus pruebas."
+          }
+        ]
+      },
+      "steps": [
+        {
+          "title": "Preparar, actuar, comprobar",
+          "text": "Cada prueba prepara una entrada, llama al código y comprueba lo que debería devolver. `assert` se detiene con un error si la condición es falsa."
+        },
+        {
+          "title": "Prueba los bordes, no solo el caso feliz",
+          "text": "Los errores se esconden en los límites: entrada vacía, un solo elemento, números enormes, caracteres raros, valores que faltan. Escribe una prueba para cada borde que se te ocurra."
+        },
+        {
+          "title": "Rojo, verde, refactorizar",
+          "text": "En TDD escribes primero la prueba y ves cómo falla (rojo), escribes el código más simple que la haga pasar (verde) y luego limpias el código mientras la prueba te protege (refactorizar)."
+        },
+        {
+          "title": "Ejecútalas automáticamente",
+          "text": "Los proyectos reales usan un ejecutor de pruebas como `pytest` (Python) o `vitest` (JavaScript), y un servicio de CI ejecuta todas las pruebas en cada push. Una compilación en rojo bloquea la fusión."
+        }
+      ],
+      "challenge": {
+        "prompt": "Una prueba falla porque `slugify` conserva la puntuación. Arregla la función para que pasen las tres pruebas y añade una cuarta que demuestre que un título vacío da un slug vacío.",
+        "hint": "`re.findall(r\"[a-z0-9]+\", texto)` devuelve solo los tramos de letras y dígitos. Quita primero los apóstrofos para que \"What's\" pase a ser \"whats\"."
+      },
+      "takeaways": [
+        "Una prueba ejecuta tu código y comprueba el resultado de forma automática, en segundos.",
+        "Escribe muchas pruebas unitarias rápidas, menos pruebas de integración y solo unas pocas de extremo a extremo.",
+        "Prueba los bordes: entradas vacías, únicas, enormes e inusuales.",
+        "En TDD, una prueba que falla primero demuestra que puede detectar el error."
+      ]
+    },
+    "performance-big-o": {
+      "title": "Rendimiento y notación Big-O",
+      "concept": {
+        "text": "Un código que es instantáneo con 100 elementos puede congelarse con un millón. La **notación Big-O** describe cómo crece el trabajo a medida que crece la entrada, ignorando los detalles que no importan a gran escala.\n\n**O(1)** se mantiene plano sea cual sea el tamaño. **O(n)** crece al mismo ritmo que la entrada. **O(n²)** lo eleva al cuadrado: duplicas la entrada y el trabajo se multiplica por cuatro. Esto último suele venir de un bucle dentro de otro bucle.\n\nLas mayores mejoras de velocidad rara vez vienen de trucos ingeniosos. Vienen de elegir la estructura de datos adecuada, como un conjunto o un diccionario en lugar de una lista cuando necesitas buscar cosas.",
+        "analogy": "Encontrar a un amigo en un concierto: pasar por delante de cada asiento es O(n). Llamarle al móvil es O(1), por grande que sea el público. Pedir a cada persona que compare su entrada con la de todas las demás es O(n²), y el concierto termina antes de que acabes."
+      },
+      "visual": {
+        "caption": "Aproximadamente cuántos pasos necesita cada ritmo de crecimiento.",
+        "columns": [
+          "Ejemplo típico",
+          "1.000 elementos",
+          "1.000.000 elementos"
+        ],
+        "rows": [
+          [
+            "O(1)",
+            "Buscar una clave en un diccionario o conjunto",
+            "1",
+            "1"
+          ],
+          [
+            "O(log n)",
+            "Búsqueda binaria en datos ordenados",
+            "~10",
+            "~20"
+          ],
+          [
+            "O(n)",
+            "Un bucle sobre una lista",
+            "1.000",
+            "1.000.000"
+          ],
+          [
+            "O(n log n)",
+            "Un buen algoritmo de ordenación",
+            "~10.000",
+            "~20.000.000"
+          ],
+          [
+            "O(n²)",
+            "Un bucle dentro de otro bucle",
+            "1.000.000",
+            "1.000.000.000.000"
+          ]
+        ]
+      },
+      "steps": [
+        {
+          "title": "Cuenta cómo crece el trabajo",
+          "text": "Pregúntate: si la entrada se duplica, ¿qué pasa con el trabajo? Un bucle sobre los datos lo duplica, O(n). Un bucle dentro de otro sobre los mismos datos lo cuadruplica, O(n²)."
+        },
+        {
+          "title": "Conoce tus estructuras de datos",
+          "text": "`x in mi_lista` revisa los elementos uno a uno, O(n). `x in mi_conjunto` y `mi_dict[clave]` saltan directamente a la respuesta usando un hash, O(1) de media."
+        },
+        {
+          "title": "Cambia memoria por velocidad",
+          "text": "Construir un conjunto o un diccionario de búsqueda cuesta algo de memoria una vez y después hace instantánea cada búsqueda. Casi siempre compensa."
+        },
+        {
+          "title": "Mide antes de optimizar",
+          "text": "Las suposiciones sobre velocidad suelen fallar. Cronometra el código real (`time.perf_counter()` o un profiler) y arregla primero la parte más lenta. Una solución O(n) clara es mejor que una ingeniosa que nadie entiende."
+        }
+      ],
+      "challenge": {
+        "prompt": "`has_duplicates` compara cada pareja de elementos, lo que es O(n²). Reescríbela para que sea O(n) y compara los tiempos.",
+        "hint": "Recorre la lista una sola vez y guarda en un conjunto lo que ya has visto. Si un elemento ya está en el conjunto, has encontrado un duplicado."
+      },
+      "takeaways": [
+        "Big-O describe cómo crece el trabajo con el tamaño de la entrada, no la velocidad exacta.",
+        "Un bucle dentro de otro sobre los mismos datos es O(n²) y se vuelve lento muy rápido.",
+        "Los conjuntos y diccionarios buscan en O(1) de media. Las listas tardan O(n).",
+        "Mide primero y luego arregla la parte más lenta."
+      ]
+    },
+    "async-concurrency": {
+      "title": "Código asíncrono: promesas y concurrencia",
+      "concept": {
+        "text": "La mayor parte del tiempo que un programa pasa \"trabajando\" en realidad está esperando: una respuesta de red, una base de datos o un archivo. El código **asíncrono** le permite empezar una tarea lenta, hacer otras cosas mientras espera y recoger el resultado cuando esté listo.\n\nEn JavaScript, una operación lenta devuelve una **promesa**: un marcador de posición para un valor que llegará más tarde. `await` pausa la función actual hasta que la promesa se resuelve, sin congelar el resto del programa.\n\nEl error habitual es esperar tareas independientes una detrás de otra. Si tres peticiones no dependen entre sí, lánzalas a la vez con `Promise.all` y la espera total será la de la más lenta, no la suma. Eso es **concurrencia**: muchas tareas en marcha a la vez, incluso con un solo hilo.",
+        "analogy": "Quien cocina la cena no se queda mirando cómo hierve la pasta. Pone el agua al fuego, corta las verduras mientras se calienta y empieza la salsa entretanto. Una sola persona, varios platos en marcha: eso es concurrencia."
+      },
+      "visual": {
+        "caption": "Con Promise.all, las tres peticiones se solapan. El tiempo total es el de la más lenta, no la suma.",
+        "actors": [
+          "Tu código",
+          "API de usuarios",
+          "API de pedidos",
+          "API del tiempo"
+        ],
+        "messages": [
+          {
+            "label": "Pide el usuario"
+          },
+          {
+            "label": "Pide los pedidos (sin esperar)"
+          },
+          {
+            "label": "Pide el tiempo (sin esperar)"
+          },
+          {
+            "label": "Usuario, a los 300 ms"
+          },
+          {
+            "label": "Pedidos, a los 400 ms"
+          },
+          {
+            "label": "Tiempo, a los 500 ms: todo listo"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "title": "await pausa una función, no el programa",
+          "text": "Mientras una función espera en `await`, el bucle de eventos sigue ejecutando otro código, temporizadores y clics. Nada se congela."
+        },
+        {
+          "title": "Lanza juntas las tareas independientes",
+          "text": "Llama primero a las funciones (cada una devuelve una promesa al instante) y luego espéralas todas a la vez."
+        },
+        {
+          "title": "Decide qué significa un fallo",
+          "text": "`Promise.all` se rechaza en cuanto falla una tarea. Usa `Promise.allSettled` cuando quieras todos los resultados, buenos o malos, y envuelve los `await` en `try` y `catch`."
+        },
+        {
+          "title": "Limita cuántas se ejecutan a la vez",
+          "text": "Lanzar 10.000 peticiones juntas puede saturar un servidor o chocar con límites de uso. El código real limita la concurrencia, por ejemplo a 5 peticiones a la vez."
+        },
+        {
+          "title": "Cuidado con las condiciones de carrera",
+          "text": "Cuando dos tareas leen y actualizan el mismo valor mientras esperan, una puede pisar a la otra. Mantén pequeño el estado compartido y actualízalo en un solo sitio."
+        }
+      ],
+      "challenge": {
+        "prompt": "Escribe `mapWithLimit(items, limit, fn)`: llama a `fn` con cada elemento, sin superar nunca `limit` llamadas en marcha a la vez, y devuelve los resultados en el orden original. El código inicial lanza las siete descargas a la vez; el tuyo debería mostrar `most at once: 3`.",
+        "hint": "Arranca `limit` \"trabajadores\". Cada uno repite: toma el siguiente índice libre, espera a `fn` para ese elemento, guarda el resultado en ese índice y sigue hasta que no queden elementos. Espera a todos los trabajadores con `Promise.all`."
+      },
+      "takeaways": [
+        "Una promesa es un marcador de posición para un valor que llega más tarde. await la espera sin congelar el programa.",
+        "Lanza juntas las tareas independientes con Promise.all. El tiempo total pasa a ser el de la más lenta, no la suma.",
+        "Usa Promise.allSettled cuando un fallo no deba descartar el resto de resultados.",
+        "Limita la concurrencia en lotes grandes y mantén simple el estado compartido para evitar condiciones de carrera."
+      ]
+    },
+    "secure-coding": {
+      "title": "Programación segura: inyección y el OWASP Top 10",
+      "concept": {
+        "text": "La mayoría de las brechas reales no las causan hackers geniales. Aprovechan una lista corta de errores de programación cotidianos, que el **OWASP Top 10** recoge y clasifica.\n\nEl clásico es la **inyección**: el programa construye una orden, como una consulta SQL, pegando directamente lo que escribe el usuario. Si esa entrada contiene sintaxis SQL, el atacante pasa a escribir parte de tu consulta. La misma idea está detrás del **cross-site scripting (XSS)**, donde la entrada se pega en una página web y se ejecuta como script.\n\nLa solución es un hábito, no un truco: **nunca mezcles datos no confiables con código**. Usa consultas parametrizadas, escapa la salida, comprueba los permisos en cada petición y deja los secretos fuera del código fuente.",
+        "analogy": "La inyección es como un cajero de banco que lee en voz alta tu hoja de ingreso como si fueran instrucciones. Escribe \"ingresar 10 €. Además, dame el contenido de la cámara acorazada\" y el cajero lo hace sin más. Un cajero seguro solo lee la hoja como una cantidad."
+      },
+      "visual": {
+        "caption": "Seis de los riesgos más comunes del OWASP Top 10.",
+        "items": [
+          {
+            "title": "Control de acceso roto",
+            "text": "Los usuarios llegan a datos o acciones que no deberían, por ejemplo cambiando un ID en la URL."
+          },
+          {
+            "title": "Inyección",
+            "text": "Una entrada no confiable se trata como código: inyección SQL, inyección de comandos, XSS."
+          },
+          {
+            "title": "Fallos criptográficos",
+            "text": "Datos sensibles enviados o guardados sin cifrado fuerte, o contraseñas con un hash débil."
+          },
+          {
+            "title": "Configuración insegura",
+            "text": "Contraseñas por defecto, modo de depuración en producción, cabeceras de seguridad ausentes."
+          },
+          {
+            "title": "Componentes vulnerables",
+            "text": "Bibliotecas desactualizadas con fallos conocidos. Actualiza las dependencias y analízalas."
+          },
+          {
+            "title": "Fallos de autenticación",
+            "text": "Sin límite de intentos, contraseñas débiles permitidas, sesiones que nunca caducan."
+          }
+        ]
+      },
+      "steps": [
+        {
+          "title": "Reconoce el patrón vulnerable",
+          "text": "Este código de inicio de sesión pega la entrada directamente en la consulta. Lo que escriba el usuario pasa a formar parte del SQL."
+        },
+        {
+          "title": "Usa consultas parametrizadas",
+          "text": "Pasa la entrada por separado con marcadores. La base de datos la trata estrictamente como datos, así que las comillas y las palabras clave de SQL pierden su poder."
+        },
+        {
+          "title": "Escapa la salida para frenar el XSS",
+          "text": "Al mostrar texto de un usuario en una página, insértalo como texto, nunca como HTML. Frameworks como React escapan por defecto; evita atajos como `innerHTML` y `dangerouslySetInnerHTML` con datos de usuarios. Una cabecera Content-Security-Policy es una segunda capa muy sólida."
+        },
+        {
+          "title": "Comprueba el acceso en el servidor, siempre",
+          "text": "Ocultar un botón no es seguridad. Antes de devolver o cambiar datos, el servidor debe comprobar que ese usuario es su dueño o tiene el rol adecuado."
+        },
+        {
+          "title": "Mantén limpios los secretos y las dependencias",
+          "text": "Las claves de API y contraseñas van en variables de entorno o en un gestor de secretos, nunca en Git. Actualiza las dependencias con regularidad y deja que herramientas como Dependabot avisen de vulnerabilidades conocidas."
+        }
+      ],
+      "challenge": {
+        "prompt": "Un endpoint público, `GET /invoice?id=42`, ejecuta estas tres líneas. Enumera todos los problemas de seguridad que encuentres, con una solución para cada uno.\n\n`invoice_id = request.args[\"id\"]`\n\n`row = db.execute(f\"SELECT * FROM invoices WHERE id = {invoice_id}\").fetchone()`\n\n`return f\"<h1>Invoice for {row['customer_name']}</h1>\"`",
+        "hint": "Fíjate en tres cosas: cómo se construye la consulta, de quién es la factura que se devuelve y cómo llega el nombre del cliente al HTML.",
+        "solution": "1. **Inyección SQL.** `invoice_id` se pega en la consulta. Un atacante puede enviar `1 OR 1=1` o algo peor. Solución: `db.execute(\"SELECT * FROM invoices WHERE id = ?\", (invoice_id,))`.\n\n2. **Control de acceso roto.** Cualquier visitante puede leer cualquier factura cambiando el ID. Solución: exigir inicio de sesión y añadir `AND user_id = ?` con el ID del usuario conectado, devolviendo 404 si no hay coincidencia.\n\n3. **XSS.** `customer_name` entra en el HTML sin escapar. Un nombre como `<script>...</script>` se ejecutaría en el navegador de quien lo vea. Solución: escaparlo (`html.escape(...)`) o generar la página con un motor de plantillas que escape por defecto.\n\n4. **Falta de manejo de errores.** Si ninguna factura coincide, `row` es `None` y el código falla, quizá mostrando una traza interna. Solución: devolver un 404 limpio."
+      },
+      "takeaways": [
+        "Nunca pegues entrada no confiable en SQL, comandos de shell o HTML. Mantén separados los datos y el código.",
+        "Las consultas parametrizadas frenan la inyección SQL. Escapar la salida frena el XSS.",
+        "Comprueba los permisos en el servidor en cada petición. Ocultar botones no es seguridad.",
+        "Deja los secretos fuera de Git y mantén las dependencias al día."
+      ]
+    },
+    "system-design": {
+      "title": "Diseño de sistemas: escalar una aplicación web",
+      "concept": {
+        "text": "Un servidor y una base de datos pueden aguantar una cantidad sorprendente de tráfico. El **diseño de sistemas** trata de qué añadir, y en qué orden, cuando ya no pueden.\n\nLos movimientos habituales: poner un **balanceador de carga** delante de varios servidores de aplicación idénticos; hacer que esos servidores **no guarden estado** para que cualquiera pueda atender cualquier petición; añadir una **caché** para que las lecturas repetidas no lleguen a la base de datos; añadir **réplicas de lectura** cuando las lecturas superan lo que aguanta una base de datos; mandar el trabajo lento a una **cola** para procesarlo en segundo plano; y servir imágenes y scripts desde una **CDN** cerca del usuario.\n\nCada añadido resuelve un cuello de botella y trae problemas nuevos, como datos obsoletos en la caché o más piezas que vigilar. Un buen diseño empieza midiendo dónde está el cuello de botella real.",
+        "analogy": "Un food truck que crece hasta ser un restaurante. Contratas más cocineros (servidores de aplicación), alguien que reparta a los clientes entre las mesas (balanceador de carga), preparas por adelantado los platos más pedidos (caché) y mandas los pedidos de catering a una cocina trasera (cola) para no hacer esperar a quien entra por la puerta."
+      },
+      "visual": {
+        "caption": "Una forma habitual de una aplicación web que se ha quedado pequeña para un solo servidor.",
+        "nodes": [
+          {
+            "label": "Usuarios",
+            "detail": "Navegadores y apps móviles"
+          },
+          {
+            "label": "CDN",
+            "detail": "Sirve imágenes, CSS y JS desde cerca"
+          },
+          {
+            "label": "Balanceador de carga",
+            "detail": "Reparte las peticiones entre servidores"
+          },
+          {
+            "label": "Servidores de aplicación",
+            "detail": "Idénticos y sin estado. Añade más cuando haga falta"
+          },
+          {
+            "label": "Caché",
+            "detail": "Responde lecturas repetidas en microsegundos"
+          },
+          {
+            "label": "Base de datos",
+            "detail": "Una principal para escrituras, réplicas para lecturas"
+          },
+          {
+            "label": "Cola + trabajadores",
+            "detail": "Correos, codificación de vídeo e informes en segundo plano"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "title": "Mide el cuello de botella",
+          "text": "¿Es la CPU de los servidores de aplicación, consultas lentas a la base de datos o un endpoint pesado? Añade un índice o arregla una consulta antes de comprar más servidores."
+        },
+        {
+          "title": "Haz que los servidores no guarden estado",
+          "text": "Guarda las sesiones y los archivos subidos en una base de datos, caché o almacenamiento compartidos, no en la memoria o el disco de un servidor. Así cualquier servidor atiende cualquier petición y puedes añadir o quitar servidores libremente."
+        },
+        {
+          "title": "Cachea lo que se lee a menudo",
+          "text": "Con **cache-aside**, la aplicación consulta primero la caché y solo va a la base de datos si no encuentra el dato; luego guarda el resultado con un tiempo de caducidad. Lo difícil es la invalidación: decidir cuándo un dato de la caché está desactualizado."
+        },
+        {
+          "title": "Lleva el trabajo lento a una cola",
+          "text": "Si una petición dispara algo lento, como enviar un correo o redimensionar imágenes, pon un trabajo en una cola y responde al momento. Los trabajadores en segundo plano procesan los trabajos a su ritmo y pueden reintentar los que fallen."
+        },
+        {
+          "title": "Escala la base de datos al final y con cuidado",
+          "text": "Las réplicas de lectura aguantan más lecturas, pero pueden ir un instante por detrás de la principal. Repartir los datos entre varias bases de datos (**sharding**) aguanta más escrituras, pero complica mucho las consultas y las transacciones."
+        }
+      ],
+      "interactive": {
+        "questions": [
+          {
+            "q": "Tras añadir un segundo servidor de aplicación, los usuarios pierden la sesión al azar. ¿Cuál es la causa más probable?",
+            "options": [
+              "El balanceador de carga es demasiado lento",
+              "Las sesiones se guardan en la memoria de cada servidor",
+              "La base de datos necesita un índice",
+              "La CDN está cacheando la página de inicio de sesión"
+            ],
+            "explain": "Las peticiones se alternan entre servidores, y el segundo nunca ha visto esa sesión. Guarda las sesiones en un sitio compartido para que los servidores no tengan estado."
+          },
+          {
+            "q": "La página de un producto se lee 10.000 veces por cada vez que cambia. ¿Qué ayuda más?",
+            "options": [
+              "Hacer sharding de la base de datos",
+              "Una cola",
+              "Una caché con caducidad corta",
+              "Un servidor de aplicación más grande"
+            ],
+            "explain": "Datos muy leídos que cambian poco son el caso ideal para la caché. La mayoría de las peticiones ni tocan la base de datos."
+          },
+          {
+            "q": "El registro tarda 6 segundos porque espera a que se envíe un correo de bienvenida. ¿Cuál es la mejor solución?",
+            "options": [
+              "Añadir más servidores de aplicación",
+              "Poner el correo en una cola y responder al momento",
+              "Cachear el correo",
+              "Usar una réplica de lectura"
+            ],
+            "explain": "El usuario no necesita esperar al correo. Un trabajador en segundo plano lo envía y puede reintentarlo si el servicio de correo falla."
+          },
+          {
+            "q": "Un usuario actualiza su perfil, recarga y durante un momento ve la versión antigua. Las lecturas vienen de una réplica. ¿Por qué?",
+            "options": [
+              "Retraso de replicación",
+              "La CDN está caída",
+              "Hay demasiados servidores de aplicación",
+              "Falta un índice"
+            ],
+            "explain": "Las réplicas copian los cambios de la principal con un pequeño retraso. Lee los cambios recientes del propio usuario desde la principal para evitarlo."
+          }
+        ]
+      },
+      "challenge": {
+        "prompt": "Una aplicación de cuestionarios funciona en un servidor con una base de datos y tiene 500 usuarios. El mes que viene la usarán 200.000 estudiantes de una región, todos haciendo un cuestionario el lunes a las 9:00. Describe qué cambiarías, en orden, y por qué.",
+        "hint": "Piensa en la forma del tráfico: un pico enorme en un momento concreto, sobre todo leyendo preguntas, y luego una ráfaga de respuestas enviadas.",
+        "solution": "1. **Mide primero.** Haz una prueba de carga con la aplicación actual para encontrar el primer cuello de botella y arregla consultas lentas e índices que falten.\n\n2. **Archivos estáticos a una CDN**, para que el pico de las 9:00 de JavaScript, CSS e imágenes nunca llegue a los servidores.\n\n3. **Servidores sin estado detrás de un balanceador de carga**, con autoescalado programado para subir antes de las 9:00 en vez de reaccionar cuando ya llega el pico.\n\n4. **Cachea las preguntas.** Todos los estudiantes leen el mismo cuestionario, así que puede servirse casi entero desde la caché.\n\n5. **Pon en cola las respuestas enviadas.** Acepta cada envío rápido, escríbelo en una cola y deja que los trabajadores lo guarden y lo corrijan a un ritmo constante, para que una ráfaga de escrituras no tumbe la base de datos.\n\n6. **Añade una réplica de lectura** para informes y paneles, para que el profesorado consultando resultados no frene al alumnado.\n\nMantén una sola base de datos principal salvo que las mediciones demuestren que las escrituras siguen sin dar abasto. El sharding es el último recurso."
+      },
+      "takeaways": [
+        "Mide antes de escalar. A menudo el problema real es una consulta lenta o un índice que falta.",
+        "Los servidores sin estado detrás de un balanceador de carga pueden crecer y encogerse libremente.",
+        "Las cachés absorben las lecturas repetidas. Las colas absorben el trabajo lento y los picos de tráfico.",
+        "Cada componente nuevo resuelve un cuello de botella y añade complejidad, así que añádelos solo cuando hagan falta."
+      ]
+    }
+  }
+}

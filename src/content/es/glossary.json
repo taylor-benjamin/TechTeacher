@@ -75,5 +75,14 @@
   "phishing": { "term": "phishing", "def": "Engañar a alguien para que revele secretos o ejecute malware, normalmente con un mensaje falso." },
   "IDS": { "term": "IDS", "def": "Sistema de Detección de Intrusiones: vigila el tráfico y lanza alertas ante actividad sospechosa." },
   "IPS": { "term": "IPS", "def": "Sistema de Prevención de Intrusiones: como un IDS, pero colocado en línea y capaz de bloquear tráfico." },
-  "SIEM": { "term": "SIEM", "def": "Gestión de Información y Eventos de Seguridad: recoge registros de todas partes y los correlaciona en alertas." }
+  "SIEM": { "term": "SIEM", "def": "Gestión de Información y Eventos de Seguridad: recoge registros de todas partes y los correlaciona en alertas." },
+  "unit test": { "term": "prueba unitaria", "aliases": ["pruebas unitarias"], "def": "Una prueba automatizada que comprueba una pieza pequeña de código, como una sola función, de forma aislada." },
+  "Big-O": { "term": "Big-O", "aliases": ["notación Big-O"], "def": "Una forma de describir cómo crece el trabajo de un algoritmo a medida que crece su entrada, por ejemplo O(n) u O(n²)." },
+  "race condition": { "term": "condición de carrera", "aliases": ["condiciones de carrera"], "def": "Un error en el que el resultado depende del orden en que terminan tareas que se ejecutan a la vez, como dos actualizaciones que se pisan." },
+  "SQL injection": { "term": "inyección SQL", "def": "Un ataque en el que una entrada pegada en una consulta SQL cambia lo que hace la consulta. Se evita con consultas parametrizadas." },
+  "XSS": { "term": "XSS", "aliases": ["cross-site scripting"], "def": "Cross-site scripting: un ataque en el que una entrada no confiable se muestra en una página como HTML y se ejecuta como script en el navegador de otros usuarios." },
+  "cache": { "term": "caché", "aliases": ["cachés"], "def": "Un almacén rápido que guarda copias de datos que se leen a menudo, para que las siguientes peticiones no tengan que ir a la fuente original, más lenta." },
+  "overfitting": { "term": "sobreajuste", "aliases": ["sobreajustado", "overfitting"], "def": "Cuando un modelo memoriza sus datos de entrenamiento, ruido incluido, y funciona mal con datos que no ha visto." },
+  "learning rate": { "term": "tasa de aprendizaje", "def": "El tamaño del paso que da el descenso de gradiente cada vez que actualiza los pesos. Demasiado pequeña es lenta; demasiado grande diverge." },
+  "prompt injection": { "term": "inyección de prompts", "aliases": ["inyección de prompt"], "def": "Un ataque que esconde instrucciones en un texto que leerá un LLM, como una página web o un correo, para que ignore sus instrucciones reales." }
 }

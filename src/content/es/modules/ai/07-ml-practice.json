@@ -1,0 +1,184 @@
+{
+  "title": "Machine learning en la práctica",
+  "summary": "Machine learning clásico hecho a mano: entrena un modelo, mídelo con honestidad y descubre las matemáticas que hacen posible el aprendizaje.",
+  "lessons": {
+    "supervised-learning": {
+      "title": "Aprendizaje supervisado: entrenar, probar, predecir",
+      "concept": {
+        "text": "La mayor parte del machine learning práctico es **aprendizaje supervisado**: enseñas a un modelo ejemplos cuya respuesta ya conoces, y aprende a predecir la respuesta en casos nuevos. Cada ejemplo tiene **características** (las entradas, como las horas de estudio) y una **etiqueta** (la respuesta, como aprobado o suspenso).\n\nLa regla de oro: juzga un modelo solo con datos que nunca ha visto. Por eso divides los datos en un **conjunto de entrenamiento** para aprender y un **conjunto de prueba** guardado bajo llave hasta el final. Un modelo que puntúa bien con los datos de entrenamiento pero mal con los de prueba ha memorizado en vez de aprender: es sobreajuste.\n\nCompara siempre con una **referencia base**, como \"adivinar siempre la respuesta más común\". Un modelo solo es útil si la supera.",
+        "analogy": "Estudiar con exámenes de años anteriores es el entrenamiento. El examen real, con preguntas que nunca has visto, es el conjunto de prueba. Memorizar palabra por palabra las respuestas antiguas te da un diez en los simulacros y muy poco en el examen de verdad."
+      },
+      "visual": {
+        "caption": "El flujo de trabajo del aprendizaje supervisado.",
+        "nodes": [
+          {
+            "label": "Datos etiquetados",
+            "detail": "Ejemplos con respuestas conocidas"
+          },
+          {
+            "label": "Dividir",
+            "detail": "Por ejemplo, 80 % entrenamiento y 20 % prueba"
+          },
+          {
+            "label": "Entrenar",
+            "detail": "El modelo aprende patrones solo del conjunto de entrenamiento"
+          },
+          {
+            "label": "Predecir",
+            "detail": "Ejecuta el modelo con el conjunto de prueba, que no ha visto"
+          },
+          {
+            "label": "Puntuar",
+            "detail": "Compara las predicciones con las etiquetas reales y con una referencia base"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "title": "Elige características y una etiqueta",
+          "text": "Decide qué predice el modelo (la etiqueta) y qué entradas medibles pueden ayudar (las características). Deja fuera cualquier dato que no se conocería en el momento de predecir, o el modelo hará trampa."
+        },
+        {
+          "title": "Divide antes de mirar",
+          "text": "Aparta primero los datos de prueba. Si ajustas algo mirando los resultados de la prueba, deja de ser un examen justo. Los proyectos grandes añaden un tercer conjunto de **validación** para hacer los ajustes."
+        },
+        {
+          "title": "Empieza por lo simple",
+          "text": "**k vecinos más cercanos (k-NN)** es el método más sencillo: para clasificar un punto nuevo, busca los k ejemplos de entrenamiento más parecidos y haz una votación. No necesita más matemáticas que medir distancias."
+        },
+        {
+          "title": "Supera una referencia base",
+          "text": "Si el 90 % de los correos no son spam, un \"modelo\" que siempre dice \"no es spam\" acierta el 90 %. Tu modelo tiene que hacerlo mejor para valer algo."
+        }
+      ],
+      "challenge": {
+        "prompt": "Añade una referencia base que prediga siempre la etiqueta más común del conjunto de entrenamiento y mide su precisión. Después compara k = 1, 3 y 5. ¿Por qué aquí k = 1 lo hace peor?",
+        "hint": "`max(set(labels), key=labels.count)` encuentra la etiqueta más común. Fíjate en el punto de entrenamiento marcado como valor atípico y en qué punto de prueba está justo a su lado."
+      },
+      "takeaways": [
+        "El aprendizaje supervisado aprende de ejemplos etiquetados para predecir etiquetas en casos nuevos.",
+        "Juzga un modelo solo con datos de prueba que no vio durante el entrenamiento.",
+        "Compara siempre con una referencia base sencilla.",
+        "Pequeñas decisiones, como el valor de k, cambian lo sensible que es un modelo a los ejemplos ruidosos."
+      ]
+    },
+    "evaluation-metrics": {
+      "title": "Medir modelos: precisión, exhaustividad y la matriz de confusión",
+      "concept": {
+        "text": "La exactitud (accuracy) es la proporción de predicciones correctas. Parece suficiente, pero se desmorona cuando un resultado es poco frecuente. Si 1 de cada 100 pagos es un fraude, un modelo que nunca marca nada acierta el 99 % y no sirve para nada.\n\nLa **matriz de confusión** reparte los resultados en cuatro casillas: verdaderos positivos, falsos positivos, falsos negativos y verdaderos negativos. De ahí salen dos preguntas mejores. **Precisión**: de todo lo que el modelo marcó, ¿cuánto era realmente positivo? **Exhaustividad (recall)**: de todos los positivos reales, ¿cuántos detectó el modelo?\n\nLas dos tiran en sentidos opuestos. Si marcas más casos, la exhaustividad sube y la precisión baja. Cuál importa más depende del coste de cada error.",
+        "analogy": "Un filtro de spam con mucha precisión casi nunca manda correo legítimo a la carpeta de spam. Uno con mucha exhaustividad deja pasar muy poco spam a tu bandeja de entrada. Forzar mucho una suele costar parte de la otra."
+      },
+      "visual": {
+        "caption": "La matriz de confusión. Precisión = VP / (VP + FP). Exhaustividad = VP / (VP + FN).",
+        "columns": [
+          "El modelo dice positivo",
+          "El modelo dice negativo"
+        ],
+        "rows": [
+          [
+            "En realidad positivo",
+            "Verdadero positivo (VP): detectado",
+            "Falso negativo (FN): se le escapó"
+          ],
+          [
+            "En realidad negativo",
+            "Falso positivo (FP): falsa alarma",
+            "Verdadero negativo (VN): bien ignorado"
+          ]
+        ]
+      },
+      "steps": [
+        {
+          "title": "Cuenta los cuatro resultados",
+          "text": "Compara cada predicción con la etiqueta real y cuenta VP, FP, FN y VN."
+        },
+        {
+          "title": "Calcula la precisión y la exhaustividad",
+          "text": "La precisión mide cuánto puedes fiarte de una predicción positiva. La exhaustividad mide cuántos positivos reales se encontraron."
+        },
+        {
+          "title": "Elige el umbral",
+          "text": "La mayoría de los modelos devuelven una puntuación, como 0,83 de sospecha. Tú eliges el umbral que convierte las puntuaciones en sí o no. Un umbral más bajo detecta más (más exhaustividad) pero da más falsas alarmas (menos precisión)."
+        },
+        {
+          "title": "Ajusta la métrica al coste de los errores",
+          "text": "El cribado de cáncer prioriza la exhaustividad, porque pasar por alto un caso es mucho peor que una prueba de seguimiento. Un filtro de spam prioriza la precisión, porque perder un correo real es peor que ver un spam. **F1** equilibra ambas cuando las dos importan."
+        }
+      ],
+      "challenge": {
+        "prompt": "En realidad el modelo devuelve una puntuación de sospecha para cada pago. Para los umbrales 0,3, 0,5 y 0,7, muestra la precisión, la exhaustividad y F1. ¿Qué umbral elegirías para un banco, y por qué?",
+        "hint": "Dentro del bucle, usa los recuentos de `confusion` con las fórmulas de los pasos. Evita dividir entre cero cuando no se marca nada."
+      },
+      "takeaways": [
+        "La exactitud engaña cuando un resultado es poco frecuente.",
+        "Precisión: cuántos casos marcados eran reales. Exhaustividad: cuántos casos reales se marcaron.",
+        "Mover el umbral intercambia precisión por exhaustividad.",
+        "Elige la métrica que refleje el coste real de cada tipo de error."
+      ]
+    },
+    "gradient-descent": {
+      "title": "Descenso de gradiente: cómo aprenden de verdad los modelos",
+      "concept": {
+        "text": "Entrenar un modelo significa encontrar los pesos que hacen que sus predicciones se equivoquen lo menos posible. Primero necesitas un número para \"cuánto se equivoca\": la **pérdida**. Para predecir números, una opción habitual es el **error cuadrático medio**, la media de las diferencias al cuadrado entre las predicciones y los valores reales.\n\nEl **descenso de gradiente** mejora después los pesos paso a paso. El **gradiente** indica, para cada peso, en qué dirección sube la pérdida y con qué pendiente. Empuja cada peso un poco en sentido contrario, recalcula y repite. El tamaño de cada empujón es la **tasa de aprendizaje**: si es demasiado pequeña, el entrenamiento se arrastra; si es demasiado grande, los pesos se pasan de largo y salen disparados hacia el infinito.\n\nEste mismo bucle, ampliado a miles de millones de pesos y ejecutado en GPU, es como se entrenan los grandes modelos de lenguaje.",
+        "analogy": "Ajustar una ducha que no conoces: el agua sale fría, así que giras el mando un poco hacia el calor, esperas y vuelves a comprobar. Con giros pequeños llegas a la temperatura buena despacio. Con giros enormes pasas de helada a hirviendo y vuelta, y nunca aciertas. Cuánto giras cada vez es la tasa de aprendizaje."
+      },
+      "visual": {
+        "caption": "Un paso de entrenamiento. Se repite cientos o millones de veces.",
+        "nodes": [
+          {
+            "label": "Pesos",
+            "detail": "Empieza con una suposición, por ejemplo w = 0, b = 0"
+          },
+          {
+            "label": "Predecir",
+            "detail": "predicción = w × x + b para cada ejemplo"
+          },
+          {
+            "label": "Pérdida",
+            "detail": "Error cuadrático medio: cuánto se equivoca, de media"
+          },
+          {
+            "label": "Gradiente",
+            "detail": "Pendiente de la pérdida para cada peso"
+          },
+          {
+            "label": "Actualizar",
+            "detail": "peso -= tasa de aprendizaje × gradiente"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "title": "Define el modelo y la pérdida",
+          "text": "Una recta, `prediction = w * x + b`, tiene dos pesos. La pérdida es el error cuadrático medio sobre todos los ejemplos."
+        },
+        {
+          "title": "Calcula el gradiente",
+          "text": "El cálculo diferencial da la pendiente de la pérdida para cada peso. En este modelo son medias sencillas. Bibliotecas como PyTorch las calculan automáticamente para cualquier modelo, lo que se llama **retropropagación**."
+        },
+        {
+          "title": "Da un paso cuesta abajo",
+          "text": "Resta un múltiplo pequeño de cada gradiente. La pérdida debería bajar en cada paso."
+        },
+        {
+          "title": "Ajusta la tasa de aprendizaje",
+          "text": "Si la pérdida baja despacio, sube la tasa de aprendizaje. Si crece o se convierte en números enormes, bájala. El entrenamiento real usa optimizadores más listos como **Adam**, pero la idea es la misma."
+        },
+        {
+          "title": "Sabe cuándo parar",
+          "text": "Para cuando la pérdida deje de mejorar de forma apreciable, o cuando la pérdida con los datos de validación empiece a subir, que es el sobreajuste."
+        }
+      ],
+      "challenge": {
+        "prompt": "Ejecuta el ejemplo con tasas de aprendizaje de 0,001 y 0,12 y describe qué pasa. Después añade **parada temprana**: termina el entrenamiento en cuanto la pérdida mejore menos de 0,000000001 en un paso, muestra en qué paso se detuvo y usa el modelo entrenado para predecir y con x = 10.",
+        "hint": "Guarda la pérdida anterior en una variable que empiece en `float(\"inf\")`. Compárala con la nueva antes de actualizar los pesos y sal del bucle con `break` cuando la mejora sea mínima."
+      },
+      "takeaways": [
+        "La pérdida mide cuánto se equivoca el modelo. El entrenamiento intenta hacerla pequeña.",
+        "El gradiente apunta cuesta arriba. El descenso de gradiente da pasos en sentido contrario, poco a poco.",
+        "La tasa de aprendizaje fija el tamaño del paso: demasiado pequeña es lenta, demasiado grande diverge.",
+        "El mismo bucle, con gradientes automáticos, entrena todas las redes neuronales modernas."
+      ]
+    }
+  }
+}

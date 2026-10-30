@@ -1,11 +1,11 @@
 {
   "software": {
     "title": "Desarrollo de software",
-    "summary": "APIs, ocho lenguajes de programación con ejecución en el navegador, y Git/GitHub."
+    "summary": "APIs, ocho lenguajes de programación con ejecución en el navegador, Git/GitHub y prácticas de ingeniería, de las pruebas al diseño de sistemas."
   },
   "ai": {
     "title": "IA / ML",
-    "summary": "Cómo funcionan de verdad las redes neuronales y los LLM, además de prompts, RAG, agentes y modelos locales."
+    "summary": "Cómo funcionan de verdad las redes neuronales y los LLM, machine learning práctico, además de prompts, RAG, evals, agentes y modelos locales."
   },
   "networking": {
     "title": "Redes",
